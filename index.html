@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NEXUS CORE | Secure Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:'Orbitron', sans-serif;
+    background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #0f2027);
+    background-size:400% 400%;
+    animation: gradientMove 12s ease infinite;
+}
+
+@keyframes gradientMove {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.card{
+    backdrop-filter: blur(15px);
+    background: rgba(0,0,0,0.65);
+    padding:50px;
+    width:380px;
+    border-radius:20px;
+    box-shadow:0 0 40px rgba(0,0,0,0.8);
+    text-align:center;
+    color:white;
+}
+
+.logo{
+    width:120px;
+    margin-bottom:20px;
+    filter: drop-shadow(0 0 15px gold);
+}
+
+h1{
+    margin:10px 0 30px;
+    letter-spacing:3px;
+    font-weight:600;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    margin:12px 0;
+    border:none;
+    border-radius:10px;
+    background:#111;
+    color:white;
+    font-size:14px;
+}
+
+input:focus{
+    outline:none;
+    box-shadow:0 0 10px gold;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    border:none;
+    border-radius:10px;
+    background:gold;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#ffd700;
+    box-shadow:0 0 15px gold;
+}
+
+.footer{
+    margin-top:25px;
+    font-size:11px;
+    color:#aaa;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<img src="logo.png" class="logo">
+
+<h1>NEXUS CORE</h1>
+
+<input type="text" placeholder="USERNAME">
+<input type="password" placeholder="PASSWORD">
+
+<button>SECURE ACCESS</button>
+
+<div class="footer">
+AUTHORIZED PERSONNEL ONLY<br>
+© 2026 NEXUS CORE SYSTEMS
+</div>
+
+</div>
+
+</body>
+</html>
