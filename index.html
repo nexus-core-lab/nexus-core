@@ -1,3 +1,76 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internal Access</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:black;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    text-align:center;
+    background:#111;
+    padding:30px;
+    border-radius:10px;
+    width:320px;
+    box-shadow:0 0 20px red;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    background:black;
+    border:1px solid red;
+    color:white;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    background:red;
+    border:none;
+    color:white;
+    cursor:pointer;
+}
+
+button:disabled{
+    background:gray;
+}
+
+#msg{
+    margin-top:10px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <img src="logo.png" width="90"><br><br>
+
+    <h3>IDENTITY VERIFICATION</h3>
+
+    <input type="text" id="card" placeholder="Card ID">
+    <input type="password" id="pass" placeholder="Password">
+    <button id="loginBtn" onclick="authenticate()">Authenticate</button>
+
+    <div id="msg"></div>
+
+</div>
+
 <script>
 const correctCard = "LC-A01";
 const correctPass = "Lc1993♧";
@@ -7,6 +80,7 @@ let lockUntil = 0;
 let timerInterval = null;
 
 function authenticate() {
+
     const now = Date.now();
     const message = document.getElementById("msg");
     const button = document.getElementById("loginBtn");
@@ -19,12 +93,16 @@ function authenticate() {
     const pass = document.getElementById("pass").value.trim();
 
     if (card === correctCard && pass === correctPass) {
+
         message.style.color = "lime";
         message.innerText = "ACCESS GRANTED";
-        setTimeout(() => {
-            window.location.href = "dashboard.html";
-        }, 1500);
+
+        setTimeout(()=>{
+            window.location.href="dashboard.html";
+        },1500);
+
     } else {
+
         failCount++;
         message.style.color = "red";
         message.innerText = "ข้อมูลไม่ถูกต้อง";
@@ -35,24 +113,30 @@ function authenticate() {
     }
 }
 
-function lockSystem(seconds) {
+function lockSystem(seconds){
+
     const message = document.getElementById("msg");
     const button = document.getElementById("loginBtn");
 
     lockUntil = Date.now() + seconds * 1000;
     button.disabled = true;
 
-    timerInterval = setInterval(() => {
-        const remaining = Math.ceil((lockUntil - Date.now()) / 1000);
+    timerInterval = setInterval(()=>{
 
-        if (remaining <= 0) {
+        const remaining = Math.ceil((lockUntil - Date.now())/1000);
+
+        if(remaining <= 0){
             clearInterval(timerInterval);
             button.disabled = false;
-            message.innerText = "";
-        } else {
-            message.style.color = "orange";
-            message.innerText = "ระบบล็อก " + remaining + " วินาที";
+            message.innerText="";
+        }else{
+            message.style.color="orange";
+            message.innerText="ระบบล็อก "+remaining+" วินาที";
         }
-    }, 1000);
+
+    },1000);
 }
 </script>
+
+</body>
+</html>
