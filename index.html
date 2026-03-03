@@ -8,57 +8,60 @@
 <style>
 body{
     margin:0;
-    font-family:Tahoma, sans-serif;
+    font-family: "Segoe UI", Tahoma, sans-serif;
     background:#dcdcdc;
 }
 
 .topbar{
     background:#000;
     color:#fff;
-    padding:10px;
+    padding:10px 15px;
     display:flex;
     justify-content:space-between;
     font-size:14px;
 }
 
 .container{
-    max-width:480px;
-    margin:40px auto;
-    background:#f2f2f2;
-    padding:40px 30px;
+    max-width:500px;
+    margin:50px auto;
+    background:#f4f4f4;
+    padding:45px 35px;
     text-align:center;
-    box-shadow:0 0 10px rgba(0,0,0,0.2);
+    box-shadow:0 3px 15px rgba(0,0,0,0.25);
 }
 
 .logo{
     width:110px;
-    margin-bottom:20px;
+    margin-bottom:25px;
 }
 
 h2{
-    margin:10px 0;
+    margin:10px 0 5px 0;
+    font-weight:700;
 }
 
 .subtitle{
     color:#555;
     font-size:14px;
-    margin-bottom:30px;
+    margin-bottom:35px;
+    line-height:1.6;
 }
 
 input{
     width:100%;
-    padding:12px;
-    margin:10px 0;
+    padding:14px;
+    margin:12px 0;
     border:2px solid #888;
     background:#e9e9e9;
     font-size:15px;
+    box-sizing:border-box;
 }
 
 button{
     width:100%;
-    padding:12px;
-    margin-top:10px;
-    background:#777;
+    padding:14px;
+    margin-top:15px;
+    background:#6f6f6f;
     color:white;
     border:none;
     font-size:16px;
@@ -70,12 +73,12 @@ button:disabled{
 }
 
 #msg{
-    margin-top:15px;
+    margin-top:18px;
     font-weight:bold;
 }
 
 .footer{
-    margin-top:20px;
+    margin-top:25px;
     font-size:13px;
     color:#777;
 }
@@ -124,8 +127,8 @@ let timerInterval = null;
 function updateTime(){
     const now = new Date();
     document.getElementById("datetime").innerText =
-        now.toLocaleDateString("th-TH") + " " +
-        now.toLocaleTimeString("th-TH");
+        now.toLocaleDateString("en-GB") + " " +
+        now.toLocaleTimeString();
 }
 setInterval(updateTime,1000);
 updateTime();
