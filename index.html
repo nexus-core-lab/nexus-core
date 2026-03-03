@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS CORE - Secure Access</title>
+<title>NEXUS CORE</title>
 
 <style>
 body{
@@ -63,10 +63,6 @@ button{
     cursor:pointer;
 }
 
-button:disabled{
-    opacity:0.5;
-}
-
 .message{
     margin-top:15px;
     font-size:14px;
@@ -106,7 +102,6 @@ const correctPass = "Lc1993♧";
 
 let attempts = 0;
 let locked = false;
-let hardLock = false;
 
 const card = document.getElementById("card");
 const pass = document.getElementById("pass");
@@ -115,40 +110,31 @@ const msg = document.getElementById("msg");
 
 btn.onclick = function(){
 
-    if(locked || hardLock) return;
+    if(locked) return;
 
-    msg.style.color="#ccc";
-    msg.innerText="Verifying credentials...";
+    msg.innerText="Verifying...";
     btn.disabled=true;
 
     setTimeout(function(){
 
         if(card.value === correctCard && pass.value === correctPass){
-
             msg.style.color="lime";
             msg.innerText="ACCESS GRANTED";
-
-            setTimeout(function(){
-                window.location.href="https://lin.ee/xbIaU45";
-            },1200);
-
             return;
         }
 
         attempts++;
 
-        if(attempts >= 9){
-            activateHardLock();
-            return;
-        }
-
-        if(attempts >= 6){
-            activateLock(300,true);
-            return;
-        }
-
         if(attempts >= 3){
-            activateLock(30,false);
+            locked=true;
+            msg.style.color="red";
+            msg.innerText="SYSTEM LOCKED 30s";
+            setTimeout(function(){
+                locked=false;
+                attempts=0;
+                msg.innerText="";
+                btn.disabled=false;
+            },30000);
             return;
         }
 
@@ -157,59 +143,8 @@ btn.onclick = function(){
         btn.disabled=false;
         pass.value="";
 
-    },1200);
-};
-
-function activateLock(seconds, alertMode){
-
-    locked=true;
-    card.disabled=true;
-    pass.disabled=true;
-
-    let timeLeft=seconds;
-
-    const timer=setInterval(function(){
-
-        msg.style.color= alertMode ? "#ff3b3b" : "orange";
-
-        msg.innerText= alertMode
-            ? "SECURITY ALERT - Retry in "+timeLeft+"s"
-            : "System locked - Retry in "+timeLeft+"s";
-
-        timeLeft--;
-
-        if(timeLeft < 0){
-            clearInterval(timer);
-            locked=false;
-            attempts=0;
-            card.disabled=false;
-            pass.disabled=false;
-            btn.disabled=false;
-            msg.innerText="";
-        }
-
     },1000);
-}
-
-function activateHardLock(){
-
-    hardLock=true;
-    card.disabled=true;
-    pass.disabled=true;
-    btn.disabled=true;
-
-    msg.style.color="#ff0000";
-    msg.innerText="ACCOUNT SUSPENDED - CONTACT ADMINISTRATOR";
-}
-
-function updateTime(){
-    const now=new Date();
-    document.getElementById("time").innerText=
-        now.toLocaleDateString()+" "+now.toLocaleTimeString();
-}
-
-setInterval(updateTime,1000);
-updateTime();
+};
 
 });
 </script>
