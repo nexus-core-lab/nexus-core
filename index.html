@@ -6,52 +6,47 @@
 <title>Secure Access</title>
 
 <style>
-body{
-    margin:0;
-    height:100vh;
-    background:black;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-family:Arial, sans-serif;
-    color:#00ffcc;
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: black;
+    font-family: Arial, sans-serif;
+    color: #00ffcc;
 }
 
-.container{
-    background:#111;
-    padding:40px;
-    border-radius:15px;
-    text-align:center;
-    box-shadow:0 0 25px #00ffcc;
-    width:300px;
+.container {
+    text-align: center;
+    background: rgba(0,0,0,0.9);
+    padding: 40px;
+    border: 2px solid #00ffcc;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #00ffcc;
 }
 
-.logo{
-    width:120px;
-    margin-bottom:20px;
+input {
+    padding: 10px;
+    width: 200px;
+    margin-top: 15px;
+    background: black;
+    border: 1px solid #00ffcc;
+    color: #00ffcc;
+    text-align: center;
 }
 
-input{
-    width:100%;
-    padding:10px;
-    margin:10px 0;
-    border:none;
-    border-radius:8px;
-    text-align:center;
-    font-size:18px;
+button {
+    margin-top: 20px;
+    padding: 10px 25px;
+    background: #00ffcc;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-button{
-    width:100%;
-    padding:10px;
-    border:none;
-    border-radius:8px;
-    background:#00ffcc;
-    font-weight:bold;
-    cursor:pointer;
-}
-button:hover{
-    background:#00ccaa;
+button:hover {
+    background: white;
 }
 </style>
 </head>
@@ -59,10 +54,11 @@ button:hover{
 <body>
 
 <div class="container">
-    <img src="logo.png" class="logo">
-    <h2>SECURE LOGIN</h2>
-    <input type="password" id="password" placeholder="Enter Access Code">
-    <button onclick="login()">ENTER</button>
+    <h2>SECURE ACCESS SYSTEM</h2>
+    <input type="password" id="password" placeholder="ENTER ACCESS CODE">
+    <br>
+    <button onclick="login()">LOGIN</button>
+    <p id="warning"></p>
 </div>
 
 <audio id="alarmSound" src="alarm.mp3" preload="auto"></audio>
@@ -70,21 +66,23 @@ button:hover{
 <script>
 let attempts = 0;
 
-function login(){
-    const pass = document.getElementById("password").value;
+function login() {
+    const password = document.getElementById("password").value;
     const alarm = document.getElementById("alarmSound");
+    const warning = document.getElementById("warning");
 
-    if(pass === "1234"){
+    if (password === "1234") {
         window.location.href = "https://lin.ee/xbIaU45";
-    }else{
-        attempts++;
+        return;
+    }
 
-        alarm.currentTime = 0;
-        alarm.play().catch(()=>{});
+    attempts++;
+    alarm.currentTime = 0;
+    alarm.play().catch(()=>{});
 
-        if(attempts >= 3){
-            alert("⚠ SECURITY ALERT ⚠\nUnauthorized Access Attempt Detected");
-        }
+    if (attempts >= 3) {
+        warning.innerHTML = "⚠ SECURITY ALERT ⚠<br>Unauthorized Access Detected";
+        warning.style.color = "red";
     }
 }
 </script>
