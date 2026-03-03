@@ -3,83 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Identity Verification</title>
+<title>NEXUS Secure System</title>
 
 <style>
 body{
     margin:0;
-    font-family:Arial, sans-serif;
-    background:#ffffff;
+    font-family:Tahoma, sans-serif;
+    background:#dcdcdc;
+}
+
+.topbar{
+    background:#000;
+    color:#fff;
+    padding:10px;
     display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+    justify-content:space-between;
+    font-size:14px;
 }
 
 .container{
+    max-width:480px;
+    margin:40px auto;
+    background:#f2f2f2;
+    padding:40px 30px;
     text-align:center;
-    padding:40px;
-    width:340px;
-    border-radius:12px;
-    background:#ffffff;
-    box-shadow:0 0 25px rgba(0,0,0,0.15);
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.logo{
+    width:110px;
+    margin-bottom:20px;
 }
 
 h2{
-    margin-bottom:25px;
-    color:#222;
+    margin:10px 0;
+}
+
+.subtitle{
+    color:#555;
+    font-size:14px;
+    margin-bottom:30px;
 }
 
 input{
     width:100%;
     padding:12px;
     margin:10px 0;
-    border:1px solid #ccc;
-    border-radius:6px;
-    font-size:14px;
-}
-
-input:focus{
-    outline:none;
-    border:1px solid #000;
+    border:2px solid #888;
+    background:#e9e9e9;
+    font-size:15px;
 }
 
 button{
     width:100%;
     padding:12px;
-    background:#000;
+    margin-top:10px;
+    background:#777;
     color:white;
     border:none;
-    border-radius:6px;
+    font-size:16px;
     cursor:pointer;
-    font-size:15px;
 }
 
 button:disabled{
-    background:#888;
+    background:#aaa;
 }
 
 #msg{
     margin-top:15px;
     font-weight:bold;
 }
+
+.footer{
+    margin-top:20px;
+    font-size:13px;
+    color:#777;
+}
 </style>
 </head>
 
 <body>
 
+<div class="topbar">
+    <div>เครือข่ายภายในที่ปลอดภัย</div>
+    <div id="datetime"></div>
+</div>
+
 <div class="container">
 
-    <img src="logo.png" width="90"><br><br>
+    <img src="logo.png" class="logo">
 
-    <h2>IDENTITY VERIFICATION</h2>
+    <h2>ระบบสารสนเทศหลัก NEXUS</h2>
 
-    <input type="text" id="card" placeholder="Card ID">
-    <input type="password" id="pass" placeholder="Password">
+    <div class="subtitle">
+        เฉพาะบุคลากรที่ได้รับอนุญาตเท่านั้น<br>
+        ระดับการรักษาความปลอดภัย: ต้องมีใบอนุญาตระดับ 3
+    </div>
 
-    <button id="loginBtn" onclick="authenticate()">Authenticate</button>
+    <input type="text" id="card" placeholder="รหัสบัตรประจำตัว">
+    <input type="password" id="pass" placeholder="รหัสผ่าน">
+
+    <button id="loginBtn" onclick="authenticate()">ยืนยันตัวตน</button>
 
     <div id="msg"></div>
+
+    <div class="footer">
+        การเข้าถึงโดยไม่ได้รับอนุญาตอาจถูกตรวจสอบและดำเนินคดี
+    </div>
 
 </div>
 
@@ -90,6 +120,15 @@ const correctPass = "Lc1993♧";
 let failCount = 0;
 let lockUntil = 0;
 let timerInterval = null;
+
+function updateTime(){
+    const now = new Date();
+    document.getElementById("datetime").innerText =
+        now.toLocaleDateString("th-TH") + " " +
+        now.toLocaleTimeString("th-TH");
+}
+setInterval(updateTime,1000);
+updateTime();
 
 function authenticate(){
 
@@ -107,7 +146,7 @@ function authenticate(){
     if(card === correctCard && pass === correctPass){
 
         message.style.color="green";
-        message.innerText="ACCESS GRANTED";
+        message.innerText="ยืนยันตัวตนสำเร็จ";
 
         setTimeout(()=>{
             window.location.href="dashboard.html";
@@ -131,19 +170,21 @@ function lockSystem(seconds){
     const button = document.getElementById("loginBtn");
 
     lockUntil = Date.now() + seconds*1000;
-    button.disabled = true;
+    button.disabled=true;
 
-    timerInterval = setInterval(()=>{
+    timerInterval=setInterval(()=>{
 
-        const remaining = Math.ceil((lockUntil - Date.now())/1000);
+        const remaining=Math.ceil((lockUntil-Date.now())/1000);
 
-        if(remaining <= 0){
+        if(remaining<=0){
             clearInterval(timerInterval);
             button.disabled=false;
             message.innerText="";
         }else{
-            message.style.color="orange";
-            message.innerText="ระบบล็อก "+remaining+" วินาที";
+            message.style.color="red";
+            message.innerText=
+            "ระบบล็อกอยู่ โปรดลองใหม่อีกครั้งใน "
+            + remaining + " วินาที";
         }
 
     },1000);
