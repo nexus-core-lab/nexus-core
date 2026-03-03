@@ -1,4 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS CORE</title>
+
+<style>
+body{
+    margin:0;
+    background:#e6e6e6;
+    font-family:Arial;
+}
+
+.topbar{
+    background:#111;
+    color:#fff;
+    padding:8px 15px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.container{
+    max-width:400px;
+    margin:60px auto;
+    background:#fff;
+    padding:25px;
+    border:1px solid #bbb;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-bottom:12px;
+    border:1px solid #666;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    background:#000;
+    color:#fff;
+    border:none;
+}
+
+.message{
+    margin-top:10px;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <div>เครือข่ายภายในที่ปลอดภัย</div>
+    <div id="time"></div>
+</div>
+
+<div class="container">
+    <h3>ระบบสารสนเทศหลัก NEXUS</h3>
+    <input type="text" id="card" placeholder="รหัสบัตร">
+    <input type="password" id="pass" placeholder="รหัสผ่าน">
+    <button id="loginBtn">ยืนยันตัวตน</button>
+    <div class="message" id="msg"></div>
+</div>
+
 <script>
+
 document.addEventListener("DOMContentLoaded", function(){
 
 const correctCard = "LC-A01";
@@ -6,98 +74,86 @@ const correctPass = "Lc1993♧";
 
 let attempts = 0;
 let locked = false;
-let hardLocked = false;
 
 const card = document.getElementById("card");
 const pass = document.getElementById("pass");
 const btn = document.getElementById("loginBtn");
 const msg = document.getElementById("msg");
-const session = document.getElementById("session");
 
-if(!card || !pass || !btn) return; // กันพัง
+btn.onclick = function(){
 
-btn.addEventListener("click", authenticate);
+    if(locked) return;
 
-function authenticate(){
-
-    if(locked || hardLocked) return;
-
-    msg.innerText = "กำลังตรวจสอบข้อมูล...";
+    msg.innerText = "กำลังตรวจสอบ...";
     btn.disabled = true;
 
-    setTimeout(()=>{
+    setTimeout(function(){
 
         if(card.value === correctCard && pass.value === correctPass){
 
-            session.innerText = "Session ID: NC-" + Math.floor(Math.random()*1000000);
             msg.style.color = "green";
-            msg.innerText = "ยืนยันตัวตนสำเร็จ";
+            msg.innerText = "เข้าสู่ระบบสำเร็จ";
 
-            setTimeout(()=>{
+            setTimeout(function(){
                 window.location.href = "https://lin.ee/xbIaU45";
-            },1200);
+            },1000);
 
             return;
         }
 
         attempts++;
 
-        if(attempts >= 9){
-            hardLocked = true;
-            msg.style.color = "#8b0000";
-            msg.innerText = "บัญชีถูกระงับ กรุณาติดต่อผู้ดูแลระบบ";
-            card.disabled = true;
-            pass.disabled = true;
-            btn.disabled = true;
-            return;
-        }
-
-        if(attempts >= 6){
-            activateLock(300, true);
-            return;
-        }
-
         if(attempts >= 3){
-            activateLock(30, false);
-            return;
+            lockSystem();
+        }else{
+            msg.style.color = "red";
+            msg.innerText = "รหัสไม่ถูกต้อง ("+attempts+"/3)";
+            btn.disabled = false;
+            pass.value="";
         }
 
-        msg.style.color = "#b00000";
-        msg.innerText = "การยืนยันล้มเหลว ("+attempts+"/3)";
-        btn.disabled = false;
-        pass.value="";
+    },1000);
+};
 
-    },1200);
-}
-
-function activateLock(seconds, alertMode){
+function lockSystem(){
 
     locked = true;
-    let timeLeft = seconds;
+    let timeLeft = 30;
 
     card.disabled = true;
     pass.disabled = true;
 
-    const timer = setInterval(()=>{
+    const timer = setInterval(function(){
+
+        msg.style.color = "red";
+        msg.innerText = "ระบบถูกล็อก ลองใหม่ใน "+timeLeft+" วินาที";
+
         timeLeft--;
 
-        msg.style.color = alertMode ? "#8b0000" : "#b00000";
-        msg.innerText = alertMode
-            ? "SECURITY ALERT: โปรดลองใหม่ใน "+timeLeft+" วินาที"
-            : "ระบบถูกระงับชั่วคราว โปรดลองอีกครั้งใน "+timeLeft+" วินาที";
-
-        if(timeLeft <= 0){
+        if(timeLeft < 0){
             clearInterval(timer);
             locked = false;
+            attempts = 0;
             btn.disabled = false;
             card.disabled = false;
             pass.disabled = false;
-            pass.value="";
-            msg.innerText="";
+            msg.innerText = "";
         }
 
     },1000);
 }
 
+function updateTime(){
+    const now = new Date();
+    document.getElementById("time").innerText =
+        now.toLocaleDateString() + " " + now.toLocaleTimeString();
+}
+
+setInterval(updateTime,1000);
+updateTime();
+
 });
 </script>
+
+</body>
+</html>
