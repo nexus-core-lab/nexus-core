@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Internal Access</title>
+<title>Identity Verification</title>
 
 <style>
 body{
     margin:0;
     font-family:Arial, sans-serif;
-    background:black;
-    color:white;
+    background:#ffffff;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -19,37 +18,49 @@ body{
 
 .container{
     text-align:center;
-    background:#111;
-    padding:30px;
-    border-radius:10px;
-    width:320px;
-    box-shadow:0 0 20px red;
+    padding:40px;
+    width:340px;
+    border-radius:12px;
+    background:#ffffff;
+    box-shadow:0 0 25px rgba(0,0,0,0.15);
+}
+
+h2{
+    margin-bottom:25px;
+    color:#222;
 }
 
 input{
     width:100%;
-    padding:10px;
-    margin:8px 0;
-    background:black;
-    border:1px solid red;
-    color:white;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:14px;
+}
+
+input:focus{
+    outline:none;
+    border:1px solid #000;
 }
 
 button{
     width:100%;
-    padding:10px;
-    background:red;
-    border:none;
+    padding:12px;
+    background:#000;
     color:white;
+    border:none;
+    border-radius:6px;
     cursor:pointer;
+    font-size:15px;
 }
 
 button:disabled{
-    background:gray;
+    background:#888;
 }
 
 #msg{
-    margin-top:10px;
+    margin-top:15px;
     font-weight:bold;
 }
 </style>
@@ -61,10 +72,11 @@ button:disabled{
 
     <img src="logo.png" width="90"><br><br>
 
-    <h3>IDENTITY VERIFICATION</h3>
+    <h2>IDENTITY VERIFICATION</h2>
 
     <input type="text" id="card" placeholder="Card ID">
     <input type="password" id="pass" placeholder="Password">
+
     <button id="loginBtn" onclick="authenticate()">Authenticate</button>
 
     <div id="msg"></div>
@@ -79,37 +91,37 @@ let failCount = 0;
 let lockUntil = 0;
 let timerInterval = null;
 
-function authenticate() {
+function authenticate(){
 
     const now = Date.now();
     const message = document.getElementById("msg");
     const button = document.getElementById("loginBtn");
 
-    if (now < lockUntil) {
+    if(now < lockUntil){
         return;
     }
 
     const card = document.getElementById("card").value.trim();
     const pass = document.getElementById("pass").value.trim();
 
-    if (card === correctCard && pass === correctPass) {
+    if(card === correctCard && pass === correctPass){
 
-        message.style.color = "lime";
-        message.innerText = "ACCESS GRANTED";
+        message.style.color="green";
+        message.innerText="ACCESS GRANTED";
 
         setTimeout(()=>{
             window.location.href="dashboard.html";
         },1500);
 
-    } else {
+    }else{
 
         failCount++;
-        message.style.color = "red";
-        message.innerText = "ข้อมูลไม่ถูกต้อง";
+        message.style.color="red";
+        message.innerText="ข้อมูลไม่ถูกต้อง";
 
-        if (failCount === 3) lockSystem(30);
-        if (failCount === 6) lockSystem(60);
-        if (failCount === 9) lockSystem(180);
+        if(failCount === 3) lockSystem(30);
+        if(failCount === 6) lockSystem(60);
+        if(failCount === 9) lockSystem(180);
     }
 }
 
@@ -118,7 +130,7 @@ function lockSystem(seconds){
     const message = document.getElementById("msg");
     const button = document.getElementById("loginBtn");
 
-    lockUntil = Date.now() + seconds * 1000;
+    lockUntil = Date.now() + seconds*1000;
     button.disabled = true;
 
     timerInterval = setInterval(()=>{
@@ -127,7 +139,7 @@ function lockSystem(seconds){
 
         if(remaining <= 0){
             clearInterval(timerInterval);
-            button.disabled = false;
+            button.disabled=false;
             message.innerText="";
         }else{
             message.style.color="orange";
