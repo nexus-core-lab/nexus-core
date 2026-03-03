@@ -8,7 +8,7 @@
 <style>
 body{
     margin:0;
-    font-family: "Segoe UI", Tahoma, sans-serif;
+    font-family:"Segoe UI",Tahoma,sans-serif;
     background:#dcdcdc;
 }
 
@@ -57,6 +57,10 @@ input{
     box-sizing:border-box;
 }
 
+input:disabled{
+    background:#d0d0d0;
+}
+
 button{
     width:100%;
     padding:14px;
@@ -69,7 +73,7 @@ button{
 }
 
 button:disabled{
-    background:#aaa;
+    background:#b5b5b5;
 }
 
 #msg{
@@ -81,6 +85,14 @@ button:disabled{
     margin-top:25px;
     font-size:13px;
     color:#777;
+}
+
+@keyframes shake {
+0% { transform: translateX(0); }
+25% { transform: translateX(-5px); }
+50% { transform: translateX(5px); }
+75% { transform: translateX(-5px); }
+100% { transform: translateX(0); }
 }
 </style>
 </head>
@@ -147,6 +159,70 @@ function authenticate(){
     const pass = document.getElementById("pass").value.trim();
 
     if(card === correctCard && pass === correctPass){
+
+        message.style.color="green";
+        message.innerText="ยืนยันตัวตนสำเร็จ";
+
+        setTimeout(()=>{
+            window.location.href="dashboard.html";
+        },1500);
+
+    }else{
+
+        failCount++;
+
+        document.querySelector(".container").style.animation="shake 0.3s";
+        setTimeout(()=>{
+            document.querySelector(".container").style.animation="";
+        },300);
+
+        message.style.color="red";
+        message.innerText="ข้อมูลไม่ถูกต้อง";
+
+        if(failCount === 3) lockSystem(30);
+        if(failCount === 6) lockSystem(60);
+        if(failCount === 9) lockSystem(180);
+    }
+}
+
+function lockSystem(seconds){
+
+    const message = document.getElementById("msg");
+    const button = document.getElementById("loginBtn");
+    const cardInput = document.getElementById("card");
+    const passInput = document.getElementById("pass");
+
+    lockUntil = Date.now() + seconds*1000;
+
+    button.disabled = true;
+    cardInput.disabled = true;
+    passInput.disabled = true;
+
+    timerInterval = setInterval(()=>{
+
+        const remaining = Math.ceil((lockUntil - Date.now())/1000);
+
+        if(remaining <= 0){
+            clearInterval(timerInterval);
+
+            button.disabled = false;
+            cardInput.disabled = false;
+            passInput.disabled = false;
+
+            message.innerText = "";
+        }else{
+            message.style.color="red";
+            message.innerText =
+            "ระบบล็อกอยู่ โปรดลองใหม่อีกครั้งใน "
+            + remaining + " วินาที";
+        }
+
+    },1000);
+}
+</script>
+
+</body>
+</html>    if(card === correctCard && pass === correctPass){
 
         message.style.color="green";
         message.innerText="ยืนยันตัวตนสำเร็จ";
