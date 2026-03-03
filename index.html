@@ -1,72 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secure Access</title>
+<title>NEXUS CORE</title>
 
 <style>
-body {
-    margin: 0;
-    height: 100vh;
-    background: radial-gradient(circle at center, #111 0%, #000 100%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    color: white;
+body{
+    margin:0;
+    height:100vh;
+    background:#0a0a0a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family: 'Segoe UI', sans-serif;
+    color:#eaeaea;
 }
 
-.container {
-    background: rgba(0,0,0,0.85);
-    padding: 40px;
-    border-radius: 12px;
-    text-align: center;
-    width: 320px;
-    box-shadow: 0 0 25px rgba(0,255,0,0.3);
+/* subtle grid */
+body::before{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:100%;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size:40px 40px;
+    z-index:0;
 }
 
-.logo {
-    width: 100px;
-    margin-bottom: 20px;
+.container{
+    position:relative;
+    z-index:1;
+    width:90%;
+    max-width:380px;
+    background:#111;
+    padding:40px;
+    border-radius:14px;
+    border:1px solid rgba(212,175,55,0.3);
+    box-shadow:0 0 40px rgba(0,0,0,0.8);
+    text-align:center;
 }
 
-h2 {
-    margin-bottom: 20px;
-    letter-spacing: 2px;
+.logo{
+    width:100px;
+    margin-bottom:20px;
+    filter: drop-shadow(0 0 10px rgba(212,175,55,0.6));
 }
 
-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    border: none;
-    outline: none;
-    text-align: center;
-    font-size: 18px;
+h1{
+    font-size:20px;
+    letter-spacing:3px;
+    margin-bottom:30px;
+    color:#d4af37;
 }
 
-button {
-    width: 100%;
-    padding: 12px;
-    border-radius: 6px;
-    border: none;
-    background: #00aa00;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.2s;
+input{
+    width:100%;
+    padding:14px;
+    margin-bottom:20px;
+    border-radius:8px;
+    border:1px solid #333;
+    background:#0f0f0f;
+    color:white;
+    font-size:15px;
 }
 
-button:hover {
-    background: #00cc00;
+input:focus{
+    outline:none;
+    border-color:#d4af37;
 }
 
-.warning {
-    margin-top: 10px;
-    color: red;
-    font-size: 14px;
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    background:#1a1a1a;
+    color:#d4af37;
+    font-weight:bold;
+    letter-spacing:2px;
+    cursor:pointer;
+    border:1px solid #d4af37;
+    transition:0.2s;
+}
+
+button:hover{
+    background:#d4af37;
+    color:black;
+}
+
+.warning{
+    margin-top:15px;
+    font-size:13px;
+    color:#ff4d4d;
+    min-height:18px;
 }
 </style>
 </head>
@@ -75,10 +104,12 @@ button:hover {
 
 <div class="container">
     <img src="logo.png" class="logo">
-    <h2>SECURE LOGIN</h2>
-    <input type="password" id="password" placeholder="Enter Access Code">
-    <button onclick="login()">ACCESS</button>
-    <div class="warning" id="warning"></div>
+    <h1>SECURE TERMINAL</h1>
+
+    <input type="password" id="password" placeholder="ACCESS CODE">
+    <button onclick="login()">AUTHENTICATE</button>
+
+    <div id="warning" class="warning"></div>
 </div>
 
 <audio id="alarmSound" src="alarm.mp3" preload="auto"></audio>
@@ -87,13 +118,13 @@ button:hover {
 let attempts = 0;
 const correctPassword = "1234";
 
-function login() {
-    const input = document.getElementById("password");
-    const warning = document.getElementById("warning");
+function login(){
+    const pass = document.getElementById("password");
+    const warn = document.getElementById("warning");
     const alarm = document.getElementById("alarmSound");
 
-    if (input.value === correctPassword) {
-        window.location.href = "https://lin.ee/xbIaU45";
+    if(pass.value === correctPassword){
+        window.location.href="https://lin.ee/xbIaU45";
         return;
     }
 
@@ -101,13 +132,13 @@ function login() {
     alarm.currentTime = 0;
     alarm.play().catch(()=>{});
 
-    if (attempts >= 3) {
-        warning.innerText = "⚠ SECURITY ALERT: Too Many Attempts";
-    } else {
-        warning.innerText = "Incorrect Code (" + attempts + "/3)";
+    if(attempts >= 3){
+        warn.innerText="SECURITY LOCKDOWN INITIATED";
+    }else{
+        warn.innerText="INVALID ACCESS CODE ("+attempts+"/3)";
     }
 
-    input.value = "";
+    pass.value="";
 }
 </script>
 
