@@ -3,67 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS CORE - Secure Access</title>
+<title>NEXUS CORE - Secure Terminal</title>
 
 <style>
 body{
     margin:0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: radial-gradient(circle at center, #0b1e33 0%, #050c18 100%);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: radial-gradient(circle at center, #081424 0%, #02060d 100%);
     height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    color:white;
+    color:#e0e6ed;
 }
 
 .container{
-    width:90%;
-    max-width:380px;
-    background:#0f2238;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 0 40px rgba(0,0,0,0.9);
-    border-top:4px solid gold;
+    width:92%;
+    max-width:400px;
+    background:#0d1b2a;
+    padding:35px;
+    border-radius:14px;
+    box-shadow:0 0 60px rgba(0,0,0,0.9);
+    border:1px solid rgba(255,215,0,0.4);
     text-align:center;
 }
 
 .logo{
-    width:85px;
+    width:95px;
     margin-bottom:15px;
+    filter: drop-shadow(0 0 10px rgba(255,215,0,0.6));
 }
 
 h1{
-    margin:5px 0;
-    letter-spacing:2px;
+    margin:8px 0 5px 0;
+    letter-spacing:3px;
+    font-weight:600;
 }
 
 .subtitle{
-    font-size:13px;
-    opacity:0.7;
-    margin-bottom:20px;
+    font-size:12px;
+    opacity:0.65;
+    margin-bottom:25px;
 }
 
 input{
     width:100%;
-    padding:12px;
-    margin:10px 0;
-    border-radius:6px;
+    padding:13px;
+    margin:12px 0;
+    border-radius:8px;
     border:1px solid #1f3a5a;
     background:#081625;
     color:white;
     font-size:14px;
+    transition:0.3s;
+}
+
+input:focus{
+    outline:none;
+    border-color:gold;
+    box-shadow:0 0 6px rgba(255,215,0,0.6);
 }
 
 button{
     width:100%;
-    padding:13px;
-    background:goldenrod;
+    padding:14px;
+    background:linear-gradient(90deg,#b8860b,#ffd700);
     border:none;
-    border-radius:6px;
+    border-radius:8px;
     font-weight:bold;
     cursor:pointer;
-    margin-top:10px;
+    margin-top:15px;
+    letter-spacing:1px;
 }
 
 button:hover{
@@ -71,7 +81,7 @@ button:hover{
 }
 
 .message{
-    margin-top:10px;
+    margin-top:12px;
     font-size:13px;
     color:#ff4d4d;
     min-height:18px;
@@ -79,8 +89,8 @@ button:hover{
 
 .footer{
     font-size:11px;
-    opacity:0.6;
-    margin-top:15px;
+    opacity:0.5;
+    margin-top:20px;
 }
 
 .locked{
@@ -102,18 +112,18 @@ button:hover{
 <div class="container">
     <img src="logo.png" class="logo">
     <h1>NEXUS CORE</h1>
-    <div class="subtitle">Central Intelligence Division</div>
+    <div class="subtitle">High Security Intelligence Network</div>
 
-    <input id="username" type="text" placeholder="รหัสตัวแทน">
-    <input id="password" type="password" placeholder="รหัสเข้าใช้งาน">
+    <input id="username" type="text" placeholder="Agent ID">
+    <input id="password" type="password" placeholder="Access Code">
 
     <button onclick="login()">AUTHORIZED ACCESS</button>
 
     <div id="msg" class="message"></div>
 
     <div class="footer">
-        Official Use Only<br>
-        Unauthorized access is prohibited.
+        CLASSIFIED SYSTEM<br>
+        Unauthorized access will be logged.
     </div>
 </div>
 
@@ -139,12 +149,12 @@ function login(){
             document.body.innerHTML = `
                 <div class="locked">
                     <h1>⚠ SECURITY BREACH DETECTED ⚠</h1>
-                    <p>Multiple failed login attempts detected.</p>
-                    <p>System locked.</p>
+                    <p>Terminal locked due to repeated failed attempts.</p>
+                    <p>Access permanently suspended.</p>
                 </div>
             `;
         }else{
-            msg.innerText = "รหัสไม่ถูกต้อง (" + attempts + "/3)";
+            msg.innerText = "Access denied (" + attempts + "/3)";
         }
     }
 }
