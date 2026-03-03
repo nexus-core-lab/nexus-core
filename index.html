@@ -1,135 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>NEXUS CORE | Federal Secure Access</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS CORE - Secure Access</title>
 
 <style>
-
 body{
     margin:0;
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at center,#0a1a2f,#050b18);
     height:100vh;
-    background:#0b1a2a;
     display:flex;
     justify-content:center;
     align-items:center;
-    font-family:'Roboto', sans-serif;
-}
-
-/* subtle background grid */
-body::before{
-    content:"";
-    position:absolute;
-    width:100%;
-    height:100%;
-    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size:40px 40px;
+    color:white;
 }
 
 .card{
-    position:relative;
-    background:#111c2e;
-    width:420px;
-    padding:50px;
-    border-radius:8px;
-    box-shadow:0 0 40px rgba(0,0,0,0.8);
-    color:white;
+    width:350px;
+    background:#0f1e35;
+    border-radius:12px;
+    padding:40px 30px;
     text-align:center;
-    border-top:4px solid #caa64d;
-}
-
-.logo{
-    width:110px;
-    margin-bottom:20px;
+    box-shadow:0 0 40px rgba(0,0,0,0.8);
+    border-top:3px solid gold;
+    animation: fadeIn 1s ease;
 }
 
 h1{
-    margin:10px 0 5px;
-    font-weight:700;
-    letter-spacing:2px;
+    letter-spacing:3px;
+    margin-bottom:5px;
 }
 
-.subtitle{
+.sub{
     font-size:12px;
-    color:#aab4c4;
-    margin-bottom:30px;
-    letter-spacing:1px;
+    color:#aaa;
+    margin-bottom:25px;
 }
 
 input{
     width:100%;
-    padding:14px;
-    margin:12px 0;
-    background:#0d1624;
-    border:1px solid #2b3b52;
+    padding:12px;
+    margin:10px 0;
+    background:#091423;
+    border:1px solid #1c355e;
+    border-radius:6px;
     color:white;
-    font-size:14px;
-}
-
-input:focus{
-    outline:none;
-    border:1px solid #caa64d;
 }
 
 button{
     width:100%;
-    padding:14px;
-    margin-top:20px;
-    background:#caa64d;
+    padding:12px;
+    margin-top:15px;
+    background:goldenrod;
     border:none;
-    color:#111;
-    font-weight:700;
-    letter-spacing:1px;
+    border-radius:6px;
+    font-weight:bold;
     cursor:pointer;
     transition:0.3s;
 }
 
 button:hover{
-    background:#e0bb63;
+    background:gold;
 }
 
-.footer{
-    margin-top:30px;
-    font-size:11px;
-    color:#7f8da3;
-}
-
-.warning{
+.alert{
     margin-top:15px;
-    font-size:11px;
-    color:#caa64d;
+    font-size:13px;
+    display:none;
 }
 
+.success{
+    color:#00ff88;
+}
+
+.danger{
+    color:#ff4d4d;
+}
+
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(20px);}
+    to{opacity:1;transform:translateY(0);}
+}
 </style>
 </head>
 
 <body>
 
 <div class="card">
+    <h1>NEXUS CORE</h1>
+    <div class="sub">FEDERAL INTELLIGENCE DIVISION</div>
 
-<img src="logo.png" class="logo">
+    <input type="text" id="user" placeholder="Agent ID">
+    <input type="password" id="pass" placeholder="Access Key">
 
-<h1>NEXUS CORE</h1>
-<div class="subtitle">FEDERAL INTELLIGENCE DIVISION</div>
+    <button type="button" onclick="login()">AUTHORIZED ACCESS</button>
 
-<input type="text" placeholder="AGENT IDENTIFICATION">
-<input type="password" placeholder="SECURITY CLEARANCE CODE">
-
-<button>AUTHORIZED ACCESS</button>
-
-<div class="warning">
-OFFICIAL USE ONLY
+    <div id="alertBox" class="alert"></div>
 </div>
 
-<div class="footer">
-Unauthorized access is a violation of federal law.<br>
-© 2026 NEXUS CORE INTELLIGENCE AUTHORITY
-</div>
+<script>
+function login(){
+    const user = document.getElementById("user").value;
+    const pass = document.getElementById("pass").value;
+    const alertBox = document.getElementById("alertBox");
 
-</div>
+    if(user === "admin" && pass === "1234"){
+        alertBox.style.display = "block";
+        alertBox.className = "alert success";
+        alertBox.innerText = "ACCESS GRANTED - Welcome Agent";
+    } else {
+        alertBox.style.display = "block";
+        alertBox.className = "alert danger";
+        alertBox.innerText = "⚠ UNAUTHORIZED ACCESS DETECTED";
+    }
+}
+</script>
 
 </body>
 </html>
