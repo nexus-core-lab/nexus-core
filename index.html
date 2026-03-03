@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,44 +9,64 @@
 body {
     margin: 0;
     height: 100vh;
+    background: radial-gradient(circle at center, #111 0%, #000 100%);
     display: flex;
     justify-content: center;
     align-items: center;
-    background: black;
     font-family: Arial, sans-serif;
-    color: #00ffcc;
+    color: white;
 }
 
 .container {
-    text-align: center;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.85);
     padding: 40px;
-    border: 2px solid #00ffcc;
-    border-radius: 10px;
-    box-shadow: 0 0 20px #00ffcc;
+    border-radius: 12px;
+    text-align: center;
+    width: 320px;
+    box-shadow: 0 0 25px rgba(0,255,0,0.3);
+}
+
+.logo {
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-bottom: 20px;
+    letter-spacing: 2px;
 }
 
 input {
-    padding: 10px;
-    width: 200px;
-    margin-top: 15px;
-    background: black;
-    border: 1px solid #00ffcc;
-    color: #00ffcc;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
     text-align: center;
+    font-size: 18px;
 }
 
 button {
-    margin-top: 20px;
-    padding: 10px 25px;
-    background: #00ffcc;
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
     border: none;
+    background: #00aa00;
+    color: white;
+    font-size: 16px;
     cursor: pointer;
-    font-weight: bold;
+    transition: 0.2s;
 }
 
 button:hover {
-    background: white;
+    background: #00cc00;
+}
+
+.warning {
+    margin-top: 10px;
+    color: red;
+    font-size: 14px;
 }
 </style>
 </head>
@@ -54,24 +74,25 @@ button:hover {
 <body>
 
 <div class="container">
-    <h2>SECURE ACCESS SYSTEM</h2>
-    <input type="password" id="password" placeholder="ENTER ACCESS CODE">
-    <br>
-    <button onclick="login()">LOGIN</button>
-    <p id="warning"></p>
+    <img src="logo.png" class="logo">
+    <h2>SECURE LOGIN</h2>
+    <input type="password" id="password" placeholder="Enter Access Code">
+    <button onclick="login()">ACCESS</button>
+    <div class="warning" id="warning"></div>
 </div>
 
 <audio id="alarmSound" src="alarm.mp3" preload="auto"></audio>
 
 <script>
 let attempts = 0;
+const correctPassword = "1234";
 
 function login() {
-    const password = document.getElementById("password").value;
-    const alarm = document.getElementById("alarmSound");
+    const input = document.getElementById("password");
     const warning = document.getElementById("warning");
+    const alarm = document.getElementById("alarmSound");
 
-    if (password === "1234") {
+    if (input.value === correctPassword) {
         window.location.href = "https://lin.ee/xbIaU45";
         return;
     }
@@ -81,9 +102,12 @@ function login() {
     alarm.play().catch(()=>{});
 
     if (attempts >= 3) {
-        warning.innerHTML = "⚠ SECURITY ALERT ⚠<br>Unauthorized Access Detected";
-        warning.style.color = "red";
+        warning.innerText = "⚠ SECURITY ALERT: Too Many Attempts";
+    } else {
+        warning.innerText = "Incorrect Code (" + attempts + "/3)";
     }
+
+    input.value = "";
 }
 </script>
 
