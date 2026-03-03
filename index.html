@@ -7,66 +7,61 @@
 
 <style>
 body{
-    margin:0;
-    background:#0f0f0f;
-    font-family:Arial, Helvetica, sans-serif;
-    color:#fff;
+margin:0;
+background:#0f0f0f;
+font-family:Arial,Helvetica,sans-serif;
+color:#fff;
 }
 
 .topbar{
-    background:#000;
-    padding:10px 15px;
-    font-size:13px;
-    display:flex;
-    justify-content:space-between;
-    border-bottom:1px solid #333;
+background:#000;
+padding:10px 15px;
+display:flex;
+justify-content:space-between;
+border-bottom:1px solid #333;
+font-size:13px;
 }
 
 .container{
-    max-width:420px;
-    margin:80px auto;
-    background:#1a1a1a;
-    padding:30px;
-    border:1px solid #333;
-}
-
-.logo{
-    text-align:center;
-    margin-bottom:20px;
-}
-
-.logo img{
-    width:90px;
+max-width:420px;
+margin:80px auto;
+background:#1a1a1a;
+padding:30px;
+border:1px solid #333;
 }
 
 h3{
-    text-align:center;
-    margin-bottom:25px;
-    font-weight:normal;
+text-align:center;
+margin-bottom:25px;
+font-weight:normal;
 }
 
 input{
-    width:100%;
-    padding:12px;
-    margin-bottom:15px;
-    background:#111;
-    border:1px solid #444;
-    color:#fff;
+width:100%;
+padding:12px;
+margin-bottom:15px;
+background:#111;
+border:1px solid #444;
+color:#fff;
 }
 
 button{
-    width:100%;
-    padding:12px;
-    background:#000;
-    color:#fff;
-    border:1px solid #555;
-    cursor:pointer;
+width:100%;
+padding:12px;
+background:#000;
+color:#fff;
+border:1px solid #555;
+cursor:pointer;
+}
+
+button:disabled{
+opacity:0.5;
 }
 
 .message{
-    margin-top:15px;
-    font-size:14px;
-    min-height:20px;
+margin-top:15px;
+min-height:20px;
+font-size:14px;
 }
 </style>
 </head>
@@ -74,79 +69,86 @@ button{
 <body>
 
 <div class="topbar">
-    <div>INTERNAL SECURE NETWORK</div>
-    <div id="time"></div>
+<div>INTERNAL NETWORK</div>
+<div id="time"></div>
 </div>
 
 <div class="container">
-
-    <div class="logo">
-        <img src="logo.png">
-    </div>
-
-    <h3>IDENTITY VERIFICATION</h3>
-
-    <input type="text" id="card" placeholder="Card ID">
-    <input type="password" id="pass" placeholder="Password">
-    <button id="loginBtn">Authenticate</button>
-
-    <div class="message" id="msg"></div>
-
+<h3>IDENTITY VERIFICATION</h3>
+<input id="card" placeholder="Card ID">
+<input id="pass" type="password" placeholder="Password">
+<button id="loginBtn">Authenticate</button>
+<div class="message" id="msg"></div>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded",function(){
 
-const correctCard = "LC-A01";
-const correctPass = "Lc1993♧";
+const correctCard="LC-A01";
+const correctPass="Lc1993♧";
 
-let attempts = 0;
-let locked = false;
+let attempts=0;
+let locked=false;
 
-const card = document.getElementById("card");
-const pass = document.getElementById("pass");
-const btn = document.getElementById("loginBtn");
-const msg = document.getElementById("msg");
+const card=document.getElementById("card");
+const pass=document.getElementById("pass");
+const btn=document.getElementById("loginBtn");
+const msg=document.getElementById("msg");
 
-btn.onclick = function(){
+btn.onclick=function(){
 
-    if(locked) return;
+if(locked) return;
 
-    msg.innerText="Verifying...";
-    btn.disabled=true;
+btn.disabled=true;
+msg.style.color="#ccc";
+msg.innerText="Verifying...";
 
-    setTimeout(function(){
+setTimeout(function(){
 
-        if(card.value === correctCard && pass.value === correctPass){
-            msg.style.color="lime";
-            msg.innerText="ACCESS GRANTED";
-            return;
-        }
+if(card.value===correctCard && pass.value===correctPass){
+msg.style.color="lime";
+msg.innerText="ACCESS GRANTED";
+return;
+}
 
-        attempts++;
+attempts++;
 
-        if(attempts >= 3){
-            locked=true;
-            msg.style.color="red";
-            msg.innerText="SYSTEM LOCKED 30s";
-            setTimeout(function(){
-                locked=false;
-                attempts=0;
-                msg.innerText="";
-                btn.disabled=false;
-            },30000);
-            return;
-        }
+if(attempts>=3){
+locked=true;
+msg.style.color="red";
+msg.innerText="SYSTEM LOCKED 30s";
+setTimeout(function(){
+locked=false;
+attempts=0;
+btn.disabled=false;
+msg.innerText="";
+},30000);
+return;
+}
 
-        msg.style.color="red";
-        msg.innerText="ACCESS DENIED ("+attempts+"/3)";
-        btn.disabled=false;
-        pass.value="";
+msg.style.color="red";
+msg.innerText="ACCESS DENIED ("+attempts+"/3)";
+btn.disabled=false;
+pass.value="";
 
-    },1000);
+},1000);
+
 };
 
+function updateTime(){
+const now=new Date();
+document.getElementById("time").innerText=
+now.toLocaleDateString()+" "+now.toLocaleTimeString();
+}
+
+setInterval(updateTime,1000);
+updateTime();
+
 });
+</script>
+
+</body>
+</html>});
 </script>
 
 </body>
