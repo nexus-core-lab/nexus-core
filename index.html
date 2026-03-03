@@ -1,138 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS CORE - Secure Access</title>
-
-<style>
-body{
-    margin:0;
-    background:#e6e6e6;
-    font-family:Arial, Helvetica, sans-serif;
-}
-
-.topbar{
-    background:#111;
-    color:#fff;
-    padding:8px 15px;
-    font-size:13px;
-    display:flex;
-    justify-content:space-between;
-}
-
-.container{
-    max-width:420px;
-    margin:60px auto;
-    background:#fff;
-    padding:30px;
-    border:1px solid #bbb;
-}
-
-.logo{
-    display:block;
-    margin:0 auto 15px auto;
-    width:85px;
-}
-
-.title{
-    text-align:center;
-    font-weight:bold;
-    margin-bottom:3px;
-}
-
-.subtitle{
-    text-align:center;
-    font-size:13px;
-    margin-bottom:5px;
-    color:#444;
-}
-
-.classification{
-    text-align:center;
-    font-size:11px;
-    margin-bottom:20px;
-    color:#555;
-}
-
-input{
-    width:100%;
-    padding:10px;
-    margin-bottom:12px;
-    border:1.5px solid #666;
-    font-size:14px;
-}
-
-button{
-    width:100%;
-    padding:10px;
-    background:#000;
-    color:#fff;
-    border:none;
-    cursor:pointer;
-}
-
-button:disabled{
-    background:#777;
-}
-
-.message{
-    font-size:13px;
-    margin-top:10px;
-    min-height:18px;
-}
-
-.footer{
-    text-align:center;
-    font-size:11px;
-    margin-top:20px;
-    color:#666;
-}
-
-.session{
-    text-align:center;
-    font-size:12px;
-    margin-top:8px;
-    color:#333;
-}
-</style>
-</head>
-
-<body>
-
-<div class="topbar">
-    <div>Internal Secure Network</div>
-    <div id="time"></div>
-</div>
-
-<div class="container">
-
-    <img src="logo.png" class="logo">
-
-    <div class="title">NEXUS CORE INFORMATION SYSTEM</div>
-    <div class="subtitle">Authorized Personnel Only</div>
-    <div class="classification">Security Classification: LEVEL 3 CLEARANCE REQUIRED</div>
-
-    <input type="text" id="card" placeholder="Card ID">
-    <input type="password" id="pass" placeholder="Password">
-
-    <button id="loginBtn">Authenticate</button>
-
-    <div class="message" id="msg"></div>
-    <div class="session" id="session"></div>
-
-    <div class="footer">
-        Unauthorized access is subject to monitoring and prosecution.
-    </div>
-
-</div>
-
 <script>
 const correctCard = "LC-A01";
 const correctPass = "Lc1993♧";
 
 let attempts = 0;
 let locked = false;
+let hardLocked = false;
 
 const card = document.getElementById("card");
 const pass = document.getElementById("pass");
@@ -144,10 +16,10 @@ btn.addEventListener("click", authenticate);
 
 function authenticate(){
 
-    if(locked) return;
+    if(locked || hardLocked) return;
 
     msg.style.color = "#333";
-    msg.innerText = "Authenticating...";
+    msg.innerText = "กำลังตรวจสอบข้อมูล...";
     btn.disabled = true;
 
     setTimeout(()=>{
@@ -157,7 +29,9 @@ function authenticate(){
             const sessionID = "NC-" + Math.floor(Math.random()*1000000);
             session.innerText = "Session ID: " + sessionID;
             msg.style.color = "green";
-            msg.innerText = "Access Granted";
+            msg.innerText = "อนุญาตการเข้าใช้งาน";
+
+            attempts = 0;
 
             setTimeout(()=>{
                 window.location.href = "https://lin.ee/xbIaU45";
@@ -167,44 +41,73 @@ function authenticate(){
         }
 
         attempts++;
+        pass.value="";
 
-        if(attempts >= 3){
-            lockSystem();
-        }else{
+        if(attempts >= 9){
+            activateHardLock();
+        }
+        else if(attempts >= 6){
+            lockSystem(300, true); // 5 นาที + alert
+        }
+        else if(attempts >= 3){
+            lockSystem(30, false);
+        }
+        else{
             msg.style.color = "#b00000";
-            msg.innerText = "Authentication Failed ("+attempts+"/3)";
+            msg.innerText = "ยืนยันตัวตนล้มเหลว ("+attempts+"/9)";
             btn.disabled = false;
         }
-
-        pass.value="";
 
     },1200);
 }
 
-function lockSystem(){
-    locked = true;
-    let timeLeft = 30;
+function lockSystem(seconds, alertMode){
 
-    msg.style.color = "#b00000";
-    msg.innerText = "System Locked. Retry in 30 seconds.";
-    btn.disabled = true;
+    locked = true;
     card.disabled = true;
     pass.disabled = true;
 
+    let timeLeft = seconds;
+
+    if(alertMode){
+        msg.style.color = "#8B0000";
+        msg.innerText = "SECURITY ALERT: ระบบถูกตรวจพบความพยายามผิดปกติ";
+    }else{
+        msg.style.color = "#b00000";
+        msg.innerText = "ระบบถูกระงับชั่วคราว";
+    }
+
     const timer = setInterval(()=>{
         timeLeft--;
-        msg.innerText = "System Locked. Retry in " + timeLeft + " seconds.";
+
+        msg.innerText = 
+        (alertMode ? 
+        "SECURITY ALERT: โปรดลองอีกครั้งใน " : 
+        "โปรดลองอีกครั้งใน ") 
+        + timeLeft + " วินาที";
 
         if(timeLeft <= 0){
             clearInterval(timer);
-            attempts = 0;
             locked = false;
-            btn.disabled = false;
             card.disabled = false;
             pass.disabled = false;
+            btn.disabled = false;
             msg.innerText = "";
         }
+
     },1000);
+}
+
+function activateHardLock(){
+
+    hardLocked = true;
+
+    msg.style.color = "#8B0000";
+    msg.innerText = "บัญชีถูกระงับ กรุณาติดต่อผู้ดูแลระบบ";
+
+    card.disabled = true;
+    pass.disabled = true;
+    btn.disabled = true;
 }
 
 function updateTime(){
@@ -216,6 +119,3 @@ function updateTime(){
 setInterval(updateTime,1000);
 updateTime();
 </script>
-
-</body>
-</html>
