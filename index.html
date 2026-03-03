@@ -8,7 +8,8 @@ let timerInterval = null;
 
 function authenticate() {
     const now = Date.now();
-    const message = document.getElementById("message");
+    const message = document.getElementById("msg");
+    const button = document.getElementById("loginBtn");
 
     if (now < lockUntil) {
         return;
@@ -19,7 +20,7 @@ function authenticate() {
 
     if (card === correctCard && pass === correctPass) {
         message.style.color = "lime";
-        message.innerText = "ยืนยันตัวตนสำเร็จ กำลังเข้าสู่ระบบ...";
+        message.innerText = "ACCESS GRANTED";
         setTimeout(() => {
             window.location.href = "dashboard.html";
         }, 1500);
@@ -35,7 +36,7 @@ function authenticate() {
 }
 
 function lockSystem(seconds) {
-    const message = document.getElementById("message");
+    const message = document.getElementById("msg");
     const button = document.getElementById("loginBtn");
 
     lockUntil = Date.now() + seconds * 1000;
@@ -50,7 +51,7 @@ function lockSystem(seconds) {
             message.innerText = "";
         } else {
             message.style.color = "orange";
-            message.innerText = `ระบบล็อกอยู่ โปรดลองใหม่อีกครั้งใน ${remaining} วินาที`;
+            message.innerText = "ระบบล็อก " + remaining + " วินาที";
         }
     }, 1000);
 }
