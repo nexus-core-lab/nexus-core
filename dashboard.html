@@ -2,12 +2,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus Core | Dashboard</title>
 
 <style>
 body{
   margin:0;
-  font-family:Segoe UI,Arial,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
   background:#111827;
   color:white;
   display:flex;
@@ -15,14 +16,16 @@ body{
   align-items:center;
   height:100vh;
   flex-direction:column;
+  text-align:center;
 }
 button{
   margin-top:20px;
-  padding:10px 20px;
+  padding:12px 25px;
   border:none;
-  border-radius:6px;
+  border-radius:8px;
   background:white;
   color:#111827;
+  font-weight:600;
   cursor:pointer;
 }
 </style>
@@ -36,33 +39,39 @@ button{
 <button onclick="logout()">Sign Out</button>
 
 <script>
-const expiry = localStorage.getItem("sessionExpiry");
+function checkSession(){
+  const expiry = localStorage.getItem("sessionExpiry");
 
-if(!expiry || Date.now() > expiry){
-  localStorage.removeItem("sessionExpiry");
-  window.location.href = "index.html";
+  if(!expiry || Date.now()>expiry){
+    localStorage.removeItem("sessionExpiry");
+    window.location.href="index.html";
+  }
+
+  return expiry;
 }
+
+const expiry = checkSession();
 
 function updateTimer(){
   const remaining = expiry - Date.now();
 
-  if(remaining <= 0){
+  if(remaining<=0){
     localStorage.removeItem("sessionExpiry");
-    window.location.href = "index.html";
+    window.location.href="index.html";
   }
 
-  const minutes = Math.floor(remaining / 60000);
-  const seconds = Math.floor((remaining % 60000) / 1000);
+  const m = Math.floor(remaining/60000);
+  const s = Math.floor((remaining%60000)/1000);
 
-  document.getElementById("timer").innerText =
-    "Session expires in: " + minutes + "m " + seconds + "s";
+  document.getElementById("timer").innerText=
+    "Session expires in "+m+"m "+s+"s";
 }
 
 setInterval(updateTimer,1000);
 
 function logout(){
   localStorage.removeItem("sessionExpiry");
-  window.location.href = "index.html";
+  window.location.href="index.html";
 }
 </script>
 
