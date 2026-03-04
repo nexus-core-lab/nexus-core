@@ -7,6 +7,7 @@
 
 <style>
 *{box-sizing:border-box;}
+
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
@@ -52,6 +53,12 @@ input{
   border:1px solid #d1d5db;
   border-radius:6px;
   font-size:14px;
+  background:#fff;
+}
+
+input:focus{
+  outline:none;
+  border:1px solid #2563eb;
 }
 
 button{
@@ -70,17 +77,20 @@ button:disabled{
   cursor:not-allowed;
 }
 
-.message{
-  margin-top:15px;
-  font-size:13px;
-  color:#dc2626;
-}
-
 .footer{
   margin-top:25px;
   font-size:11px;
   color:#6b7280;
 }
+
+.message{
+  font-size:13px;
+  margin-bottom:10px;
+  min-height:18px;
+}
+.error{color:#dc2626;}
+.lock{color:#b91c1c;}
+.success{color:#16a34a;}
 </style>
 </head>
 
@@ -88,18 +98,18 @@ button:disabled{
 
 <div class="container">
 
-  <!-- โลโก้ (ต้องมีไฟล์ logo.png อยู่ในโฟลเดอร์เดียวกัน) -->
-  <img src="logo.png" class="logo" alt="Logo">
+  <!-- ใส่ไฟล์ logo.png ไว้ในโฟลเดอร์เดียวกัน -->
+  <img src="logo.png" class="logo" alt="Nexus Core Logo">
 
   <div class="company">NEXUS CORE SYSTEM</div>
   <h1>Secure Access Portal</h1>
+
+  <div id="message" class="message"></div>
 
   <input type="text" id="userId" placeholder="User ID">
   <input type="password" id="password" placeholder="Password">
 
   <button onclick="login()" id="loginBtn">SIGN IN</button>
-
-  <div class="message" id="message"></div>
 
   <div class="footer">
     © 2025 Nexus Core. All rights reserved.
@@ -108,56 +118,69 @@ button:disabled{
 </div>
 
 <script>
-let attempts = 0;
-let lockTime = 0;
-let timerInterval = null;
 
-// ตั้งค่ารหัสถูกต้อง
-const correctUser = "LC-A01";
+const correctCard = "LC-A01";
 const correctPass = "Lc1993♧";
+
+let attempts = parseInt(localStorage.getItem("attempts")) || 0;
+let lockUntil = parseInt(localStorage.getItem("lockUntil")) || 0;
+
+const messageBox = document.getElementById("message");
+const loginBtn = document.getElementById("loginBtn");
+
+function checkLock(){
+  const now = Date.now();
+  if(now < lockUntil){
+    loginBtn.disabled = true;
+    const remaining = Math.ceil((lockUntil - now)/1000);
+    messageBox.className="message lock";
+    messageBox.innerText="Account locked. Try again in "+remaining+" seconds.";
+    setTimeout(checkLock,1000);
+  }else{
+    loginBtn.disabled = false;
+    messageBox.innerText="";
+  }
+}
+
+function applyLock(){
+  let lockTime = 0;
+
+  if(attempts === 3) lockTime = 30;
+  if(attempts === 6) lockTime = 90;
+  if(attempts === 9) lockTime = 180;
+
+  if(lockTime > 0){
+    lockUntil = Date.now() + lockTime*1000;
+    localStorage.setItem("lockUntil", lockUntil);
+  }
+
+  localStorage.setItem("attempts", attempts);
+  checkLock();
+}
 
 function login(){
 
-  if(lockTime > 0) return;
+  if(Date.now() < lockUntil) return;
 
   const user = document.getElementById("userId").value;
   const pass = document.getElementById("password").value;
-  const message = document.getElementById("message");
 
-  if(user === correctUser && pass === correctPass){
-      message.style.color = "green";
-      message.innerText = "Access Granted";
-      attempts = 0;
-      return;
+  if(user === correctCard && pass === correctPass){
+    messageBox.className="message success";
+    messageBox.innerText="Access Granted";
+    localStorage.removeItem("attempts");
+    localStorage.removeItem("lockUntil");
+    attempts = 0;
+  }else{
+    attempts++;
+    messageBox.className="message error";
+    messageBox.innerText="Invalid credentials";
+    applyLock();
   }
-
-  attempts++;
-  message.style.color = "#dc2626";
-  message.innerText = "Invalid credentials";
-
-  if(attempts === 3) startLock(30);
-  if(attempts === 6) startLock(90);
-  if(attempts === 9) startLock(180);
 }
 
-function startLock(seconds){
-  lockTime = seconds;
-  const btn = document.getElementById("loginBtn");
-  const message = document.getElementById("message");
+checkLock();
 
-  btn.disabled = true;
-
-  timerInterval = setInterval(()=>{
-      lockTime--;
-      message.innerText = "Account locked. Try again in " + lockTime + " seconds.";
-
-      if(lockTime <= 0){
-          clearInterval(timerInterval);
-          btn.disabled = false;
-          message.innerText = "";
-      }
-  },1000);
-}
 </script>
 
 </body>
