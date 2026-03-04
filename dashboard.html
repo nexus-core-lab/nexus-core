@@ -3,35 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS CORE - Dashboard</title>
+<title>NEXUS CORE | Dashboard</title>
 
 <style>
 body{
   margin:0;
-  font-family:Segoe UI,Tahoma,sans-serif;
-  background:linear-gradient(135deg,#1f2d3a,#2f4454);
+  font-family:'Segoe UI',Tahoma,sans-serif;
+  background:linear-gradient(145deg,#1b2735,#2c3e50);
   color:white;
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
   flex-direction:column;
+  text-align:center;
+}
+
+h1{
+  font-weight:600;
+  letter-spacing:2px;
 }
 
 button{
-  margin-top:20px;
-  padding:10px 20px;
+  margin-top:30px;
+  padding:12px 25px;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
+  background:white;
+  color:#2c3e50;
+  font-weight:600;
   cursor:pointer;
 }
 </style>
 </head>
 <body>
 
-<h1>WELCOME TO NEXUS CORE</h1>
+<h1>NEXUS CORE</h1>
+<p>Secure Environment Access Granted</p>
 
-<button onclick="logout()">ออกจากระบบ</button>
+<button onclick="logout()">Sign Out</button>
 
 <script>
 if(!localStorage.getItem("session")){
