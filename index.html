@@ -2,195 +2,176 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-
-<!-- บังคับ mobile viewport -->
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
-<title>Access Control System</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบตรวจสอบสิทธิการเข้าใช้งาน</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-
-html,body{
-    font-family:'Sarabun',sans-serif;
-    background:#cfd5d9;
-    color:#2b2b2b;
+body{
+    margin:0;
+    font-family:"Tahoma",sans-serif;
+    background:#eef1f4;
 }
 
-/* HEADER */
-.header{
-    width:100%;
-    background:#24343d;
-    color:#fff;
-    padding:14px 16px;
+/* แถบบน */
+.topbar{
+    background:#1f2e35;
+    color:white;
+    padding:8px 15px;
+    font-size:13px;
     display:flex;
     justify-content:space-between;
-    font-size:13px;
 }
 
-/* MAIN */
-.main{
-    width:100%;
-    padding:28px 14px 50px 14px;
+/* กล่องกลาง */
+.container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:calc(100vh - 40px);
 }
 
-/* PANEL */
-.panel{
-    width:100%;
-    max-width:520px;
-    margin:0 auto;
-    background:#ffffff;
-    border:1px solid #5f6a72;
-    padding:36px 24px;
-    box-shadow:0 8px 22px rgba(0,0,0,0.08);
+.card{
+    background:white;
+    width:340px;
+    padding:30px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.15);
+    text-align:center;
 }
 
-/* LOGO */
 .logo{
     width:70px;
-    display:block;
-    margin:0 auto 18px auto;
+    margin-bottom:10px;
 }
 
-/* TEXT */
-h1{
-    text-align:center;
+h2{
+    margin:5px 0;
     font-size:18px;
-    margin-bottom:6px;
-    font-weight:600;
 }
 
-.subtitle{
-    text-align:center;
-    font-size:13px;
-    margin-bottom:22px;
+.sub{
+    font-size:12px;
     color:#555;
+    margin-bottom:20px;
 }
 
-/* INPUT */
 input{
     width:100%;
-    padding:12px;
-    margin-bottom:14px;
-    border:1px solid #7a848b;
+    padding:10px;
+    margin:6px 0;
+    border:1px solid #bbb;
     font-size:14px;
-    background:#f2f4f5;
 }
 
-input:focus{
-    outline:none;
-    background:#fff;
-    border-color:#24343d;
-}
-
-/* BUTTON */
 button{
     width:100%;
-    padding:13px;
-    background:#2f4a56;
-    color:#fff;
+    padding:10px;
+    background:#2f4550;
+    color:white;
     border:none;
-    font-size:14px;
+    margin-top:10px;
     cursor:pointer;
+    font-size:14px;
 }
 
 button:hover{
-    background:#22363f;
+    background:#243740;
 }
-
-/* STATUS */
-.status{
-    margin-top:14px;
-    font-size:13px;
-    text-align:center;
-}
-
-.success{color:#1b7a28;}
-.error{color:#b00020;}
 
 .notice{
-    margin-top:20px;
-    font-size:12px;
-    border-top:1px solid #d6d6d6;
-    padding-top:14px;
-    color:#444;
-    line-height:1.6;
+    font-size:11px;
+    color:#777;
+    margin-top:15px;
 }
 
-/* FOOTER */
 .footer{
-    width:100%;
+    background:#1f2e35;
+    color:white;
     text-align:center;
-    font-size:11px;
-    padding:14px;
-    background:#eef1f3;
-    border-top:1px solid #c7cbd0;
-    color:#555;
+    padding:8px;
+    font-size:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-    <div>ศูนย์ควบคุมสิทธิ์การเข้าถึง</div>
+<div class="topbar">
+    <div>ศูนย์ควบคุมสิทธิการเข้าใช้งาน</div>
     <div id="datetime"></div>
 </div>
 
-<div class="main">
-<div class="panel">
+<div class="container">
+<div class="card">
 
-<img src="logo.png" class="logo" alt="logo">
+<img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" class="logo">
 
-<h1>ระบบตรวจสอบสิทธิการเข้าใช้งาน</h1>
-<div class="subtitle">Access Control System</div>
+<h2>ระบบตรวจสอบสิทธิการเข้าใช้งาน</h2>
+<div class="sub">Access Control System</div>
 
 <input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่">
 <input type="password" id="pass" placeholder="รหัสผ่าน">
-
 <button onclick="login()">เข้าสู่ระบบ</button>
 
-<div class="status" id="status"></div>
-
 <div class="notice">
-การเข้าถึงระบบโดยไม่ได้รับอนุญาต อาจมีความผิดตามกฎหมายที่เกี่ยวข้อง
+การเข้าระบบโดยไม่ได้รับอนุญาต อาจมีความผิดตามกฎหมายที่เกี่ยวข้อง
 </div>
 
 </div>
 </div>
 
 <div class="footer">
-© 2569 หน่วยงานกลางด้านความมั่นคงสารสนเทศ | เวอร์ชันระบบ 1.0.3
+© 2569 หน่วยงานกลางด้านความมั่นคงสารสนเทศ | เวอร์ชัน 1.0.4
 </div>
 
 <script>
-const correctCard = "LC-A01";
-const correctPass = "Lc1993♧";
+const correctCard="LC-A01";
+const correctPass="Lc1993♧";
 
-function login(){
-    const card = document.getElementById("card").value.trim();
-    const pass = document.getElementById("pass").value.trim();
-    const status = document.getElementById("status");
-
-    if(card === correctCard && pass === correctPass){
-        status.innerHTML = "ยืนยันตัวตนสำเร็จ";
-        status.className = "status success";
-    }else{
-        status.innerHTML = "ข้อมูลไม่ถูกต้อง";
-        status.className = "status error";
-    }
-}
+let failCount=localStorage.getItem("failCount")?parseInt(localStorage.getItem("failCount")):0;
+let lockUntil=localStorage.getItem("lockUntil")?parseInt(localStorage.getItem("lockUntil")):0;
 
 function updateTime(){
-    const now = new Date();
-    document.getElementById("datetime").innerText =
-        now.toLocaleDateString("th-TH") + " " +
-        now.toLocaleTimeString("th-TH");
+    const now=new Date();
+    document.getElementById("datetime").innerHTML=
+    now.toLocaleDateString("th-TH")+" "+
+    now.toLocaleTimeString("th-TH");
 }
 setInterval(updateTime,1000);
 updateTime();
+
+function login(){
+
+    if(Date.now()<lockUntil){
+        let sec=Math.ceil((lockUntil-Date.now())/1000);
+        alert("ระบบถูกล็อก กรุณารอ "+sec+" วินาที");
+        return;
+    }
+
+    let card=document.getElementById("card").value;
+    let pass=document.getElementById("pass").value;
+
+    if(card===correctCard && pass===correctPass){
+        localStorage.setItem("failCount",0);
+        alert("ยืนยันตัวตนสำเร็จ");
+    }else{
+        failCount++;
+        localStorage.setItem("failCount",failCount);
+
+        let lockTime=0;
+
+        if(failCount==3) lockTime=10;
+        if(failCount==6) lockTime=30;
+        if(failCount>=9) lockTime=60;
+
+        if(lockTime>0){
+            lockUntil=Date.now()+(lockTime*1000);
+            localStorage.setItem("lockUntil",lockUntil);
+            alert("กรอกรหัสผิด ระบบล็อก "+lockTime+" วินาที");
+        }else{
+            alert("รหัสไม่ถูกต้อง");
+        }
+    }
+}
 </script>
 
 </body>
