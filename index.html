@@ -8,85 +8,70 @@
 <style>
 body{
     margin:0;
-    font-family: Arial, sans-serif;
-    background:#e9edf1;
-}
-
-.topbar{
-    background:#1f343d;
-    color:white;
-    padding:12px 20px;
-    display:flex;
-    justify-content:space-between;
-    font-size:14px;
-}
-
-.container{
+    font-family:Arial, sans-serif;
+    background:#e9eef1;
     display:flex;
     justify-content:center;
     align-items:center;
-    height:85vh;
+    height:100vh;
+}
+
+.topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    background:#23343c;
+    color:white;
+    padding:12px 20px;
+    font-size:14px;
 }
 
 .card{
     background:white;
-    padding:35px;
-    width:320px;
+    width:90%;
+    max-width:380px;
+    padding:30px;
     text-align:center;
-    box-shadow:0 4px 15px rgba(0,0,0,0.15);
+    box-shadow:0 5px 20px rgba(0,0,0,0.15);
+    border-radius:6px;
 }
 
-.logo{
-    width:70px;
+.card img{
+    width:60px;
     margin-bottom:15px;
-}
-
-h2{
-    margin:5px 0;
-}
-
-.subtitle{
-    color:gray;
-    font-size:13px;
-    margin-bottom:20px;
 }
 
 input{
     width:100%;
-    padding:10px;
+    padding:12px;
     margin:8px 0;
     border:1px solid #ccc;
-    font-size:14px;
 }
 
 button{
     width:100%;
-    padding:10px;
-    margin-top:10px;
-    background:#324b55;
+    padding:12px;
+    background:#2f4752;
     color:white;
     border:none;
     cursor:pointer;
-    transition:0.3s;
-}
-
-button:hover{
-    background:#243a42;
+    font-size:16px;
 }
 
 button:disabled{
-    background:#7f8c91;
+    background:#999;
 }
 
 .error{
     color:red;
-    font-size:13px;
+    font-size:14px;
     margin-top:10px;
 }
 
 .footer{
+    font-size:12px;
     margin-top:15px;
-    font-size:11px;
     color:#666;
 }
 </style>
@@ -94,73 +79,92 @@ button:disabled{
 <body>
 
 <div class="topbar">
-    <div>ศูนย์ควบคุมสิทธิการเข้าใช้งาน</div>
-    <div id="time"></div>
+ศูนย์ควบคุมสิทธิการเข้าใช้งาน
 </div>
 
-<div class="container">
 <div class="card">
+<img src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png">
+<h2>ระบบตรวจสอบสิทธิการเข้าใช้งาน</h2>
+<p>Access Control System</p>
 
-    <!-- โลโก้ -->
-    <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" class="logo">
+<input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่">
+<input type="password" id="pass" placeholder="รหัสผ่าน">
+<button onclick="login()" id="loginBtn">เข้าสู่ระบบ</button>
 
-    <h2>ระบบตรวจสอบสิทธิการเข้าใช้งาน</h2>
-    <div class="subtitle">Access Control System</div>
+<div class="error" id="error"></div>
 
-    <input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่">
-    <input type="password" id="pass" placeholder="รหัสผ่าน">
-
-    <button onclick="login()" id="loginBtn">เข้าสู่ระบบ</button>
-
-    <div class="error" id="errorMsg"></div>
-
-    <div class="footer">
-        การเข้าสู่ระบบโดยไม่ได้รับอนุญาต อาจมีความผิดตามกฎหมายที่เกี่ยวข้อง
-    </div>
-
+<div class="footer">
+การเข้าสู่ระบบโดยไม่ได้รับอนุญาต อาจมีความผิดตามกฎหมายที่เกี่ยวข้อง
 </div>
 </div>
+
+<noscript>
+<h2 style="color:red;text-align:center;">ระบบต้องเปิด JavaScript</h2>
+</noscript>
 
 <script>
+const correctCard="LC-A01";
+const correctPass="Lc1993♧";
 
-// 🔐 รหัสที่ถูกต้อง
-const correctCard = "LC-A01";
-const correctPass = "Lc1993♧";
+let attempts = localStorage.getItem("attempts") 
+    ? parseInt(localStorage.getItem("attempts")) : 0;
+
+let lockUntil = localStorage.getItem("lockUntil")
+    ? parseInt(localStorage.getItem("lockUntil")) : 0;
+
+const errorBox = document.getElementById("error");
+const loginBtn = document.getElementById("loginBtn");
+
+function checkLock(){
+    if(Date.now() < lockUntil){
+        loginBtn.disabled = true;
+        let seconds = Math.floor((lockUntil - Date.now())/1000);
+        errorBox.innerText = "ถูกล็อกระบบอีก " + seconds + " วินาที";
+        setTimeout(checkLock,1000);
+    }else{
+        loginBtn.disabled = false;
+        errorBox.innerText = "";
+    }
+}
 
 function login(){
-
     const card = document.getElementById("card").value;
     const pass = document.getElementById("pass").value;
-    const btn = document.getElementById("loginBtn");
-    const error = document.getElementById("errorMsg");
 
-    error.textContent = "";
-    btn.disabled = true;
-    btn.textContent = "กำลังตรวจสอบ...";
+    if(Date.now() < lockUntil){
+        return;
+    }
 
-    setTimeout(() => {
+    if(card === correctCard && pass === correctPass){
+        alert("เข้าสู่ระบบสำเร็จ");
+        attempts = 0;
+        localStorage.removeItem("attempts");
+        localStorage.removeItem("lockUntil");
+    }else{
+        attempts++;
+        localStorage.setItem("attempts", attempts);
 
-        if(card === correctCard && pass === correctPass){
-            window.location.href = "success.html";
-        }else{
-            error.textContent = "รหัสประจำตัวหรือรหัสผ่านไม่ถูกต้อง";
-            btn.disabled = false;
-            btn.textContent = "เข้าสู่ระบบ";
+        let lockTime = 0;
+
+        if(attempts >= 9){
+            lockTime = 300;
+        }else if(attempts >= 6){
+            lockTime = 60;
+        }else if(attempts >= 3){
+            lockTime = 30;
         }
 
-    },1000);
+        if(lockTime > 0){
+            lockUntil = Date.now() + lockTime*1000;
+            localStorage.setItem("lockUntil", lockUntil);
+        }
+
+        errorBox.innerText = "รหัสไม่ถูกต้อง ("+attempts+" ครั้ง)";
+        checkLock();
+    }
 }
 
-// นาฬิกา
-function updateTime(){
-    const now = new Date();
-    document.getElementById("time").textContent =
-        now.toLocaleDateString("th-TH") + " " +
-        now.toLocaleTimeString("th-TH");
-}
-setInterval(updateTime,1000);
-updateTime();
-
+checkLock();
 </script>
 
 </body>
