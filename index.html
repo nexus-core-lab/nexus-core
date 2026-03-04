@@ -6,11 +6,9 @@
 <title>Nexus Core | Secure Access</title>
 
 <style>
-*{box-sizing:border-box;}
-
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
   background:#f4f6f8;
   display:flex;
   justify-content:center;
@@ -19,7 +17,7 @@ body{
 }
 
 .container{
-  background:#ffffff;
+  background:#fff;
   width:100%;
   max-width:360px;
   padding:40px 30px;
@@ -30,20 +28,12 @@ body{
 
 .logo{
   width:90px;
-  margin-bottom:10px;
-}
-
-.company{
-  font-size:13px;
-  letter-spacing:2px;
-  color:#6b7280;
-  margin-bottom:5px;
+  margin-bottom:15px;
 }
 
 h1{
   font-size:18px;
-  margin:0 0 25px 0;
-  color:#1f2937;
+  margin-bottom:25px;
 }
 
 input{
@@ -52,13 +42,7 @@ input{
   margin-bottom:15px;
   border:1px solid #d1d5db;
   border-radius:6px;
-  font-size:14px;
   background:#fff;
-}
-
-input:focus{
-  outline:none;
-  border:1px solid #2563eb;
 }
 
 button{
@@ -67,7 +51,7 @@ button{
   border:none;
   border-radius:6px;
   background:#1f2937;
-  color:#ffffff;
+  color:#fff;
   font-weight:600;
   cursor:pointer;
 }
@@ -77,39 +61,34 @@ button:disabled{
   cursor:not-allowed;
 }
 
+.message{
+  margin-top:10px;
+  font-size:13px;
+  color:red;
+}
+
 .footer{
   margin-top:25px;
   font-size:11px;
   color:#6b7280;
 }
-
-.message{
-  font-size:13px;
-  margin-bottom:10px;
-  min-height:18px;
-}
-.error{color:#dc2626;}
-.lock{color:#b91c1c;}
-.success{color:#16a34a;}
 </style>
 </head>
-
 <body>
 
 <div class="container">
 
-  <!-- ใส่ไฟล์ logo.png ไว้ในโฟลเดอร์เดียวกัน -->
-  <img src="logo.png" class="logo" alt="Nexus Core Logo">
+  <!-- ถ้า logo หาย ให้เช็คชื่อไฟล์ต้องตรง -->
+  <img src="logo.png" class="logo" alt="Logo">
 
-  <div class="company">NEXUS CORE SYSTEM</div>
   <h1>Secure Access Portal</h1>
 
-  <div id="message" class="message"></div>
+  <input type="text" id="user" placeholder="User ID">
+  <input type="password" id="pass" placeholder="Password">
 
-  <input type="text" id="userId" placeholder="User ID">
-  <input type="password" id="password" placeholder="Password">
+  <button id="loginBtn" onclick="login()">SIGN IN</button>
 
-  <button onclick="login()" id="loginBtn">SIGN IN</button>
+  <div class="message" id="message"></div>
 
   <div class="footer">
     © 2025 Nexus Core. All rights reserved.
@@ -118,69 +97,67 @@ button:disabled{
 </div>
 
 <script>
-
-const correctCard = "LC-A01";
+const correctUser = "LC-A01";
 const correctPass = "Lc1993♧";
 
-let attempts = parseInt(localStorage.getItem("attempts")) || 0;
+let failCount = parseInt(localStorage.getItem("failCount")) || 0;
 let lockUntil = parseInt(localStorage.getItem("lockUntil")) || 0;
 
-const messageBox = document.getElementById("message");
-const loginBtn = document.getElementById("loginBtn");
+const btn = document.getElementById("loginBtn");
+const msg = document.getElementById("message");
 
 function checkLock(){
   const now = Date.now();
   if(now < lockUntil){
-    loginBtn.disabled = true;
-    const remaining = Math.ceil((lockUntil - now)/1000);
-    messageBox.className="message lock";
-    messageBox.innerText="Account locked. Try again in "+remaining+" seconds.";
+    const remain = Math.ceil((lockUntil - now)/1000);
+    btn.disabled = true;
+    btn.textContent = "LOCKED ("+remain+"s)";
     setTimeout(checkLock,1000);
   }else{
-    loginBtn.disabled = false;
-    messageBox.innerText="";
+    btn.disabled = false;
+    btn.textContent = "SIGN IN";
+    localStorage.removeItem("lockUntil");
   }
-}
-
-function applyLock(){
-  let lockTime = 0;
-
-  if(attempts === 3) lockTime = 30;
-  if(attempts === 6) lockTime = 90;
-  if(attempts === 9) lockTime = 180;
-
-  if(lockTime > 0){
-    lockUntil = Date.now() + lockTime*1000;
-    localStorage.setItem("lockUntil", lockUntil);
-  }
-
-  localStorage.setItem("attempts", attempts);
-  checkLock();
 }
 
 function login(){
+  const user = document.getElementById("user").value;
+  const pass = document.getElementById("pass").value;
 
-  if(Date.now() < lockUntil) return;
+  if(Date.now() < lockUntil){
+    return;
+  }
 
-  const user = document.getElementById("userId").value;
-  const pass = document.getElementById("password").value;
-
-  if(user === correctCard && pass === correctPass){
-    messageBox.className="message success";
-    messageBox.innerText="Access Granted";
-    localStorage.removeItem("attempts");
-    localStorage.removeItem("lockUntil");
-    attempts = 0;
+  if(user === correctUser && pass === correctPass){
+    msg.style.color="green";
+    msg.textContent="Login successful";
+    failCount = 0;
+    localStorage.removeItem("failCount");
   }else{
-    attempts++;
-    messageBox.className="message error";
-    messageBox.innerText="Invalid credentials";
-    applyLock();
+    failCount++;
+    localStorage.setItem("failCount", failCount);
+    msg.style.color="red";
+    msg.textContent="Invalid credentials";
+
+    if(failCount === 3){
+      lock(30);
+    }
+    else if(failCount === 6){
+      lock(90);
+    }
+    else if(failCount === 9){
+      lock(180);
+    }
   }
 }
 
-checkLock();
+function lock(seconds){
+  lockUntil = Date.now() + seconds*1000;
+  localStorage.setItem("lockUntil", lockUntil);
+  checkLock();
+}
 
+checkLock();
 </script>
 
 </body>
