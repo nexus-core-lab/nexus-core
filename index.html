@@ -3,118 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS Internal Secure System</title>
+<title>NEXUS Secure Intelligence Network</title>
 
 <style>
 *{box-sizing:border-box}
 
 html,body{
-    height:100%;
     margin:0;
-    font-family:Segoe UI, Tahoma, sans-serif;
-    background:#f2f2f2;
-    color:#222;
+    height:100%;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#0b0f14;
+    color:#d6d6d6;
 }
 
-/* ===== TOP BAR ===== */
+/* ===== TOP STRIP ===== */
 .topbar{
-    background:#000;
-    color:#fff;
-    padding:10px 15px;
-    font-size:13px;
+    background:#05070a;
+    color:#9aa4ad;
+    padding:8px 18px;
+    font-size:12px;
+    letter-spacing:.5px;
     display:flex;
     justify-content:space-between;
+    border-bottom:1px solid #1c2733;
 }
 
-/* ===== LAYOUT ===== */
+/* ===== MAIN WRAPPER ===== */
 .wrapper{
     min-height:100dvh;
     display:flex;
     flex-direction:column;
 }
 
-/* ===== CONTENT ===== */
+/* ===== CENTER PANEL ===== */
 .content{
     flex:1;
-    max-width:600px;
-    margin:0 auto;
-    padding:60px 25px 40px 25px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 20px;
+}
+
+.panel{
+    width:100%;
+    max-width:520px;
+    background:#11161d;
+    padding:45px 40px;
+    border:1px solid #1f2b38;
+    box-shadow:0 0 40px rgba(0,0,0,0.8);
 }
 
 /* ===== LOGO ===== */
 .logo{
-    width:85px;
+    width:80px;
     display:block;
     margin:0 auto 15px auto;
+    filter:brightness(1.1);
 }
 
-/* ===== HEADINGS ===== */
+/* ===== TITLES ===== */
 h2{
     text-align:center;
-    margin:5px 0;
+    margin:10px 0 5px 0;
+    font-weight:500;
+    letter-spacing:1px;
 }
 
 .subtitle{
     text-align:center;
-    margin-bottom:25px;
-    font-size:14px;
-    color:#444;
+    font-size:13px;
+    color:#7f8c99;
+    margin-bottom:30px;
 }
 
-/* ===== FORM ===== */
+/* ===== INPUT ===== */
 input{
     width:100%;
-    padding:14px;
-    margin:10px 0;
-    border:1px solid #888;
-    font-size:15px;
-    background:#fff;
+    padding:13px;
+    margin-bottom:14px;
+    background:#0c1218;
+    border:1px solid #263445;
+    color:#d6d6d6;
+    font-size:14px;
 }
 
+input:focus{
+    outline:none;
+    border:1px solid #3a6ea5;
+}
+
+/* ===== BUTTON ===== */
 button{
     width:100%;
-    padding:14px;
-    margin-top:5px;
-    background:#444;
+    padding:13px;
+    background:#1f2b38;
+    border:1px solid #2e3f52;
     color:#fff;
-    border:none;
-    font-size:15px;
+    font-size:14px;
     cursor:pointer;
 }
 
+button:hover{
+    background:#243545;
+}
+
 button:disabled{
-    background:#999;
+    opacity:.5;
+    cursor:not-allowed;
 }
 
 /* ===== MESSAGE ===== */
 #msg{
     margin-top:12px;
-    font-weight:bold;
-    min-height:22px;
+    font-size:13px;
+    min-height:20px;
 }
 
-/* ===== INFO ===== */
+/* ===== SYSTEM INFO ===== */
 .system-info{
-    margin-top:40px;
-    font-size:13px;
-    color:#555;
+    margin-top:30px;
+    font-size:12px;
+    color:#7f8c99;
     line-height:1.6;
-    border-top:1px solid #ccc;
+    border-top:1px solid #1f2b38;
     padding-top:20px;
+}
+
+.secure{
+    color:#4caf50;
+    font-weight:bold;
 }
 
 /* ===== FOOTER ===== */
 .footer{
-    background:#e5e5e5;
-    padding:12px;
-    font-size:12px;
     text-align:center;
-    color:#444;
-}
-
-.secure{
-    color:green;
-    font-weight:bold;
+    font-size:11px;
+    padding:15px;
+    color:#5f6b77;
+    border-top:1px solid #1c2733;
 }
 </style>
 </head>
@@ -124,38 +150,40 @@ button:disabled{
 <div class="wrapper">
 
 <div class="topbar">
-    <div>เครือข่ายภายในองค์กร (Internal Network)</div>
+    <div>INTERNAL SECURE NETWORK // RESTRICTED ACCESS</div>
     <div id="datetime"></div>
 </div>
 
 <div class="content">
+<div class="panel">
 
 <img src="logo.png" class="logo">
 
-<h2>ระบบสารสนเทศหลัก NEXUS</h2>
-<div class="subtitle">เฉพาะผู้ได้รับอนุญาตระดับ 3 เท่านั้น</div>
+<h2>NEXUS INTELLIGENCE GRID</h2>
+<div class="subtitle">Level-3 Clearance Required</div>
 
-<input type="text" id="card" placeholder="รหัสบัตรประจำตัว">
-<input type="password" id="pass" placeholder="รหัสผ่าน">
-<button id="loginBtn">เข้าสู่ระบบ</button>
+<input type="text" id="card" placeholder="Card Identification Code">
+<input type="password" id="pass" placeholder="Access Passphrase">
+<button id="loginBtn">Authenticate</button>
 
 <div id="msg"></div>
 
 <div class="system-info">
-คำเตือน: ระบบนี้เป็นทรัพย์สินขององค์กร การเข้าถึงโดยไม่ได้รับอนุญาต
-อาจถูกตรวจสอบ บันทึกกิจกรรม และดำเนินคดีตามกฎหมาย
+Warning: This system is monitored and logged. Unauthorized access
+attempts will trigger security protocols and digital audit tracing.
 
 <br><br>
-System Version: NX-SEC 3.4.1<br>
-Security Classification: Internal Use Only<br>
+System Node: NX-CORE-ALPHA<br>
+Security Tier: Classified<br>
 Session ID: <span id="sessionId"></span><br>
-Channel Status: <span class="secure">Secure Channel Established</span>
+Channel Status: <span class="secure">Encrypted Link Active</span>
 </div>
 
+</div>
 </div>
 
 <div class="footer">
-© 2026 NEXUS Internal Infrastructure Division
+© 2026 NEXUS Secure Infrastructure Command
 </div>
 
 </div>
@@ -174,7 +202,7 @@ const msg=document.getElementById("msg");
 const cardInput=document.getElementById("card");
 const passInput=document.getElementById("pass");
 
-/* ===== TIME ===== */
+/* ===== CLOCK ===== */
 function updateTime(){
     const now=new Date();
     document.getElementById("datetime").innerText=
@@ -183,13 +211,13 @@ function updateTime(){
 setInterval(updateTime,1000);
 updateTime();
 
-/* ===== SESSION ===== */
+/* ===== SESSION ID ===== */
 function generateSession(){
     return "NX-"+Math.random().toString(36).substring(2,10).toUpperCase();
 }
 document.getElementById("sessionId").innerText=generateSession();
 
-/* ===== LOCK SYSTEM ===== */
+/* ===== LOCK HANDLING ===== */
 let countdownInterval=null;
 
 function startCountdown(){
@@ -211,8 +239,8 @@ function startCountdown(){
             return;
         }
 
-        msg.style.color="red";
-        msg.innerText="บัญชีถูกระงับชั่วคราว ("+remaining+" วินาที)";
+        msg.style.color="#ff4d4d";
+        msg.innerText="ACCESS TEMPORARILY LOCKED ("+remaining+"s)";
     },1000);
 }
 
@@ -228,8 +256,8 @@ btn.addEventListener("click",function(){
     if(cardInput.value.trim()===correctCard &&
        passInput.value.trim()===correctPass){
 
-        msg.style.color="green";
-        msg.innerText="ยืนยันตัวตนสำเร็จ";
+        msg.style.color="#4caf50";
+        msg.innerText="AUTHENTICATION SUCCESSFUL";
         localStorage.removeItem("failCount");
         return;
     }
@@ -237,8 +265,8 @@ btn.addEventListener("click",function(){
     failCount++;
     localStorage.setItem("failCount",failCount);
 
-    msg.style.color="red";
-    msg.innerText="ข้อมูลไม่ถูกต้อง";
+    msg.style.color="#ff4d4d";
+    msg.innerText="INVALID CREDENTIALS";
 
     if(failCount===3) lockUntil=Date.now()+30000;
     if(failCount===6) lockUntil=Date.now()+60000;
