@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS Secure</title>
+<title>NEXUS Secure System</title>
 
 <style>
 body{
@@ -44,10 +44,27 @@ button{
     background:#6f6f6f;
     color:white;
     border:none;
+    cursor:pointer;
+}
+button:disabled{
+    background:#999;
 }
 #msg{
     margin-top:15px;
     font-weight:bold;
+}
+.footer{
+    margin-top:30px;
+    font-size:12px;
+    color:#666;
+    text-align:left;
+}
+.secure{
+    color:green;
+    font-weight:bold;
+}
+hr{
+    margin:25px 0;
 }
 </style>
 </head>
@@ -71,6 +88,23 @@ button{
     <button id="loginBtn">ยืนยันตัวตน</button>
 
     <div id="msg"></div>
+
+    <hr>
+
+    <div class="footer">
+        <p>
+        คำเตือน: ระบบนี้เป็นทรัพย์สินขององค์กร 
+        การเข้าถึงโดยไม่ได้รับอนุญาตอาจถูกตรวจสอบ 
+        บันทึกกิจกรรม และดำเนินคดีตามกฎหมาย
+        </p>
+
+        <p>
+        System Version: NX-SEC 3.4.1<br>
+        Security Classification: Internal Use Only<br>
+        Session ID: <span id="sessionId"></span><br>
+        Channel Status: <span class="secure">Secure Channel Established</span>
+        </p>
+    </div>
 </div>
 
 <script>
@@ -88,6 +122,7 @@ const msg=document.getElementById("msg");
 const cardInput=document.getElementById("card");
 const passInput=document.getElementById("pass");
 
+// ===== DateTime =====
 function updateTime(){
     const now=new Date();
     document.getElementById("datetime").innerText=
@@ -96,21 +131,43 @@ function updateTime(){
 setInterval(updateTime,1000);
 updateTime();
 
-function checkLock(){
-    if(Date.now()<lockUntil){
-        btn.disabled=true;
-        cardInput.disabled=true;
-        passInput.disabled=true;
-        msg.style.color="red";
-        msg.innerText="ระบบล็อกอยู่";
-    }else{
-        btn.disabled=false;
-        cardInput.disabled=false;
-        passInput.disabled=false;
-    }
+// ===== Session ID =====
+function generateSession(){
+    return "NX-"+Math.random().toString(36).substring(2,10).toUpperCase();
 }
-checkLock();
+document.getElementById("sessionId").innerText=generateSession();
 
+// ===== Lock Countdown =====
+let countdownInterval=null;
+
+function startCountdown(){
+    btn.disabled=true;
+    cardInput.disabled=true;
+    passInput.disabled=true;
+
+    countdownInterval=setInterval(function(){
+        let remaining=Math.ceil((lockUntil-Date.now())/1000);
+
+        if(remaining<=0){
+            clearInterval(countdownInterval);
+            btn.disabled=false;
+            cardInput.disabled=false;
+            passInput.disabled=false;
+            msg.innerText="";
+            localStorage.removeItem("lockUntil");
+            return;
+        }
+
+        msg.style.color="red";
+        msg.innerText="ระบบล็อกอยู่ ("+remaining+" วินาที)";
+    },1000);
+}
+
+if(Date.now()<lockUntil){
+    startCountdown();
+}
+
+// ===== Login =====
 btn.addEventListener("click",function(){
 
     if(Date.now()<lockUntil) return;
@@ -131,10 +188,13 @@ btn.addEventListener("click",function(){
     msg.style.color="red";
     msg.innerText="ข้อมูลไม่ถูกต้อง";
 
+    if(failCount===3) lockUntil=Date.now()+30000;
+    if(failCount===6) lockUntil=Date.now()+60000;
+    if(failCount>=9) lockUntil=Date.now()+180000;
+
     if(failCount>=3){
-        lockUntil=Date.now()+30000;
         localStorage.setItem("lockUntil",lockUntil);
-        checkLock();
+        startCountdown();
     }
 
 });
