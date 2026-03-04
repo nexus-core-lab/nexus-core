@@ -2,85 +2,76 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- สำคัญมาก -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<!-- ป้องกัน Google Translate popup -->
+<meta name="google" content="notranslate">
+
 <title>Nexus Core | Internal Access</title>
 
 <style>
 *{box-sizing:border-box;}
 
-body{
+html,body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  height:100%;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
   background:#eef1f5;
+}
+
+body{
   display:flex;
   justify-content:center;
   align-items:center;
-  min-height:100vh;
-  padding:20px;
+  padding:16px;
 }
 
 .card{
-  background:#ffffff;
+  background:#fff;
   width:100%;
-  max-width:420px;
-  padding:40px 30px;
-  border-radius:14px;
-  box-shadow:0 15px 40px rgba(0,0,0,0.08);
+  max-width:480px;   /* ขยายขึ้น */
+  padding:50px 35px; /* เพิ่มพื้นที่ */
+  border-radius:18px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.12);
   text-align:center;
 }
 
 .logo{
-  width:90px;
-  margin-bottom:15px;
+  width:110px; /* ขยายโลโก้ */
+  margin-bottom:20px;
 }
 
 h1{
-  font-size:20px;
-  margin-bottom:30px;
+  font-size:22px;
+  margin-bottom:35px;
   color:#1f2937;
 }
 
 input{
   width:100%;
-  padding:14px;
-  margin-bottom:16px;
+  padding:16px;
+  margin-bottom:18px;
   border:1px solid #d1d5db;
-  border-radius:8px;
-  font-size:15px;
-}
-
-input:focus{
-  outline:none;
-  border-color:#1f2937;
+  border-radius:10px;
+  font-size:16px;
 }
 
 button{
   width:100%;
-  padding:14px;
+  padding:16px;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   background:#1f2937;
   color:white;
   font-weight:600;
-  font-size:15px;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-button:hover{
-  opacity:0.9;
-}
-
-.error{
-  font-size:13px;
-  color:#dc2626;
-  margin-bottom:10px;
-  display:none;
+  font-size:16px;
 }
 
 .footer{
-  margin-top:25px;
-  font-size:12px;
+  margin-top:30px;
+  font-size:13px;
   color:#6b7280;
 }
 </style>
@@ -94,53 +85,16 @@ button:hover{
 
 <h1>Internal Access Portal</h1>
 
-<div id="errorMsg" class="error"></div>
+<input type="text" placeholder="Employee ID">
+<input type="password" placeholder="Password">
 
-<input type="text" id="empId" placeholder="Employee ID">
-<input type="password" id="password" placeholder="Password">
-
-<button onclick="login()" id="btn">SIGN IN</button>
+<button>SIGN IN</button>
 
 <div class="footer">
 © 2025 Nexus Core System · Internal Use Only
 </div>
 
 </div>
-
-<script>
-const SESSION_DURATION = 5 * 60 * 1000;
-
-function login(){
-  const id = document.getElementById("empId").value.trim();
-  const pass = document.getElementById("password").value.trim();
-  const error = document.getElementById("errorMsg");
-  const btn = document.getElementById("btn");
-
-  error.style.display="none";
-
-  if(!id || !pass){
-    error.textContent="Please enter Employee ID and Password";
-    error.style.display="block";
-    return;
-  }
-
-  btn.innerText="Signing in...";
-  btn.disabled=true;
-
-  setTimeout(()=>{
-    if(id==="admin" && pass==="1234"){
-      localStorage.setItem("sessionExpiry", Date.now()+SESSION_DURATION);
-      window.location.href="dashboard.html";
-    }else{
-      error.textContent="Invalid credentials";
-      error.style.display="block";
-      btn.innerText="SIGN IN";
-      btn.disabled=false;
-    }
-  },1000);
-
-}
-</script>
 
 </body>
 </html>
