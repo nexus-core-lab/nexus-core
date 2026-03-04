@@ -6,11 +6,9 @@
 <title>Nexus Core | Secure Access</title>
 
 <style>
-*{box-sizing:border-box;}
-
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  font-family:Segoe UI, Arial, sans-serif;
   background:#f4f6f8;
   display:flex;
   justify-content:center;
@@ -19,30 +17,22 @@ body{
 }
 
 .container{
-  background:#ffffff;
-  width:100%;
-  max-width:360px;
-  padding:40px 30px;
+  background:#fff;
+  width:350px;
+  padding:35px;
   border-radius:8px;
   box-shadow:0 8px 24px rgba(0,0,0,0.08);
   text-align:center;
 }
 
 .logo{
-  width:90px;
-  margin-bottom:15px;
-}
-
-.company{
-  font-size:13px;
-  letter-spacing:2px;
-  color:#6b7280;
-  margin-bottom:5px;
+  width:80px;
+  margin-bottom:10px;
 }
 
 h1{
   font-size:18px;
-  margin:0 0 25px 0;
+  margin-bottom:20px;
   color:#1f2937;
 }
 
@@ -52,13 +42,6 @@ input{
   margin-bottom:15px;
   border:1px solid #d1d5db;
   border-radius:6px;
-  font-size:14px;
-  background:#fff;
-}
-
-input:focus{
-  outline:none;
-  border:1px solid #2563eb;
 }
 
 button{
@@ -67,7 +50,7 @@ button{
   border:none;
   border-radius:6px;
   background:#1f2937;
-  color:#ffffff;
+  color:white;
   font-weight:600;
   cursor:pointer;
 }
@@ -78,12 +61,13 @@ button:disabled{
 }
 
 .message{
+  margin-top:15px;
   font-size:13px;
-  margin-top:10px;
+  color:#dc2626;
 }
 
 .footer{
-  margin-top:25px;
+  margin-top:20px;
   font-size:11px;
   color:#6b7280;
 }
@@ -94,79 +78,84 @@ button:disabled{
 
 <div class="container">
 
-  <img src="logo.png" class="logo" alt="Logo">
+<img src="logo.png" class="logo" alt="Logo">
 
-  <div class="company">NEXUS CORE SYSTEM</div>
-  <h1>Secure Access Portal</h1>
+<h1>Secure Access Portal</h1>
 
-  <input type="text" id="user" placeholder="User ID">
-  <input type="password" id="pass" placeholder="Password">
+<input type="text" id="username" placeholder="User ID">
+<input type="password" id="password" placeholder="Password">
 
-  <button onclick="login()" id="loginBtn">SIGN IN</button>
+<button onclick="login()" id="loginBtn">SIGN IN</button>
 
-  <div class="message" id="message"></div>
+<div class="message" id="message"></div>
 
-  <div class="footer">
-    © 2025 Nexus Core. All rights reserved.
-  </div>
+<div class="footer">
+© 2025 Nexus Core. All rights reserved.
+</div>
 
 </div>
 
 <script>
-const correctUser = "admin";
-const correctPass = "Lc1993♧";
 
 let attempts = 0;
-let locked = false;
+let lockLevel = 0;
+let lockTimer = null;
+
+const correctUser = "admin";
+const correctPass = "1234";
 
 function login(){
-  if(locked) return;
 
-  const user = document.getElementById("user").value;
-  const pass = document.getElementById("pass").value;
-  const message = document.getElementById("message");
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  const msg = document.getElementById("message");
 
   if(user === correctUser && pass === correctPass){
-    message.style.color = "green";
-    message.innerText = "Access Granted";
-    attempts = 0;
-  }else{
-    attempts++;
-    message.style.color = "red";
-    message.innerText = "Invalid credentials ("+attempts+"/9)";
+    msg.style.color = "green";
+    msg.innerText = "Access Granted";
+    return;
+  }
 
-    if(attempts === 3 || attempts === 6){
-      lockSystem(15);
-    }
+  attempts++;
 
-    if(attempts >= 9){
-      lockSystem(30);
-    }
+  if(attempts === 3){
+    lockAccount(30);
+  }
+  else if(attempts === 6){
+    lockAccount(60);
+  }
+  else if(attempts === 9){
+    lockAccount(120);
+  }
+  else{
+    msg.innerText = "Invalid credentials (" + attempts + " attempts)";
   }
 }
 
-function lockSystem(seconds){
-  locked = true;
+function lockAccount(seconds){
+
   const btn = document.getElementById("loginBtn");
-  const message = document.getElementById("message");
+  const msg = document.getElementById("message");
+
   btn.disabled = true;
 
-  let timeLeft = seconds;
-  message.innerText = "System locked. Try again in "+timeLeft+"s";
+  let remaining = seconds;
 
-  const countdown = setInterval(()=>{
-    timeLeft--;
-    message.innerText = "System locked. Try again in "+timeLeft+"s";
+  msg.innerText = "Account locked for " + remaining + " seconds";
 
-    if(timeLeft <= 0){
-      clearInterval(countdown);
-      locked = false;
+  lockTimer = setInterval(() => {
+    remaining--;
+    msg.innerText = "Account locked for " + remaining + " seconds";
+
+    if(remaining <= 0){
+      clearInterval(lockTimer);
       btn.disabled = false;
       attempts = 0;
-      message.innerText = "";
+      msg.innerText = "You may try again.";
     }
   },1000);
 }
+
 </script>
 
 </body>
