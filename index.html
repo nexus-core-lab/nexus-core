@@ -53,7 +53,6 @@ input{
   border:1px solid #d1d5db;
   border-radius:6px;
   font-size:14px;
-  background:#ffffff;
 }
 
 input:focus{
@@ -72,14 +71,22 @@ button{
   cursor:pointer;
 }
 
-button:hover{
-  background:#111827;
+button:disabled{
+  background:#9ca3af;
+  cursor:not-allowed;
+}
+
+.error{
+  color:#dc2626;
+  font-size:13px;
+  margin-bottom:10px;
+  display:none;
 }
 
 .footer{
   margin-top:25px;
   font-size:11px;
-  color:#6b7280;
+  color:#4b5563;
 }
 </style>
 </head>
@@ -88,21 +95,54 @@ button:hover{
 
 <div class="container">
 
-  <img src="logo.png" class="logo" alt="Nexus Core Logo">
+  <img src="logo.png" class="logo" alt="Logo">
 
   <div class="company">NEXUS CORE SYSTEM</div>
   <h1>Internal Access Portal</h1>
 
-  <input type="text" placeholder="Employee ID">
-  <input type="password" placeholder="Password">
+  <div class="error" id="errorMsg">Invalid Employee ID or Password</div>
 
-  <button>SIGN IN</button>
+  <input type="text" id="empId" placeholder="Employee ID">
+  <input type="password" id="password" placeholder="Password">
+
+  <button onclick="login()" id="loginBtn">SIGN IN</button>
 
   <div class="footer">
     © 2025 Nexus Core System · Internal Use Only
   </div>
 
 </div>
+
+<script>
+function login() {
+  const id = document.getElementById("empId").value.trim();
+  const pass = document.getElementById("password").value.trim();
+  const error = document.getElementById("errorMsg");
+  const btn = document.getElementById("loginBtn");
+
+  error.style.display = "none";
+
+  if(id === "" || pass === "") {
+    error.textContent = "Please enter Employee ID and Password";
+    error.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Signing in...";
+
+  setTimeout(() => {
+    if(id === "admin" && pass === "1234") {
+      window.location.href = "dashboard.html";
+    } else {
+      error.textContent = "Invalid Employee ID or Password";
+      error.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "SIGN IN";
+    }
+  }, 1200);
+}
+</script>
 
 </body>
 </html>
