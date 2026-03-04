@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ระบบตรวจสอบสิทธิ์การเข้าใช้งาน</title>
+<title>Access Control System</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
 
@@ -14,7 +14,7 @@ html,body{
     margin:0;
     height:100%;
     font-family:'Sarabun',sans-serif;
-    background:#e4e8eb;
+    background:linear-gradient(#e3e7ea,#d9dee2);
     color:#222;
 }
 
@@ -24,37 +24,42 @@ html,body{
     flex-direction:column;
 }
 
-/* Header */
+/* HEADER */
 .header{
-    background:#243642;
+    background:#22313b;
     color:#fff;
-    padding:14px 24px;
+    padding:12px 22px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    font-size:15px;
+    font-size:14px;
 }
 
-/* Main */
+/* MAIN */
 .main{
     flex:1;
-    padding:40px 16px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:40px 16px 20px 16px;
 }
 
 .panel{
+    width:100%;
     max-width:520px;
-    margin:0 auto;
     background:#fff;
-    border:1.5px solid #3a4a56;
-    padding:34px 28px;
+    border:2px solid #2f3e49;
+    padding:36px 30px;
 }
 
+/* LOGO */
 .logo{
-    width:70px;
+    width:68px;
     display:block;
     margin:0 auto 18px auto;
 }
 
+/* TITLES */
 h1{
     text-align:center;
     font-size:18px;
@@ -64,37 +69,42 @@ h1{
 
 .subtitle{
     text-align:center;
-    font-size:14px;
-    margin:6px 0 22px 0;
+    font-size:13px;
+    margin:6px 0 20px 0;
     color:#444;
 }
 
+/* INPUT */
 input{
     width:100%;
     padding:10px;
     margin-bottom:12px;
-    border:1px solid #555;
+    border:1.5px solid #444;
     font-size:14px;
-    background:#fafafa;
+    background:#f8f8f8;
+    transition:all .2s;
 }
 
 input:focus{
     outline:none;
     border-color:#000;
+    background:#fff;
 }
 
+/* BUTTON */
 button{
     width:100%;
     padding:11px;
-    background:#243642;
+    background:#22313b;
     color:#fff;
     border:none;
     font-size:14px;
     cursor:pointer;
+    transition:.2s;
 }
 
 button:hover{
-    background:#1a2730;
+    background:#1a262e;
 }
 
 .notice{
@@ -106,20 +116,14 @@ button:hover{
     color:#333;
 }
 
-/* Footer */
+/* FOOTER */
 .footer{
     text-align:center;
-    font-size:12px;
-    padding:14px;
+    font-size:11px;
+    padding:12px;
+    background:#f2f4f6;
     border-top:1px solid #bbb;
-    background:#f1f3f5;
-}
-
-/* Mobile Adjust */
-@media(max-width:600px){
-    .panel{
-        padding:26px 18px;
-    }
+    color:#444;
 }
 </style>
 </head>
@@ -138,8 +142,8 @@ button:hover{
 
 <img src="logo.png" class="logo" alt="logo">
 
-<h1>ระบบตรวจสอบสิทธิ์การเข้าใช้งาน</h1>
-<div class="subtitle">เฉพาะบุคลากรที่ได้รับอนุญาตเท่านั้น</div>
+<h1>ระบบตรวจสอบสิทธิการเข้าใช้งาน</h1>
+<div class="subtitle">Access Control System</div>
 
 <input type="text" placeholder="รหัสประจำตัวเจ้าหน้าที่">
 <input type="password" placeholder="รหัสผ่าน">
@@ -154,19 +158,18 @@ button:hover{
 </div>
 
 <div class="footer">
-© หน่วยงานกลางด้านความมั่นคงสารสนเทศ
+© 2569 หน่วยงานกลางด้านความมั่นคงสารสนเทศ | เวอร์ชันระบบ 1.0.3
 </div>
 
 </div>
 
 <script>
 function updateTime(){
-    const now = new Date();
-    document.getElementById("datetime").innerText =
-        now.toLocaleDateString("th-TH") + " " +
+    const now=new Date();
+    document.getElementById("datetime").innerText=
+        now.toLocaleDateString("th-TH")+" "+
         now.toLocaleTimeString("th-TH");
 }
-
 setInterval(updateTime,1000);
 updateTime();
 </script>
