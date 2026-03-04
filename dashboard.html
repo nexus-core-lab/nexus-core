@@ -1,28 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard</title>
 </head>
-<body style="font-family:Arial;text-align:center;padding-top:100px;background:#111827;color:white;">
-
-<h2>Secure Environment Access Granted</h2>
-<button onclick="logout()" style="padding:10px 20px;margin-top:20px;">Sign Out</button>
-
-<script>
-const expiry = localStorage.getItem("sessionExpiry");
-
-if(!expiry || Date.now()>expiry){
-  localStorage.removeItem("sessionExpiry");
-  window.location.href="index.html";
-}
-
-function logout(){
-  localStorage.removeItem("sessionExpiry");
-  window.location.href="index.html";
-}
-</script>
-
+<body style="font-family:sans-serif;text-align:center;margin-top:100px;">
+<h1>Welcome to Nexus Core Dashboard</h1>
+<p>Secure access granted.</p>
 </body>
 </html>
