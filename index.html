@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS Secure Intelligence Network</title>
+<title>Government Secure Information System</title>
 
 <style>
 *{box-sizing:border-box}
@@ -11,181 +11,149 @@
 html,body{
     margin:0;
     height:100%;
-    font-family:Arial, Helvetica, sans-serif;
-    background:#0b0f14;
-    color:#d6d6d6;
+    font-family:Tahoma, Arial, sans-serif;
+    background:#e6e9ed;
+    color:#222;
 }
 
-/* ===== TOP STRIP ===== */
-.topbar{
-    background:#05070a;
-    color:#9aa4ad;
-    padding:8px 18px;
-    font-size:12px;
-    letter-spacing:.5px;
+/* ===== HEADER ===== */
+.gov-header{
+    background:#1f2a44;
+    color:#fff;
+    padding:14px 25px;
+    font-size:14px;
     display:flex;
     justify-content:space-between;
-    border-bottom:1px solid #1c2733;
-}
-
-/* ===== MAIN WRAPPER ===== */
-.wrapper{
-    min-height:100dvh;
-    display:flex;
-    flex-direction:column;
-}
-
-/* ===== CENTER PANEL ===== */
-.content{
-    flex:1;
-    display:flex;
-    justify-content:center;
     align-items:center;
-    padding:40px 20px;
+}
+
+.gov-sub{
+    background:#2e3a59;
+    color:#d7dce6;
+    padding:6px 25px;
+    font-size:12px;
+}
+
+/* ===== MAIN AREA ===== */
+.content{
+    padding:60px 20px 40px 20px;
 }
 
 .panel{
     width:100%;
     max-width:520px;
-    background:#11161d;
-    padding:45px 40px;
-    border:1px solid #1f2b38;
-    box-shadow:0 0 40px rgba(0,0,0,0.8);
+    margin:auto;
+    background:#ffffff;
+    padding:40px;
+    border:1px solid #c8ced6;
 }
 
-/* ===== LOGO ===== */
-.logo{
-    width:80px;
-    display:block;
-    margin:0 auto 15px auto;
-    filter:brightness(1.1);
-}
-
-/* ===== TITLES ===== */
 h2{
     text-align:center;
-    margin:10px 0 5px 0;
-    font-weight:500;
-    letter-spacing:1px;
+    margin:0 0 5px 0;
+    font-weight:normal;
 }
 
 .subtitle{
     text-align:center;
     font-size:13px;
-    color:#7f8c99;
-    margin-bottom:30px;
+    color:#666;
+    margin-bottom:25px;
 }
 
-/* ===== INPUT ===== */
 input{
     width:100%;
-    padding:13px;
-    margin-bottom:14px;
-    background:#0c1218;
-    border:1px solid #263445;
-    color:#d6d6d6;
+    padding:12px;
+    margin-bottom:12px;
+    border:1px solid #bfc6cf;
     font-size:14px;
 }
 
-input:focus{
-    outline:none;
-    border:1px solid #3a6ea5;
-}
-
-/* ===== BUTTON ===== */
 button{
     width:100%;
-    padding:13px;
-    background:#1f2b38;
-    border:1px solid #2e3f52;
+    padding:12px;
+    background:#1f2a44;
     color:#fff;
-    font-size:14px;
+    border:none;
     cursor:pointer;
 }
 
 button:hover{
-    background:#243545;
+    background:#162033;
 }
 
 button:disabled{
-    opacity:.5;
+    opacity:.6;
     cursor:not-allowed;
 }
 
-/* ===== MESSAGE ===== */
 #msg{
     margin-top:12px;
     font-size:13px;
     min-height:20px;
 }
 
-/* ===== SYSTEM INFO ===== */
-.system-info{
-    margin-top:30px;
-    font-size:12px;
-    color:#7f8c99;
-    line-height:1.6;
-    border-top:1px solid #1f2b38;
-    padding-top:20px;
+/* ===== NOTICE SECTION ===== */
+.notice{
+    max-width:900px;
+    margin:60px auto 0 auto;
+    font-size:13px;
+    line-height:1.7;
+    color:#444;
 }
 
-.secure{
-    color:#4caf50;
-    font-weight:bold;
-}
-
-/* ===== FOOTER ===== */
 .footer{
-    text-align:center;
-    font-size:11px;
+    margin-top:60px;
     padding:15px;
-    color:#5f6b77;
-    border-top:1px solid #1c2733;
+    text-align:center;
+    font-size:12px;
+    color:#555;
+    border-top:1px solid #c8ced6;
+    background:#f4f6f8;
 }
 </style>
 </head>
 
 <body>
 
-<div class="wrapper">
-
-<div class="topbar">
-    <div>INTERNAL SECURE NETWORK // RESTRICTED ACCESS</div>
+<div class="gov-header">
+    <div>ศูนย์ระบบสารสนเทศส่วนกลาง</div>
     <div id="datetime"></div>
 </div>
 
+<div class="gov-sub">
+    เครือข่ายภายในหน่วยงานราชการ (Internal Government Network)
+</div>
+
 <div class="content">
+
 <div class="panel">
+<h2>ระบบสารสนเทศภายในหน่วยงาน</h2>
+<div class="subtitle">สำหรับเจ้าหน้าที่ที่ได้รับอนุญาตเท่านั้น</div>
 
-<img src="logo.png" class="logo">
-
-<h2>NEXUS INTELLIGENCE GRID</h2>
-<div class="subtitle">Level-3 Clearance Required</div>
-
-<input type="text" id="card" placeholder="Card Identification Code">
-<input type="password" id="pass" placeholder="Access Passphrase">
-<button id="loginBtn">Authenticate</button>
+<input type="text" id="card" placeholder="รหัสบัตรเจ้าหน้าที่">
+<input type="password" id="pass" placeholder="รหัสผ่าน">
+<button id="loginBtn">เข้าสู่ระบบ</button>
 
 <div id="msg"></div>
+</div>
 
-<div class="system-info">
-Warning: This system is monitored and logged. Unauthorized access
-attempts will trigger security protocols and digital audit tracing.
+<div class="notice">
+ระบบนี้เป็นทรัพย์สินของหน่วยงานราชการ การเข้าถึงโดยไม่ได้รับอนุญาต
+อาจมีความผิดตามกฎหมาย ข้อมูลการเข้าใช้งานทั้งหมดจะถูกบันทึก
+และตรวจสอบตามระเบียบด้านความมั่นคงปลอดภัยสารสนเทศของหน่วยงาน
 
 <br><br>
-System Node: NX-CORE-ALPHA<br>
-Security Tier: Classified<br>
-Session ID: <span id="sessionId"></span><br>
-Channel Status: <span class="secure">Encrypted Link Active</span>
+System Version: GOV-SIS 2.4.1<br>
+Security Classification: Internal Use Only<br>
+Network Zone: Government Intranet<br>
+IT Service Desk: ext. 1024
 </div>
 
-</div>
 </div>
 
 <div class="footer">
-© 2026 NEXUS Secure Infrastructure Command
-</div>
-
+© 2026 Government Information Technology Division
 </div>
 
 <script>
@@ -202,7 +170,7 @@ const msg=document.getElementById("msg");
 const cardInput=document.getElementById("card");
 const passInput=document.getElementById("pass");
 
-/* ===== CLOCK ===== */
+/* CLOCK */
 function updateTime(){
     const now=new Date();
     document.getElementById("datetime").innerText=
@@ -211,25 +179,18 @@ function updateTime(){
 setInterval(updateTime,1000);
 updateTime();
 
-/* ===== SESSION ID ===== */
-function generateSession(){
-    return "NX-"+Math.random().toString(36).substring(2,10).toUpperCase();
-}
-document.getElementById("sessionId").innerText=generateSession();
+/* LOCK SYSTEM */
+let countdown=null;
 
-/* ===== LOCK HANDLING ===== */
-let countdownInterval=null;
-
-function startCountdown(){
+function startLock(){
     btn.disabled=true;
     cardInput.disabled=true;
     passInput.disabled=true;
 
-    countdownInterval=setInterval(function(){
-        let remaining=Math.ceil((lockUntil-Date.now())/1000);
-
-        if(remaining<=0){
-            clearInterval(countdownInterval);
+    countdown=setInterval(function(){
+        let remain=Math.ceil((lockUntil-Date.now())/1000);
+        if(remain<=0){
+            clearInterval(countdown);
             btn.disabled=false;
             cardInput.disabled=false;
             passInput.disabled=false;
@@ -238,17 +199,16 @@ function startCountdown(){
             localStorage.removeItem("failCount");
             return;
         }
-
-        msg.style.color="#ff4d4d";
-        msg.innerText="ACCESS TEMPORARILY LOCKED ("+remaining+"s)";
+        msg.style.color="red";
+        msg.innerText="บัญชีถูกระงับชั่วคราว ("+remain+" วินาที)";
     },1000);
 }
 
 if(Date.now()<lockUntil){
-    startCountdown();
+    startLock();
 }
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 btn.addEventListener("click",function(){
 
     if(Date.now()<lockUntil) return;
@@ -256,8 +216,8 @@ btn.addEventListener("click",function(){
     if(cardInput.value.trim()===correctCard &&
        passInput.value.trim()===correctPass){
 
-        msg.style.color="#4caf50";
-        msg.innerText="AUTHENTICATION SUCCESSFUL";
+        msg.style.color="green";
+        msg.innerText="เข้าสู่ระบบสำเร็จ";
         localStorage.removeItem("failCount");
         return;
     }
@@ -265,8 +225,8 @@ btn.addEventListener("click",function(){
     failCount++;
     localStorage.setItem("failCount",failCount);
 
-    msg.style.color="#ff4d4d";
-    msg.innerText="INVALID CREDENTIALS";
+    msg.style.color="red";
+    msg.innerText="รหัสไม่ถูกต้อง";
 
     if(failCount===3) lockUntil=Date.now()+30000;
     if(failCount===6) lockUntil=Date.now()+60000;
@@ -274,7 +234,7 @@ btn.addEventListener("click",function(){
 
     if(failCount>=3){
         localStorage.setItem("lockUntil",lockUntil);
-        startCountdown();
+        startLock();
     }
 
 });
