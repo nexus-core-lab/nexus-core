@@ -3,74 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexus Core | Dashboard</title>
-
-<style>
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  background:#111827;
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  flex-direction:column;
-  text-align:center;
-}
-button{
-  margin-top:20px;
-  padding:12px 25px;
-  border:none;
-  border-radius:8px;
-  background:white;
-  color:#111827;
-  font-weight:600;
-  cursor:pointer;
-}
-</style>
+<title>Dashboard</title>
 </head>
 
-<body>
-
-<h2>Secure Environment Access Granted</h2>
-<p id="timer"></p>
-
-<button onclick="logout()">Sign Out</button>
+<body style="font-family:sans-serif;text-align:center;padding-top:100px;background:#111827;color:white;">
 
 <script>
-function checkSession(){
-  const expiry = localStorage.getItem("sessionExpiry");
-
-  if(!expiry || Date.now()>expiry){
-    localStorage.removeItem("sessionExpiry");
-    window.location.href="index.html";
-  }
-
-  return expiry;
+if(localStorage.getItem("session")!=="active"){
+  window.location.href="index.html";
 }
+</script>
 
-const expiry = checkSession();
+<h2>Secure Environment Access Granted</h2>
 
-function updateTimer(){
-  const remaining = expiry - Date.now();
+<button onclick="logout()" style="margin-top:20px;padding:10px 20px;">Sign Out</button>
 
-  if(remaining<=0){
-    localStorage.removeItem("sessionExpiry");
-    window.location.href="index.html";
-  }
-
-  const m = Math.floor(remaining/60000);
-  const s = Math.floor((remaining%60000)/1000);
-
-  document.getElementById("timer").innerText=
-    "Session expires in "+m+"m "+s+"s";
-}
-
-setInterval(updateTimer,1000);
-
+<script>
 function logout(){
-  localStorage.removeItem("sessionExpiry");
+  localStorage.removeItem("session");
   window.location.href="index.html";
 }
 </script>
