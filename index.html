@@ -253,3 +253,8 @@ window.onload=function(){
 
 </body>
 </html>
+window.onload=function(){
+  if(localStorage.getItem("session")){
+    window.location.href="dashboard.html";
+  }
+};
