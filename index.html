@@ -3,59 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS CORE Authentication Gateway</title>
+<title>NEXUS CORE | Secure Authentication</title>
 
 <style>
 *{box-sizing:border-box}
 body{
     margin:0;
-    font-family:Segoe UI,Arial,sans-serif;
-    background:#e6eaee;
-    color:#1a1a1a;
+    font-family:Segoe UI, Arial, sans-serif;
+    background:#edf1f4;
+    color:#1f2933;
 }
 
-/* ===== TOP BAR ===== */
-.topbar{
-    background:#18222c;
+/* ===== Header ===== */
+.header{
+    background:#1e2a34;
     color:#fff;
-    padding:14px 30px;
+    padding:16px 28px;
+    font-size:14px;
+    letter-spacing:.5px;
     display:flex;
     justify-content:space-between;
-    font-size:13px;
-    letter-spacing:.5px;
 }
 
-/* ===== MAIN GRID ===== */
-.wrapper{
-    display:grid;
-    grid-template-columns: 1fr 420px 1fr;
+/* ===== Layout ===== */
+.main{
     min-height:calc(100vh - 60px);
+    display:flex;
+    justify-content:center;
     align-items:center;
+    padding:40px 20px;
 }
 
-/* ===== SIDE INFO ===== */
-.side{
-    padding:40px;
-    font-size:12px;
-    color:#4b5563;
-    line-height:1.8;
-}
-
-/* ===== PANEL ===== */
+/* ===== Login Panel ===== */
 .panel{
+    width:100%;
+    max-width:420px;
     background:#fff;
-    padding:45px;
-    border:1px solid #d1d5db;
-    box-shadow:0 10px 30px rgba(0,0,0,.05);
+    padding:40px;
+    border:1px solid #d5dce3;
 }
 
 .logo{
     width:70px;
     display:block;
-    margin:0 auto 15px auto;
+    margin:0 auto 20px auto;
 }
 
-h2{
+h1{
+    font-size:18px;
     text-align:center;
     margin:0;
     font-weight:600;
@@ -65,106 +60,80 @@ h2{
     text-align:center;
     font-size:13px;
     color:#6b7280;
-    margin:8px 0 25px 0;
+    margin:8px 0 28px 0;
 }
 
 input{
     width:100%;
     padding:11px;
-    margin-bottom:12px;
+    margin-bottom:14px;
     border:1px solid #cbd5e1;
     font-size:14px;
 }
 
 input:focus{
     outline:none;
-    border-color:#18222c;
+    border-color:#1e2a34;
 }
 
 button{
     width:100%;
     padding:11px;
-    background:#18222c;
+    background:#1e2a34;
     color:#fff;
     border:none;
+    font-size:14px;
     cursor:pointer;
 }
 
 button:hover{
-    background:#0f1720;
-}
-
-button:disabled{
-    opacity:.6;
+    background:#111820;
 }
 
 #msg{
-    margin-top:10px;
+    margin-top:12px;
     font-size:12px;
     min-height:18px;
 }
 
-/* ===== FOOTER ===== */
+/* ===== Footer ===== */
 .footer{
     text-align:center;
     font-size:11px;
     padding:14px;
-    background:#f3f4f6;
-    border-top:1px solid #d1d5db;
+    border-top:1px solid #d5dce3;
+    background:#f5f7f9;
+    color:#6b7280;
 }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-    <div>NEXUS CORE – Authentication Gateway</div>
+<div class="header">
+    <div>NEXUS CORE</div>
     <div id="datetime"></div>
 </div>
 
-<div class="wrapper">
-
-<div class="side">
-<b>Network Status</b><br>
-Primary Node: NX-CORE-ALPHA<br>
-Backup Node: NX-CORE-BRAVO<br>
-Security Layer: AES-256<br>
-Monitoring: Active<br><br>
-
-<b>Access Policy</b><br>
-Multi-Factor Authentication Required<br>
-Access Logs Retained 365 Days
-</div>
-
+<div class="main">
 <div class="panel">
 
-<img src="logo.png" class="logo">
+<img src="logo.png" class="logo" alt="logo">
 
-<h2>Secure Login</h2>
-<div class="subtitle">Level 3 Clearance Required</div>
+<h1>Secure Authentication</h1>
+<div class="subtitle">Authorized Personnel Only</div>
 
 <input type="text" id="card" placeholder="Identification Code">
-<input type="password" id="pass" placeholder="Access Passphrase">
-<input type="text" id="otp" placeholder="One-Time Verification Code">
-<button id="loginBtn">Authenticate</button>
+<input type="password" id="pass" placeholder="Password">
+<button id="loginBtn">Sign In</button>
 
 <div id="msg"></div>
 
 </div>
-
-<div class="side">
-<b>Session Information</b><br>
-Session ID: <span id="sessionId"></span><br>
-Classification: Internal Restricted<br>
-Connection: Encrypted<br><br>
-
-Unauthorized access attempts will be logged and investigated.
-</div>
-
 </div>
 
 <div class="footer">
-© 2026 NEXUS CORE Global Infrastructure
+© 2026 NEXUS CORE. All access attempts are monitored.
 </div>
 
 <script>
@@ -172,7 +141,6 @@ document.addEventListener("DOMContentLoaded",function(){
 
 const correctCard="LC-A01";
 const correctPass="Lc1993♧";
-const correctOTP="739201";
 
 let failCount=parseInt(localStorage.getItem("failCount"))||0;
 let lockUntil=parseInt(localStorage.getItem("lockUntil"))||0;
@@ -188,29 +156,17 @@ function updateTime(){
 setInterval(updateTime,1000);
 updateTime();
 
-function generateSession(){
-    return "NX-"+Math.random().toString(36).substring(2,10).toUpperCase();
-}
-document.getElementById("sessionId").innerText=generateSession();
-
-function lockSystem(seconds){
-    lockUntil=Date.now()+seconds*1000;
-    localStorage.setItem("lockUntil",lockUntil);
-}
-
 function checkLock(){
     if(Date.now()<lockUntil){
         btn.disabled=true;
         let remaining=Math.ceil((lockUntil-Date.now())/1000);
         msg.style.color="red";
-        msg.innerText="System locked ("+remaining+"s)";
+        msg.innerText="Account temporarily locked ("+remaining+"s)";
         setTimeout(checkLock,1000);
         return true;
-    }else{
-        btn.disabled=false;
-        msg.innerText="";
-        return false;
     }
+    btn.disabled=false;
+    return false;
 }
 checkLock();
 
@@ -220,16 +176,10 @@ if(checkLock()) return;
 
 let card=document.getElementById("card").value.trim();
 let pass=document.getElementById("pass").value.trim();
-let otp=document.getElementById("otp").value.trim();
 
-msg.style.color="#333";
-msg.innerText="Verifying credentials...";
-
-setTimeout(function(){
-
-if(card===correctCard && pass===correctPass && otp===correctOTP){
+if(card===correctCard && pass===correctPass){
     msg.style.color="green";
-    msg.innerText="Authentication Successful";
+    msg.innerText="Authentication successful";
     localStorage.removeItem("failCount");
     return;
 }
@@ -238,13 +188,16 @@ failCount++;
 localStorage.setItem("failCount",failCount);
 
 msg.style.color="red";
-msg.innerText="Authentication failed";
+msg.innerText="Invalid credentials";
 
-if(failCount===3) lockSystem(30);
-if(failCount===6) lockSystem(60);
-if(failCount>=9) lockSystem(180);
+if(failCount===3) lockUntil=Date.now()+30000;
+if(failCount===6) lockUntil=Date.now()+60000;
+if(failCount>=9) lockUntil=Date.now()+180000;
 
-},1000);
+if(failCount>=3){
+    localStorage.setItem("lockUntil",lockUntil);
+    checkLock();
+}
 
 });
 
