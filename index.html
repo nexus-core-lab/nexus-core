@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS CORE | Identity & Access Management</title>
+<title>NEXUS CORE | Secure Access</title>
 
 <style>
 *{box-sizing:border-box}
@@ -15,138 +15,26 @@ body{
     color:#1f2933;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
     background:#1e2a34;
     color:#fff;
-    padding:16px 22px;
+    padding:16px 18px;
     display:flex;
     justify-content:space-between;
-    align-items:center;
-}
-
-.header .brand{
     font-size:14px;
-    letter-spacing:.6px;
-    font-weight:600;
 }
 
-.header .time{
-    font-size:12px;
-    opacity:.8;
-}
-
-/* ===== MAIN AREA ===== */
+/* MAIN */
 .main{
-    min-height:calc(100vh - 60px);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:30px 16px;
+    padding:20px 14px 30px 14px;
 }
 
-/* ===== PANEL ===== */
+/* PANEL */
 .panel{
     width:100%;
-    max-width:440px;
     background:#ffffff;
-    padding:36px 28px 32px 28px;
-    border:1px solid #d7dde3;
-}
-
-.logo{
-    width:64px;
-    display:block;
-    margin:0 auto 18px auto;
-}
-
-h1{
-    text-align:center;
-    font-size:18px;
-    margin:0;
-    font-weight:600;
-}
-
-.subtitle{
-    text-align:center;
-    font-size:13px;
-    color:#6b7280;
-    margin:6px 0 26px 0;
-}
-
-input{
-    width:100%;
-    padding:12px;
-    margin-bottom:14px;
-    border:1px solid #cbd5e1;
-    font-size:14px;
-}
-
-input:focus{
-    outline:none;
-    border-color:#1e2a34;
-}
-
-button{
-    width:100%;
-    padding:12px;
-    background:#1e2a34;
-    color:#fff;
-    border:none;
-    font-size:14px;
-    cursor:pointer;
-}
-
-button:hover{
-    background:#162028;
-}
-
-button:disabled{
-    opacity:.6;
-    cursor:not-allowed;
-}
-
-#msg{
-    margin-top:12px;
-    font-size:12px;
-    min-height:18px;
-}
-
-/* ===== FOOTER ===== */
-.footer{
-    text-align:center;
-    font-size:11px;
-    padding:14px;
-    border-top:1px solid #d7dde3;
-    background:#f6f8fa;
-    color:#6b7280;
-}
-</style>
-</head>
-
-<body>
-
-<div class="header">
-    <div class="brand">NEXUS CORE</div>
-    <div class="time" id="datetime"></div>
-</div>
-
-<div class="main">
-<div class="panel">
-
-<img src="logo.png" class="logo" alt="logo">
-
-<h1>Secure Authentication</h1>
-<div class="subtitle">Authorized Personnel Only</div>
-
-<input type="text" id="card" placeholder="Identification Code">
-<input type="password" id="pass" placeholder="Password">
-
-<button id="loginBtn">Sign In</button>
-
-<div id="msg"></div>
-
-</div>
+    padding:28px</div>
 </div>
 
 <div class="footer">
