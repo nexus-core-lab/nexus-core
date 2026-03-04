@@ -3,174 +3,194 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Access Control</title>
+<title>NEXUS CO CORE - Access Control</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial, sans-serif;
-}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Segoe UI,Tahoma,sans-serif;}
 
 body{
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#eef1f4;
+height:100vh;
+background:#f4f6f8;
+display:flex;
+flex-direction:column;
 }
 
 .topbar{
-  position:fixed;
-  top:0;
-  width:100%;
-  background:#23343b;
-  color:white;
-  padding:12px 20px;
-  font-size:14px;
+background:#24343d;
+color:#fff;
+padding:12px 20px;
+display:flex;
+justify-content:space-between;
+font-size:14px;
+}
+
+.container{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
 }
 
 .card{
-  width:95%;
-  max-width:420px;
-  background:white;
-  padding:35px 25px;
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.1);
-  text-align:center;
+background:#fff;
+width:100%;
+max-width:400px;
+padding:35px;
+border-radius:12px;
+box-shadow:0 8px 25px rgba(0,0,0,0.1);
+text-align:center;
 }
 
 .logo{
-  width:70px;
-  margin-bottom:15px;
+width:120px;
+margin-bottom:15px;
 }
 
 h2{
-  margin-bottom:5px;
+margin-bottom:5px;
 }
 
 .sub{
-  color:gray;
-  margin-bottom:20px;
-  font-size:14px;
+color:#666;
+margin-bottom:25px;
+font-size:14px;
 }
 
 input{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border:1px solid #ccc;
-  border-radius:6px;
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:14px;
 }
 
 button{
-  width:100%;
-  padding:12px;
-  background:#2f4858;
-  color:white;
-  border:none;
-  border-radius:6px;
-  margin-top:10px;
-  cursor:pointer;
+width:100%;
+padding:12px;
+background:#24343d;
+color:#fff;
+border:none;
+border-radius:6px;
+font-size:15px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#1b262c;
 }
 
 button:disabled{
-  background:#888;
-  cursor:not-allowed;
+background:#999;
+cursor:not-allowed;
 }
 
 .error{
-  color:red;
-  font-size:14px;
-  margin-top:10px;
+color:#d8000c;
+font-size:13px;
+margin-bottom:10px;
+display:none;
 }
 
-.timer{
-  color:#b30000;
-  font-size:14px;
-  margin-top:8px;
+.lockmsg{
+color:#b30000;
+font-size:13px;
+margin-bottom:10px;
+display:none;
 }
 </style>
 </head>
+
 <body>
 
 <div class="topbar">
-ศูนย์ควบคุมสิทธิการเข้าใช้งาน
+<div>NEXUS CO CORE - ศูนย์ควบคุมสิทธิ์</div>
+<div id="clock"></div>
 </div>
 
+<div class="container">
 <div class="card">
-<img src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png" class="logo">
-<h2>ระบบตรวจสอบสิทธิ</h2>
+
+<img src="logo.png" class="logo" alt="NEXUS CO CORE">
+
+<h2>ระบบตรวจสอบสิทธิการเข้าใช้งาน</h2>
 <div class="sub">Access Control System</div>
+
+<div class="error" id="errorMsg">รหัสไม่ถูกต้อง</div>
+<div class="lockmsg" id="lockMsg"></div>
 
 <input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่">
 <input type="password" id="pass" placeholder="รหัสผ่าน">
-<button id="loginBtn" onclick="login()">เข้าสู่ระบบ</button>
 
-<div class="error" id="error"></div>
-<div class="timer" id="timer"></div>
+<button onclick="login()" id="loginBtn">เข้าสู่ระบบ</button>
+
+</div>
 </div>
 
 <script>
 const correctCard="LC-A01";
 const correctPass="Lc1993♧";
 
-let failCount = Number(localStorage.getItem("failCount")) || 0;
-let lockUntil = Number(localStorage.getItem("lockUntil")) || 0;
+let attempts = localStorage.getItem("attempts") ? parseInt(localStorage.getItem("attempts")) : 0;
+let lockUntil = localStorage.getItem("lockUntil") ? parseInt(localStorage.getItem("lockUntil")) : 0;
 
-const errorDiv = document.getElementById("error");
-const timerDiv = document.getElementById("timer");
-const loginBtn = document.getElementById("loginBtn");
+function updateClock(){
+document.getElementById("clock").innerText = new Date().toLocaleString("th-TH");
+}
+setInterval(updateClock,1000);
+updateClock();
 
 function checkLock(){
-  if(Date.now() < lockUntil){
-    let remaining = Math.floor((lockUntil - Date.now())/1000);
-    loginBtn.disabled = true;
-    timerDiv.innerText = "ระบบถูกล็อก เหลือเวลา " + remaining + " วินาที";
-  } else {
-    loginBtn.disabled = false;
-    timerDiv.innerText = "";
-  }
+if(Date.now() < lockUntil){
+let remaining = Math.ceil((lockUntil - Date.now())/1000);
+document.getElementById("lockMsg").style.display="block";
+document.getElementById("lockMsg").innerText="บัญชีถูกล็อก กรุณารอ "+remaining+" วินาที";
+document.getElementById("loginBtn").disabled=true;
+return true;
+}else{
+document.getElementById("lockMsg").style.display="none";
+document.getElementById("loginBtn").disabled=false;
+return false;
+}
 }
 
 setInterval(checkLock,1000);
+checkLock();
 
 function login(){
 
-  if(Date.now() < lockUntil){
-    return;
-  }
+if(checkLock()) return;
 
-  let card = document.getElementById("card").value;
-  let pass = document.getElementById("pass").value;
+let card=document.getElementById("card").value;
+let pass=document.getElementById("pass").value;
 
-  if(card === correctCard && pass === correctPass){
-    sessionStorage.setItem("loggedIn","true");
-    window.location.href="success.html";
-  } else {
+if(card===correctCard && pass===correctPass){
+attempts=0;
+localStorage.setItem("attempts",0);
+window.location.href="home.html";
+}else{
+attempts++;
+localStorage.setItem("attempts",attempts);
 
-    failCount++;
-    localStorage.setItem("failCount",failCount);
+document.getElementById("errorMsg").style.display="block";
 
-    errorDiv.innerText="รหัสไม่ถูกต้อง ("+failCount+" ครั้ง)";
-
-    if(failCount === 3){
-      lock(30);
-    }
-    else if(failCount === 6){
-      lock(120);
-    }
-    else if(failCount === 9){
-      lock(600);
-    }
-
-  }
+if(attempts==3){
+lock(30);
+}
+else if(attempts==6){
+lock(120);
+}
+else if(attempts>=9){
+lock(300);
+}
+}
 }
 
 function lock(seconds){
-  lockUntil = Date.now() + seconds*1000;
-  localStorage.setItem("lockUntil",lockUntil);
+lockUntil = Date.now() + seconds*1000;
+localStorage.setItem("lockUntil",lockUntil);
 }
 </script>
 
