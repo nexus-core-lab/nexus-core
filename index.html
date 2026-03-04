@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ระบบสารสนเทศภายในหน่วยงาน</title>
+<title>Secure Access Portal</title>
 
 <style>
 *{box-sizing:border-box}
@@ -11,104 +11,86 @@
 html,body{
     margin:0;
     height:100%;
-    font-family:Tahoma, Arial, sans-serif;
-    background:#f4f6f9;
-    color:#222;
+    font-family:Segoe UI, Arial, sans-serif;
+    background:#eef1f4;
+    color:#1a1a1a;
 }
 
-/* ===== HEADER กระทรวง ===== */
-.header{
-    background:#0f2a44;
+/* ===== TOP BAR ===== */
+.topbar{
+    background:#1f2a36;
     color:#fff;
-}
-
-.header-top{
+    padding:12px 30px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:10px 20px;
     font-size:14px;
+    letter-spacing:.5px;
 }
 
-.header-bottom{
-    background:#163a5d;
-    padding:6px 20px;
-    font-size:13px;
-}
-
-.nav{
-    display:flex;
-    gap:20px;
-}
-
-.nav span{
-    cursor:pointer;
-}
-
-/* ===== MAIN AREA ===== */
-.container{
-    min-height:calc(100vh - 120px);
+/* ===== MAIN LAYOUT ===== */
+.main{
+    min-height:calc(100vh - 60px);
     display:flex;
     justify-content:center;
     align-items:center;
     padding:40px 20px;
-    background:linear-gradient(to bottom,#ffffff 0%,#eef2f6 100%);
 }
 
-/* ===== LOGIN PANEL ===== */
+/* ===== PANEL ===== */
 .panel{
     width:100%;
-    max-width:600px;
+    max-width:520px;
     background:#ffffff;
     padding:50px;
-    border:1px solid #d8dee6;
-    box-shadow:0 4px 20px rgba(0,0,0,0.05);
+    border:1px solid #d9dee5;
+    box-shadow:0 8px 30px rgba(0,0,0,.05);
 }
 
 .logo{
-    width:90px;
+    width:80px;
     display:block;
-    margin:0 auto 15px auto;
+    margin:0 auto 20px auto;
 }
 
 h2{
     text-align:center;
-    margin:10px 0 5px 0;
     font-weight:600;
+    margin:0;
 }
 
 .subtitle{
     text-align:center;
     font-size:13px;
-    color:#666;
-    margin-bottom:30px;
+    color:#6b7280;
+    margin:8px 0 30px 0;
 }
 
 input{
     width:100%;
     padding:12px;
     margin-bottom:15px;
-    border:1px solid #c7ced8;
+    border:1px solid #cfd6df;
     font-size:14px;
 }
 
 input:focus{
     outline:none;
-    border-color:#0f2a44;
+    border-color:#1f2a36;
 }
 
 button{
     width:100%;
     padding:12px;
-    background:#0f2a44;
-    border:none;
+    background:#1f2a36;
     color:#fff;
+    border:none;
     font-size:14px;
     cursor:pointer;
 }
 
 button:hover{
-    background:#163a5d;
+    background:#111827;
 }
 
 button:disabled{
@@ -122,78 +104,70 @@ button:disabled{
     min-height:20px;
 }
 
-/* ===== SYSTEM INFO ===== */
-.system-info{
+/* ===== INFO ===== */
+.info{
     margin-top:30px;
     font-size:12px;
     color:#555;
-    border-top:1px solid #e1e6ec;
+    border-top:1px solid #e5e9ef;
     padding-top:20px;
     line-height:1.6;
 }
 
 .secure{
     color:#2e7d32;
-    font-weight:bold;
+    font-weight:600;
 }
 
 /* ===== FOOTER ===== */
 .footer{
-    background:#f1f3f6;
     text-align:center;
     padding:15px;
     font-size:11px;
-    color:#666;
-    border-top:1px solid #d8dee6;
+    color:#6b7280;
+    border-top:1px solid #d9dee5;
+    background:#f7f9fb;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-    <div class="header-top">
-        <div>กระทรวงโครงสร้างพื้นฐานดิจิทัล</div>
-        <div id="datetime"></div>
-    </div>
-    <div class="header-bottom">
-        <div class="nav">
-            <span>หน้าแรก</span>
-            <span>คู่มือการใช้งาน</span>
-            <span>ติดต่อหน่วยงาน</span>
-        </div>
-    </div>
+<div class="topbar">
+    <div>GLOBAL INTELLIGENCE NETWORK</div>
+    <div id="datetime"></div>
 </div>
 
-<div class="container">
+<div class="main">
 <div class="panel">
 
 <img src="logo.png" class="logo" alt="logo">
 
-<h2>ระบบสารสนเทศหลัก NEXUS</h2>
-<div class="subtitle">สำหรับเจ้าหน้าที่ที่ได้รับอนุญาตเท่านั้น (ระดับ 3 ขึ้นไป)</div>
+<h2>Secure Access Portal</h2>
+<div class="subtitle">Authorized Personnel Only – Level 3 Clearance Required</div>
 
-<input type="text" id="card" placeholder="รหัสบัตรประจำตัว">
-<input type="password" id="pass" placeholder="รหัสผ่าน">
-<button id="loginBtn">เข้าสู่ระบบ</button>
+<input type="text" id="card" placeholder="Identification Code">
+<input type="password" id="pass" placeholder="Access Passphrase">
+<button id="loginBtn">Authenticate</button>
 
 <div id="msg"></div>
 
-<div class="system-info">
-คำเตือน: ระบบนี้เป็นทรัพย์สินของหน่วยงาน การเข้าใช้งานทั้งหมดจะถูกบันทึกและตรวจสอบตามระเบียบราชการ
+<div class="info">
+Warning: This system is monitored and logged. Unauthorized access attempts
+will be recorded and investigated.
 
 <br><br>
 System Node: NX-CORE-ALPHA<br>
-Security Classification: Internal Use Only<br>
+Security Classification: Internal Restricted<br>
 Session ID: <span id="sessionId"></span><br>
-Channel Status: <span class="secure">Secure Channel Established</span>
+Channel Status: <span class="secure">Encrypted Connection Active</span>
 </div>
 
 </div>
 </div>
 
 <div class="footer">
-© 2026 กระทรวงโครงสร้างพื้นฐานดิจิทัล
+© 2026 Global Intelligence Network
 </div>
 
 <script>
@@ -210,7 +184,6 @@ const msg=document.getElementById("msg");
 const cardInput=document.getElementById("card");
 const passInput=document.getElementById("pass");
 
-/* เวลา */
 function updateTime(){
     const now=new Date();
     document.getElementById("datetime").innerText=
@@ -219,13 +192,11 @@ function updateTime(){
 setInterval(updateTime,1000);
 updateTime();
 
-/* session */
 function generateSession(){
     return "NX-"+Math.random().toString(36).substring(2,10).toUpperCase();
 }
 document.getElementById("sessionId").innerText=generateSession();
 
-/* ล็อกระบบ */
 function startCountdown(){
     btn.disabled=true;
     cardInput.disabled=true;
@@ -244,7 +215,7 @@ function startCountdown(){
             return;
         }
         msg.style.color="red";
-        msg.innerText="ระบบถูกระงับชั่วคราว ("+remaining+" วินาที)";
+        msg.innerText="System temporarily locked ("+remaining+"s)";
     },1000);
 }
 
@@ -260,7 +231,7 @@ btn.addEventListener("click",function(){
        passInput.value.trim()===correctPass){
 
         msg.style.color="green";
-        msg.innerText="ยืนยันตัวตนสำเร็จ";
+        msg.innerText="Authentication Successful";
         localStorage.removeItem("failCount");
         return;
     }
@@ -269,7 +240,7 @@ btn.addEventListener("click",function(){
     localStorage.setItem("failCount",failCount);
 
     msg.style.color="red";
-    msg.innerText="ข้อมูลไม่ถูกต้อง";
+    msg.innerText="Invalid credentials";
 
     if(failCount===3) lockUntil=Date.now()+30000;
     if(failCount===6) lockUntil=Date.now()+60000;
