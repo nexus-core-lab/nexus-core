@@ -3,121 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS Secure System</title>
+<title>NEXUS Internal Secure System</title>
 
 <style>
 *{box-sizing:border-box}
 
 body{
     margin:0;
-    font-family:Segoe UI, sans-serif;
-    background:#dcdcdc;
-    min-height:100vh;
+    font-family:Segoe UI, Tahoma, sans-serif;
+    background:#f2f2f2;
+    color:#222;
 }
 
-/* ===== Top Bar ===== */
+/* ===== TOP SYSTEM BAR ===== */
 .topbar{
     background:#000;
     color:#fff;
-    padding:10px 15px;
+    padding:8px 15px;
+    font-size:13px;
     display:flex;
     justify-content:space-between;
-    font-size:13px;
 }
 
-/* ===== Container Full Screen Mobile ===== */
-.container{
-    width:100%;
-    max-width:500px;
-    margin:0 auto;
-    min-height:calc(100vh - 40px);
-    background:#f4f4f4;
-    padding:35px 25px;
-    text-align:center;
-    box-shadow:0 4px 18px rgba(0,0,0,0.3);
+/* ===== MAIN WRAPPER FULL SCREEN ===== */
+.wrapper{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
 }
 
-/* ===== Logo ===== */
+/* ===== CONTENT ===== */
+.content{
+    flex:1;
+    padding:40px 25px;
+    max-width:600px;
+    margin:auto;
+}
+
+/* ===== LOGO ===== */
 .logo{
-    width:100px;
-    margin-bottom:18px;
+    width:90px;
+    display:block;
+    margin:0 auto 15px auto;
 }
 
-/* ===== Inputs ===== */
+/* ===== HEADINGS ===== */
+h2{
+    text-align:center;
+    margin:5px 0;
+}
+
+.subtitle{
+    text-align:center;
+    margin-bottom:25px;
+    color:#444;
+    font-size:14px;
+}
+
+/* ===== INPUTS ===== */
 input{
     width:100%;
     padding:14px;
     margin:10px 0;
-    border:2px solid #888;
-    background:#e5e5e5;
+    border:1px solid #888;
+    background:#fff;
     font-size:15px;
 }
 
-/* ===== Button ===== */
 button{
     width:100%;
     padding:14px;
-    background:#6d6d6d;
-    color:white;
+    margin-top:5px;
+    background:#444;
+    color:#fff;
     border:none;
     font-size:15px;
     cursor:pointer;
 }
+
 button:disabled{
     background:#999;
 }
 
-/* ===== Message ===== */
 #msg{
     margin-top:12px;
     font-weight:bold;
-    min-height:20px;
+    min-height:22px;
 }
 
-/* ===== Footer ===== */
-.footer{
-    margin-top:30px;
+/* ===== SYSTEM INFO ===== */
+.system-info{
+    margin-top:40px;
     font-size:13px;
     color:#555;
-    text-align:left;
     line-height:1.6;
+    border-top:1px solid #ccc;
+    padding-top:20px;
 }
 
+/* ===== FOOTER ===== */
+.footer{
+    background:#e5e5e5;
+    padding:10px 15px;
+    font-size:12px;
+    text-align:center;
+    color:#444;
+}
 .secure{
     color:green;
     font-weight:bold;
-}
-
-hr{
-    margin:20px 0;
 }
 </style>
 </head>
 
 <body>
 
+<div class="wrapper">
+
 <div class="topbar">
-    <div>เครือข่ายภายในที่ปลอดภัย</div>
+    <div>เครือข่ายภายในองค์กร (Internal Network)</div>
     <div id="datetime"></div>
 </div>
 
-<div class="container">
+<div class="content">
 
     <img src="logo.png" class="logo">
 
-    <h2 style="margin:5px 0 8px 0;">ระบบสารสนเทศหลัก NEXUS</h2>
-    <p style="margin:0 0 15px 0;">เฉพาะผู้ได้รับอนุญาตระดับ 3 เท่านั้น</p>
+    <h2>ระบบสารสนเทศหลัก NEXUS</h2>
+    <div class="subtitle">เฉพาะผู้ได้รับอนุญาตระดับ 3 เท่านั้น</div>
 
-    <input type="text" id="card" placeholder="รหัสบัตร">
+    <input type="text" id="card" placeholder="รหัสบัตรประจำตัว">
     <input type="password" id="pass" placeholder="รหัสผ่าน">
 
-    <button id="loginBtn">ยืนยันตัวตน</button>
+    <button id="loginBtn">เข้าสู่ระบบ</button>
 
     <div id="msg"></div>
 
-    <hr>
-
-    <div class="footer">
+    <div class="system-info">
         คำเตือน: ระบบนี้เป็นทรัพย์สินขององค์กร การเข้าถึงโดยไม่ได้รับอนุญาต
         อาจถูกตรวจสอบ บันทึกกิจกรรม และดำเนินคดีตามกฎหมาย
 
@@ -127,6 +149,12 @@ hr{
         Session ID: <span id="sessionId"></span><br>
         Channel Status: <span class="secure">Secure Channel Established</span>
     </div>
+
+</div>
+
+<div class="footer">
+    © 2026 NEXUS Internal Infrastructure Division
+</div>
 
 </div>
 
@@ -159,7 +187,7 @@ function generateSession(){
 }
 document.getElementById("sessionId").innerText=generateSession();
 
-/* ===== Lock Countdown ===== */
+/* ===== LOCK SYSTEM ===== */
 let countdownInterval=null;
 
 function startCountdown(){
@@ -182,7 +210,7 @@ function startCountdown(){
         }
 
         msg.style.color="red";
-        msg.innerText="ระบบล็อกอยู่ ("+remaining+" วินาที)";
+        msg.innerText="บัญชีถูกระงับชั่วคราว ("+remaining+" วินาที)";
     },1000);
 }
 
@@ -190,7 +218,7 @@ if(Date.now()<lockUntil){
     startCountdown();
 }
 
-/* ===== Login Logic ===== */
+/* ===== LOGIN LOGIC ===== */
 btn.addEventListener("click",function(){
 
     if(Date.now()<lockUntil) return;
@@ -199,7 +227,7 @@ btn.addEventListener("click",function(){
        passInput.value.trim()===correctPass){
 
         msg.style.color="green";
-        msg.innerText="เข้าสู่ระบบสำเร็จ";
+        msg.innerText="ยืนยันตัวตนสำเร็จ";
         localStorage.removeItem("failCount");
         return;
     }
