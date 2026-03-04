@@ -1,84 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="google" content="notranslate">
-<title>Nexus Core System | Internal Access</title>
+<title>Internal Access</title>
 
 <style>
-*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-  background:#f3f4f6;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+margin:0;
+font-family:Arial;
+background:#f3f4f6;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
 .card{
-  background:#fff;
-  width:100%;
-  max-width:380px;
-  padding:40px 30px;
-  border-radius:10px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
-  text-align:center;
+background:#fff;
+padding:40px;
+border-radius:10px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+width:90%;
+max-width:360px;
+text-align:center;
 }
 .logo{
-  width:70px;
-  margin-bottom:15px;
-}
-h1{
-  font-size:20px;
-  margin-bottom:25px;
+margin-bottom:15px;
 }
 input{
-  width:100%;
-  padding:12px;
-  margin-bottom:15px;
-  border:1px solid #d1d5db;
-  border-radius:6px;
-  font-size:14px;
+width:100%;
+padding:12px;
+margin-bottom:12px;
+border:1px solid #ccc;
+border-radius:6px;
 }
 button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:6px;
-  background:#111827;
-  color:#fff;
-  font-weight:600;
-  cursor:pointer;
-  transition:.2s;
-}
-button:disabled{
-  background:#9ca3af;
-  cursor:not-allowed;
+width:100%;
+padding:12px;
+border:none;
+border-radius:6px;
+background:#111827;
+color:white;
+font-weight:bold;
+cursor:pointer;
 }
 .message{
-  font-size:13px;
-  margin-top:12px;
-  min-height:18px;
-}
-.footer{
-  margin-top:25px;
-  font-size:11px;
-  color:#6b7280;
-}
-.spinner{
-  border:3px solid #f3f3f3;
-  border-top:3px solid #111827;
-  border-radius:50%;
-  width:18px;
-  height:18px;
-  animation:spin 1s linear infinite;
-  display:inline-block;
-}
-@keyframes spin{
-  0%{transform:rotate(0deg)}
-  100%{transform:rotate(360deg)}
+margin-top:10px;
+font-size:13px;
+min-height:18px;
 }
 </style>
 </head>
@@ -86,107 +55,44 @@ button:disabled{
 <body>
 
 <div class="card">
-  <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg" alt="logo">
-  <h1>Internal Access Portal</h1>
 
-  <input type="text" id="user" placeholder="Employee ID">
-  <input type="password" id="pass" placeholder="Password">
+<div class="logo">
+<svg viewBox="0 0 100 100" width="60">
+<circle cx="50" cy="50" r="45" fill="#111827"/>
+<path d="M30 65 L50 30 L70 65 Z" fill="white"/>
+</svg>
+</div>
 
-  <button id="loginBtn" onclick="login()">SIGN IN</button>
+<h3>Internal Access Portal</h3>
 
-  <div class="message" id="msg"></div>
+<input id="user" placeholder="Employee ID">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">SIGN IN</button>
 
-  <div class="footer">
-    © 2025 Nexus Core System · Internal Use Only
-  </div>
+<div class="message" id="msg"></div>
+
 </div>
 
 <script>
-const MAX_ATTEMPTS = 3;
-const LOCK_TIME = 60000;
-const VALID_USER = "admin";
-const VALID_PASS = "1234";
-
-let attempts = parseInt(localStorage.getItem("attempts")) || 0;
-let lockUntil = parseInt(localStorage.getItem("lockUntil")) || 0;
-
-const btn = document.getElementById("loginBtn");
-const msg = document.getElementById("msg");
-
-function updateLockState(){
-  if(Date.now() < lockUntil){
-    btn.disabled = true;
-    startCountdown();
-  }
-}
-
-function startCountdown(){
-  let interval = setInterval(()=>{
-    let remaining = Math.ceil((lockUntil - Date.now())/1000);
-    if(remaining > 0){
-      msg.style.color="red";
-      msg.innerText="Account locked. Try again in "+remaining+"s";
-    }else{
-      clearInterval(interval);
-      attempts=0;
-      localStorage.removeItem("attempts");
-      localStorage.removeItem("lockUntil");
-      msg.innerText="";
-      btn.disabled=false;
-    }
-  },1000);
-}
-
 function login(){
+let u = document.getElementById("user").value;
+let p = document.getElementById("pass").value;
+let m = document.getElementById("msg");
 
-  if(Date.now() < lockUntil) return;
-
-  const user=document.getElementById("user").value.trim();
-  const pass=document.getElementById("pass").value.trim();
-
-  if(user==="" || pass===""){
-    msg.style.color="red";
-    msg.innerText="All fields are required";
-    return;
-  }
-
-  btn.disabled=true;
-  btn.innerHTML='<span class="spinner"></span>';
-
-  setTimeout(()=>{
-
-    if(user===VALID_USER && pass===VALID_PASS){
-
-      msg.style.color="green";
-      msg.innerText="Access Granted";
-      localStorage.removeItem("attempts");
-      localStorage.removeItem("lockUntil");
-
-      setTimeout(()=>{
-        window.location.href="dashboard.html";
-      },800);
-
-    }else{
-
-      attempts++;
-      localStorage.setItem("attempts",attempts);
-
-      if(attempts>=MAX_ATTEMPTS){
-        lockUntil=Date.now()+LOCK_TIME;
-        localStorage.setItem("lockUntil",lockUntil);
-        updateLockState();
-      }else{
-        msg.style.color="red";
-        msg.innerText="Invalid credentials ("+attempts+"/"+MAX_ATTEMPTS+")";
-        btn.disabled=false;
-        btn.innerText="SIGN IN";
-      }
-    }
-
-  },1200);
+if(u === "" || p === ""){
+m.style.color = "red";
+m.innerText = "All fields required";
+return;
 }
 
-updateLockState();
+if(u === "admin" && p === "1234"){
+m.style.color = "green";
+m.innerText = "Access Granted";
+}else{
+m.style.color = "red";
+m.innerText = "Invalid credentials";
+}
+}
 </script>
 
 </body>
