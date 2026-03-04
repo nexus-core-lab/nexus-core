@@ -8,7 +8,8 @@
 <style>
 *{box-sizing:border-box}
 
-body{
+html,body{
+    height:100%;
     margin:0;
     font-family:Segoe UI, Tahoma, sans-serif;
     background:#f2f2f2;
@@ -27,7 +28,7 @@ body{
 
 /* ===== LAYOUT ===== */
 .wrapper{
-    min-height:100vh;
+    min-height:100dvh;
     display:flex;
     flex-direction:column;
 }
@@ -129,33 +130,32 @@ button:disabled{
 
 <div class="content">
 
-    <!-- ใส่ไฟล์โลโก้ของคุณชื่อ logo.png -->
-    <img src="logo.png" class="logo">
+<img src="logo.png" class="logo">
 
-    <h2>ระบบสารสนเทศหลัก NEXUS</h2>
-    <div class="subtitle">เฉพาะผู้ได้รับอนุญาตระดับ 3 เท่านั้น</div>
+<h2>ระบบสารสนเทศหลัก NEXUS</h2>
+<div class="subtitle">เฉพาะผู้ได้รับอนุญาตระดับ 3 เท่านั้น</div>
 
-    <input type="text" id="card" placeholder="รหัสบัตรประจำตัว">
-    <input type="password" id="pass" placeholder="รหัสผ่าน">
-    <button id="loginBtn">เข้าสู่ระบบ</button>
+<input type="text" id="card" placeholder="รหัสบัตรประจำตัว">
+<input type="password" id="pass" placeholder="รหัสผ่าน">
+<button id="loginBtn">เข้าสู่ระบบ</button>
 
-    <div id="msg"></div>
+<div id="msg"></div>
 
-    <div class="system-info">
-        คำเตือน: ระบบนี้เป็นทรัพย์สินขององค์กร การเข้าถึงโดยไม่ได้รับอนุญาต
-        อาจถูกตรวจสอบ บันทึกกิจกรรม และดำเนินคดีตามกฎหมาย
+<div class="system-info">
+คำเตือน: ระบบนี้เป็นทรัพย์สินขององค์กร การเข้าถึงโดยไม่ได้รับอนุญาต
+อาจถูกตรวจสอบ บันทึกกิจกรรม และดำเนินคดีตามกฎหมาย
 
-        <br><br>
-        System Version: NX-SEC 3.4.1<br>
-        Security Classification: Internal Use Only<br>
-        Session ID: <span id="sessionId"></span><br>
-        Channel Status: <span class="secure">Secure Channel Established</span>
-    </div>
+<br><br>
+System Version: NX-SEC 3.4.1<br>
+Security Classification: Internal Use Only<br>
+Session ID: <span id="sessionId"></span><br>
+Channel Status: <span class="secure">Secure Channel Established</span>
+</div>
 
 </div>
 
 <div class="footer">
-    © 2026 NEXUS Internal Infrastructure Division
+© 2026 NEXUS Internal Infrastructure Division
 </div>
 
 </div>
@@ -221,113 +221,6 @@ if(Date.now()<lockUntil){
 }
 
 /* ===== LOGIN ===== */
-btn.addEventListener("click",function(){
-
-    if(Date.now()<lockUntil) return;
-
-    if(cardInput.value.trim()===correctCard &&
-       passInput.value.trim()===correctPass){
-
-        msg.style.color="green";
-        msg.innerText="ยืนยันตัวตนสำเร็จ";
-        localStorage.removeItem("failCount");
-        return;
-    }
-
-    failCount++;
-    localStorage.setItem("failCount",failCount);
-
-    msg.style.color="red";
-    msg.innerText="ข้อมูลไม่ถูกต้อง";
-
-    if(failCount===3) lockUntil=Date.now()+30000;
-    if(failCount===6) lockUntil=Date.now()+60000;
-    if(failCount>=9) lockUntil=Date.now()+180000;
-
-    if(failCount>=3){
-        localStorage.setItem("lockUntil",lockUntil);
-        startCountdown();
-    }
-
-});
-
-});
-</script>
-
-</body>
-</html>        Session ID: <span id="sessionId"></span><br>
-        Channel Status: <span class="secure">Secure Channel Established</span>
-    </div>
-
-</div>
-
-<div class="footer">
-    © 2026 NEXUS Internal Infrastructure Division
-</div>
-
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded",function(){
-
-const correctCard="LC-A01";
-const correctPass="Lc1993♧";
-
-let failCount=parseInt(localStorage.getItem("failCount"))||0;
-let lockUntil=parseInt(localStorage.getItem("lockUntil"))||0;
-
-const btn=document.getElementById("loginBtn");
-const msg=document.getElementById("msg");
-const cardInput=document.getElementById("card");
-const passInput=document.getElementById("pass");
-
-/* ===== DateTime ===== */
-function updateTime(){
-    const now=new Date();
-    document.getElementById("datetime").innerText=
-    now.toLocaleDateString()+" "+now.toLocaleTimeString();
-}
-setInterval(updateTime,1000);
-updateTime();
-
-/* ===== Session ID ===== */
-function generateSession(){
-    return "NX-"+Math.random().toString(36).substring(2,10).toUpperCase();
-}
-document.getElementById("sessionId").innerText=generateSession();
-
-/* ===== LOCK SYSTEM ===== */
-let countdownInterval=null;
-
-function startCountdown(){
-    btn.disabled=true;
-    cardInput.disabled=true;
-    passInput.disabled=true;
-
-    countdownInterval=setInterval(function(){
-        let remaining=Math.ceil((lockUntil-Date.now())/1000);
-
-        if(remaining<=0){
-            clearInterval(countdownInterval);
-            btn.disabled=false;
-            cardInput.disabled=false;
-            passInput.disabled=false;
-            msg.innerText="";
-            localStorage.removeItem("lockUntil");
-            localStorage.removeItem("failCount");
-            return;
-        }
-
-        msg.style.color="red";
-        msg.innerText="บัญชีถูกระงับชั่วคราว ("+remaining+" วินาที)";
-    },1000);
-}
-
-if(Date.now()<lockUntil){
-    startCountdown();
-}
-
-/* ===== LOGIN LOGIC ===== */
 btn.addEventListener("click",function(){
 
     if(Date.now()<lockUntil) return;
