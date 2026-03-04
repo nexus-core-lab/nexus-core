@@ -7,7 +7,6 @@
 
 <style>
 *{box-sizing:border-box;}
-
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
@@ -53,7 +52,6 @@ input{
   border:1px solid #d1d5db;
   border-radius:6px;
   font-size:14px;
-  background:#ffffff;
 }
 
 button{
@@ -76,7 +74,6 @@ button:disabled{
   margin-top:15px;
   font-size:13px;
   color:#dc2626;
-  min-height:20px;
 }
 
 .footer{
@@ -91,15 +88,16 @@ button:disabled{
 
 <div class="container">
 
+  <!-- โลโก้ (ต้องมีไฟล์ logo.png อยู่ในโฟลเดอร์เดียวกัน) -->
   <img src="logo.png" class="logo" alt="Logo">
 
   <div class="company">NEXUS CORE SYSTEM</div>
   <h1>Secure Access Portal</h1>
 
-  <input type="text" id="user" placeholder="User ID">
-  <input type="password" id="pass" placeholder="Password">
+  <input type="text" id="userId" placeholder="User ID">
+  <input type="password" id="password" placeholder="Password">
 
-  <button id="loginBtn">SIGN IN</button>
+  <button onclick="login()" id="loginBtn">SIGN IN</button>
 
   <div class="message" id="message"></div>
 
@@ -110,63 +108,55 @@ button:disabled{
 </div>
 
 <script>
-let failCount = 0;
-let lockUntil = 0;
-let countdownInterval = null;
+let attempts = 0;
+let lockTime = 0;
+let timerInterval = null;
 
-const btn = document.getElementById("loginBtn");
-const message = document.getElementById("message");
+// ตั้งค่ารหัสถูกต้อง
+const correctUser = "LC-A01";
+const correctPass = "Lc1993♧";
 
-btn.addEventListener("click", function(){
+function login(){
 
-  if(Date.now() < lockUntil){
-    return;
-  }
+  if(lockTime > 0) return;
 
-  // จำลองว่าล็อกอินผิดเสมอ
-  failCount++;
+  const user = document.getElementById("userId").value;
+  const pass = document.getElementById("password").value;
+  const message = document.getElementById("message");
 
-  if(failCount === 3){
-    lockAccount(30);
-  }
-  else if(failCount === 6){
-    lockAccount(90);
-  }
-  else if(failCount === 9){
-    lockAccount(180);
-  }
-  else{
-    message.textContent = "Invalid credentials.";
-  }
-
-});
-
-function lockAccount(seconds){
-
-  lockUntil = Date.now() + (seconds * 1000);
-  btn.disabled = true;
-
-  updateCountdown(seconds);
-
-  countdownInterval = setInterval(function(){
-
-    let remaining = Math.ceil((lockUntil - Date.now())/1000);
-
-    if(remaining <= 0){
-      clearInterval(countdownInterval);
-      btn.disabled = false;
-      message.textContent = "";
+  if(user === correctUser && pass === correctPass){
+      message.style.color = "green";
+      message.innerText = "Access Granted";
+      attempts = 0;
       return;
-    }
+  }
 
-    updateCountdown(remaining);
+  attempts++;
+  message.style.color = "#dc2626";
+  message.innerText = "Invalid credentials";
 
-  },1000);
+  if(attempts === 3) startLock(30);
+  if(attempts === 6) startLock(90);
+  if(attempts === 9) startLock(180);
 }
 
-function updateCountdown(seconds){
-  message.textContent = 
-    "Account locked. Try again in " + seconds + " seconds.";
+function startLock(seconds){
+  lockTime = seconds;
+  const btn = document.getElementById("loginBtn");
+  const message = document.getElementById("message");
+
+  btn.disabled = true;
+
+  timerInterval = setInterval(()=>{
+      lockTime--;
+      message.innerText = "Account locked. Try again in " + lockTime + " seconds.";
+
+      if(lockTime <= 0){
+          clearInterval(timerInterval);
+          btn.disabled = false;
+          message.innerText = "";
+      }
+  },1000);
 }
 </script>
 
