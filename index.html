@@ -3,181 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ระบบควบคุมสิทธิ์การเข้าใช้งาน</title>
+<title>Access Control</title>
 
 <style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
 body{
-    margin:0;
-    font-family: sans-serif;
-    background:#eef1f4;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#eef1f4;
+}
+
+.topbar{
+  position:fixed;
+  top:0;
+  width:100%;
+  background:#23343b;
+  color:white;
+  padding:12px 20px;
+  font-size:14px;
 }
 
 .card{
-    background:white;
-    width:350px;
-    padding:30px;
-    border-radius:10px;
-    box-shadow:0 8px 25px rgba(0,0,0,0.1);
-    text-align:center;
+  width:95%;
+  max-width:420px;
+  background:white;
+  padding:35px 25px;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+  text-align:center;
 }
 
 .logo{
-    font-size:60px;
-    margin-bottom:10px;
+  width:70px;
+  margin-bottom:15px;
 }
 
 h2{
-    margin:5px 0;
+  margin-bottom:5px;
 }
 
-.subtitle{
-    color:gray;
-    font-size:14px;
-    margin-bottom:20px;
+.sub{
+  color:gray;
+  margin-bottom:20px;
+  font-size:14px;
 }
 
 input{
-    width:100%;
-    padding:10px;
-    margin:8px 0;
-    border:1px solid #ccc;
-    border-radius:5px;
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
 }
 
 button{
-    width:100%;
-    padding:12px;
-    background:#2f4550;
-    color:white;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    font-size:16px;
+  width:100%;
+  padding:12px;
+  background:#2f4858;
+  color:white;
+  border:none;
+  border-radius:6px;
+  margin-top:10px;
+  cursor:pointer;
 }
 
 button:disabled{
-    background:gray;
-    cursor:not-allowed;
+  background:#888;
+  cursor:not-allowed;
 }
 
-.message{
-    margin-top:10px;
-    font-size:14px;
+.error{
+  color:red;
+  font-size:14px;
+  margin-top:10px;
 }
 
-.footer{
-    margin-top:15px;
-    font-size:12px;
-    color:#888;
+.timer{
+  color:#b30000;
+  font-size:14px;
+  margin-top:8px;
 }
 </style>
 </head>
 <body>
 
+<div class="topbar">
+ศูนย์ควบคุมสิทธิการเข้าใช้งาน
+</div>
+
 <div class="card">
-    <div class="logo">🔒</div>
-    <h2>ระบบตรวจสอบสิทธิ์การเข้าใช้งาน</h2>
-    <div class="subtitle">Access Control System</div>
+<img src="https://cdn-icons-png.flaticon.com/512/3064/3064155.png" class="logo">
+<h2>ระบบตรวจสอบสิทธิ</h2>
+<div class="sub">Access Control System</div>
 
-    <form id="loginForm">
-        <input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่" required>
-        <input type="password" id="pass" placeholder="รหัสผ่าน" required>
-        <button type="submit" id="loginBtn">เข้าสู่ระบบ</button>
-        <div id="messageBox" class="message"></div>
-    </form>
+<input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่">
+<input type="password" id="pass" placeholder="รหัสผ่าน">
+<button id="loginBtn" onclick="login()">เข้าสู่ระบบ</button>
 
-    <div class="footer">
-        การเข้าใช้งานโดยไม่ได้รับอนุญาต อาจมีความผิดตามกฎหมาย
-    </div>
+<div class="error" id="error"></div>
+<div class="timer" id="timer"></div>
 </div>
 
 <script>
-const correctCard = "LC-A01";
-const correctPass = "Lc1993♧";
+const correctCard="LC-A01";
+const correctPass="Lc1993♧";
 
-let failCount = parseInt(localStorage.getItem("failCount")) || 0;
-let lockUntil = parseInt(localStorage.getItem("lockUntil")) || 0;
+let failCount = Number(localStorage.getItem("failCount")) || 0;
+let lockUntil = Number(localStorage.getItem("lockUntil")) || 0;
 
-const form = document.getElementById("loginForm");
-const messageBox = document.getElementById("messageBox");
+const errorDiv = document.getElementById("error");
+const timerDiv = document.getElementById("timer");
 const loginBtn = document.getElementById("loginBtn");
 
-function showMessage(text,color="red"){
-    messageBox.innerText = text;
-    messageBox.style.color = color;
-}
-
 function checkLock(){
-    const now = Date.now();
-
-    if(lockUntil > now){
-        const secondsLeft = Math.ceil((lockUntil - now)/1000);
-        loginBtn.disabled = true;
-        showMessage("ระบบถูกล็อก กรุณารอ " + secondsLeft + " วินาที", "red");
-        setTimeout(checkLock,1000);
-        return true;
-    }else{
-        loginBtn.disabled = false;
-        return false;
-    }
-}
-
-function setLockTime(){
-    let lockTime = 0;
-
-    if(failCount >= 9){
-        lockTime = 5 * 60 * 1000;
-    }else if(failCount >= 6){
-        lockTime = 60 * 1000;
-    }else if(failCount >= 3){
-        lockTime = 30 * 1000;
-    }
-
-    if(lockTime > 0){
-        lockUntil = Date.now() + lockTime;
-        localStorage.setItem("lockUntil", lockUntil);
-    }
-}
-
-form.addEventListener("submit",function(e){
-    e.preventDefault();
-
-    if(checkLock()) return;
-
-    const card = document.getElementById("card").value.trim();
-    const pass = document.getElementById("pass").value.trim();
-
+  if(Date.now() < lockUntil){
+    let remaining = Math.floor((lockUntil - Date.now())/1000);
     loginBtn.disabled = true;
+    timerDiv.innerText = "ระบบถูกล็อก เหลือเวลา " + remaining + " วินาที";
+  } else {
+    loginBtn.disabled = false;
+    timerDiv.innerText = "";
+  }
+}
 
-    setTimeout(()=>{
+setInterval(checkLock,1000);
 
-        if(card === correctCard && pass === correctPass){
-            failCount = 0;
-            localStorage.removeItem("failCount");
-            localStorage.removeItem("lockUntil");
-            showMessage("เข้าสู่ระบบสำเร็จ","green");
+function login(){
 
-            setTimeout(()=>{
-                window.location.href="dashboard.html";
-            },1000);
+  if(Date.now() < lockUntil){
+    return;
+  }
 
-        }else{
-            failCount++;
-            localStorage.setItem("failCount",failCount);
-            setLockTime();
-            showMessage("รหัสไม่ถูกต้อง ครั้งที่ "+failCount,"red");
-            loginBtn.disabled = false;
-            checkLock();
-        }
+  let card = document.getElementById("card").value;
+  let pass = document.getElementById("pass").value;
 
-    },800);
-});
+  if(card === correctCard && pass === correctPass){
+    sessionStorage.setItem("loggedIn","true");
+    window.location.href="success.html";
+  } else {
 
-checkLock();
+    failCount++;
+    localStorage.setItem("failCount",failCount);
+
+    errorDiv.innerText="รหัสไม่ถูกต้อง ("+failCount+" ครั้ง)";
+
+    if(failCount === 3){
+      lock(30);
+    }
+    else if(failCount === 6){
+      lock(120);
+    }
+    else if(failCount === 9){
+      lock(600);
+    }
+
+  }
+}
+
+function lock(seconds){
+  lockUntil = Date.now() + seconds*1000;
+  localStorage.setItem("lockUntil",lockUntil);
+}
 </script>
 
 </body>
