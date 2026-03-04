@@ -6,61 +6,47 @@
 <title>NEXUS CORE - Access Control</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Segoe UI,Tahoma,sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI, sans-serif;}
 
 body{
 height:100vh;
-background:#f4f6f8;
-display:flex;
-flex-direction:column;
-}
-
-.topbar{
-background:#24343d;
-color:#fff;
-padding:12px 20px;
-display:flex;
-justify-content:space-between;
-font-size:14px;
-}
-
-.container{
-flex:1;
 display:flex;
 justify-content:center;
 align-items:center;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+}
+
+.container{
+width:100%;
+max-width:400px;
 padding:20px;
 }
 
 .card{
 background:#fff;
-width:100%;
-max-width:400px;
-padding:35px;
-border-radius:12px;
-box-shadow:0 8px 25px rgba(0,0,0,0.1);
+border-radius:14px;
+padding:35px 25px;
+box-shadow:0 15px 40px rgba(0,0,0,0.3);
 text-align:center;
 }
 
 .logo{
-width:120px;
-margin-bottom:15px;
+font-size:22px;
+font-weight:bold;
+color:#203a43;
+margin-bottom:10px;
 }
 
-h2{
-margin-bottom:5px;
-}
-
-.sub{
-color:#666;
-margin-bottom:25px;
+.subtitle{
+color:#555;
 font-size:14px;
+margin-bottom:20px;
 }
 
 input{
 width:100%;
 padding:12px;
-margin-bottom:15px;
+margin:8px 0;
 border:1px solid #ccc;
 border-radius:6px;
 font-size:14px;
@@ -69,62 +55,53 @@ font-size:14px;
 button{
 width:100%;
 padding:12px;
-background:#24343d;
-color:#fff;
+margin-top:15px;
 border:none;
 border-radius:6px;
+background:#203a43;
+color:white;
 font-size:15px;
 cursor:pointer;
 transition:0.3s;
 }
 
 button:hover{
-background:#1b262c;
+background:#162d38;
 }
 
 button:disabled{
-background:#999;
+background:#888;
 cursor:not-allowed;
 }
 
 .error{
-color:#d8000c;
+color:red;
 font-size:13px;
-margin-bottom:10px;
-display:none;
+margin-top:10px;
+min-height:18px;
 }
 
-.lockmsg{
+.lock{
 color:#b30000;
-font-size:13px;
-margin-bottom:10px;
-display:none;
+font-weight:bold;
+margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-<div>NEXUS CORE - ศูนย์ควบคุมสิทธิ์</div>
-<div id="clock"></div>
-</div>
-
 <div class="container">
 <div class="card">
-
-<img src="logo.png" class="logo" alt="NEXUS CORE">
-
-<h2>ระบบตรวจสอบสิทธิการเข้าใช้งาน</h2>
-<div class="sub">Access Control System</div>
-
-<div class="error" id="errorMsg">รหัสไม่ถูกต้อง</div>
-<div class="lockmsg" id="lockMsg"></div>
+<div class="logo">NEXUS CORE</div>
+<div class="subtitle">Access Control System</div>
 
 <input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่">
 <input type="password" id="pass" placeholder="รหัสผ่าน">
+<button id="loginBtn" onclick="login()">เข้าสู่ระบบ</button>
 
-<button onclick="login()" id="loginBtn">เข้าสู่ระบบ</button>
+<div class="error" id="errorMsg"></div>
+<div class="lock" id="lockMsg"></div>
 
 </div>
 </div>
@@ -133,65 +110,66 @@ display:none;
 const correctCard="LC-A01";
 const correctPass="Lc1993♧";
 
-let attempts = localStorage.getItem("attempts") ? parseInt(localStorage.getItem("attempts")) : 0;
-let lockUntil = localStorage.getItem("lockUntil") ? parseInt(localStorage.getItem("lockUntil")) : 0;
-
-function updateClock(){
-document.getElementById("clock").innerText = new Date().toLocaleString("th-TH");
-}
-setInterval(updateClock,1000);
-updateClock();
+let failCount = Number(sessionStorage.getItem("failCount")) || 0;
+let lockUntil = Number(sessionStorage.getItem("lockUntil")) || 0;
 
 function checkLock(){
-if(Date.now() < lockUntil){
-let remaining = Math.ceil((lockUntil - Date.now())/1000);
-document.getElementById("lockMsg").style.display="block";
-document.getElementById("lockMsg").innerText="บัญชีถูกล็อก กรุณารอ "+remaining+" วินาที";
-document.getElementById("loginBtn").disabled=true;
-return true;
-}else{
-document.getElementById("lockMsg").style.display="none";
-document.getElementById("loginBtn").disabled=false;
-return false;
+    if(Date.now() < lockUntil){
+        let remain = Math.ceil((lockUntil - Date.now())/1000);
+        document.getElementById("loginBtn").disabled=true;
+        document.getElementById("lockMsg").innerText=
+        "บัญชีถูกล็อก กรุณารอ "+remain+" วินาที";
+        setTimeout(checkLock,1000);
+    }else{
+        document.getElementById("loginBtn").disabled=false;
+        document.getElementById("lockMsg").innerText="";
+    }
 }
-}
-
-setInterval(checkLock,1000);
-checkLock();
 
 function login(){
 
-if(checkLock()) return;
+    if(Date.now() < lockUntil){
+        return;
+    }
 
-let card=document.getElementById("card").value;
-let pass=document.getElementById("pass").value;
+    const card=document.getElementById("card").value.trim();
+    const pass=document.getElementById("pass").value.trim();
+    const error=document.getElementById("errorMsg");
 
-if(card===correctCard && pass===correctPass){
-attempts=0;
-localStorage.setItem("attempts",0);
-window.location.href="home.html";
-}else{
-attempts++;
-localStorage.setItem("attempts",attempts);
+    if(card===correctCard && pass===correctPass){
+        error.style.color="green";
+        error.innerText="ยืนยันตัวตนสำเร็จ";
+        failCount=0;
+        sessionStorage.setItem("failCount",0);
+        setTimeout(()=>{
+            document.body.innerHTML="<h1 style='color:white;text-align:center;margin-top:20%;'>ACCESS GRANTED</h1>";
+        },1000);
+    }else{
+        failCount++;
+        sessionStorage.setItem("failCount",failCount);
 
-document.getElementById("errorMsg").style.display="block";
+        error.style.color="red";
+        error.innerText="รหัสไม่ถูกต้อง ("+failCount+" ครั้ง)";
 
-if(attempts==3){
-lock(30);
-}
-else if(attempts==6){
-lock(120);
-}
-else if(attempts>=9){
-lock(300);
-}
-}
+        if(failCount===3){
+            lock(30);
+        }
+        else if(failCount===6){
+            lock(300);
+        }
+        else if(failCount===9){
+            lock(1800);
+        }
+    }
 }
 
 function lock(seconds){
-lockUntil = Date.now() + seconds*1000;
-localStorage.setItem("lockUntil",lockUntil);
+    lockUntil = Date.now() + seconds*1000;
+    sessionStorage.setItem("lockUntil",lockUntil);
+    checkLock();
 }
+
+checkLock();
 </script>
 
 </body>
