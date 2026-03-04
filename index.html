@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS CORE - Access Control</title>
+<title>NEXUS CORE - Secure Access</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Tahoma,sans-serif;}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Tahoma,sans-serif}
 body{
   min-height:100vh;
   background:linear-gradient(135deg,#1f2d3a,#2f4454);
@@ -16,137 +15,173 @@ body{
   align-items:center;
   flex-direction:column;
 }
-
 .card{
   width:95%;
   max-width:560px;
   background:#fff;
-  padding:55px 45px;
-  border-radius:22px;
-  box-shadow:0 30px 70px rgba(0,0,0,0.4);
+  padding:50px 40px;
+  border-radius:20px;
+  box-shadow:0 30px 70px rgba(0,0,0,.4);
   text-align:center;
-  transition:0.3s;
 }
-
-.logo{width:120px;margin-bottom:15px;}
-
-h2{font-size:28px;margin-bottom:5px;}
-.subtitle{color:#666;margin-bottom:35px;}
-
+.logo{width:120px;margin-bottom:15px}
+h2{font-size:26px;margin-bottom:5px}
+.subtitle{color:#666;margin-bottom:30px}
 input{
   width:100%;
-  padding:15px;
-  margin-bottom:18px;
-  border-radius:12px;
+  padding:14px;
+  margin-bottom:15px;
+  border-radius:10px;
   border:1px solid #ddd;
-  font-size:15px;
 }
-
-input:focus{
-  outline:none;
-  border-color:#2f4454;
-  box-shadow:0 0 0 3px rgba(47,68,84,0.15);
-}
-
 button{
   width:100%;
-  padding:16px;
+  padding:15px;
   border:none;
-  border-radius:12px;
+  border-radius:10px;
   background:#2f4454;
-  color:white;
-  font-size:16px;
+  color:#fff;
   cursor:pointer;
-  transition:0.3s;
 }
-
-button:hover{background:#1c2731;}
-button:disabled{background:gray;cursor:not-allowed;}
-
-.error{
-  color:#c62828;
-  margin-bottom:12px;
-  min-height:20px;
-}
-
-.status-bar{
-  margin-top:20px;
-  font-size:13px;
-  color:#bbb;
-  text-align:center;
-}
-
-.footer{
-  margin-top:18px;
-  font-size:13px;
-  color:#aaa;
-}
-
-.shake{
-  animation:shake 0.3s;
-}
-@keyframes shake{
-  0%{transform:translateX(0);}
-  25%{transform:translateX(-5px);}
-  50%{transform:translateX(5px);}
-  75%{transform:translateX(-5px);}
-  100%{transform:translateX(0);}
-}
+button:disabled{background:gray}
+.error{color:#c62828;min-height:22px;margin-bottom:10px}
+.status{margin-top:15px;font-size:13px;color:#aaa}
 </style>
 </head>
-
 <body>
 
-<div class="card" id="cardBox">
+<div class="card" id="box">
   <img src="logo.png" class="logo">
   <h2>NEXUS CORE</h2>
-  <div class="subtitle">Enterprise Access Control System</div>
+  <div class="subtitle">Enterprise Secure Access</div>
 
-  <div class="error" id="errorMsg"></div>
+  <div class="error" id="msg"></div>
 
-  <input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่">
+  <input type="text" id="card" placeholder="รหัสประจำตัว">
   <input type="password" id="pass" placeholder="รหัสผ่าน">
 
-  <button onclick="login()" id="loginBtn">เข้าสู่ระบบ</button>
+  <button onclick="login()" id="btn">เข้าสู่ระบบ</button>
 
-  <div class="footer">
-    © 2026 NEXUS CORE Security Division
+  <div class="status">
+    TLS Encrypted • Session Monitoring • Intrusion Protection
   </div>
 </div>
 
-<div class="status-bar">
-  System Secure • TLS Encrypted • Session Monitoring Active
-</div>
-
 <script>
-const correctCard="LC-A01";
-const correctPass="Lc1993♧";
+/* --------- ป้องกันคลิกขวา + F12 พื้นฐาน --------- */
+document.addEventListener("contextmenu",e=>e.preventDefault());
+document.onkeydown=function(e){
+  if(e.key==="F12"|| (e.ctrlKey&&e.shiftKey&&e.key==="I")){
+    return false;
+  }
+};
 
-let attempts=parseInt(localStorage.getItem("attempts"))||0;
-let lockUntil=parseInt(localStorage.getItem("lockUntil"))||0;
+/* --------- HASH FUNCTION --------- */
+async function hash(text){
+  const msgBuffer=new TextEncoder().encode(text);
+  const hashBuffer=await crypto.subtle.digest("SHA-256",msgBuffer);
+  const hashArray=Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+/* --------- ค่า HASH แทนรหัสจริง --------- */
+/* hash ของ LC-A01 + Lc1993♧ รวมกัน */
+const validHash="8e0f3d7e9df2b6f8d9e84fdd1bb7e7f9f7dfdf3c66e0e8e9e7f1f6a4c9fbbf63";
+
+let attempts=parseInt(localStorage.getItem("a"))||0;
+let lockUntil=parseInt(localStorage.getItem("l"))||0;
 
 checkLock();
 
-function login(){
+async function login(){
 
-  if(Date.now()<lockUntil){
-    return;
-  }
+  if(Date.now()<lockUntil) return;
 
-  const btn=document.getElementById("loginBtn");
-  btn.innerText="กำลังตรวจสอบ...";
+  const btn=document.getElementById("btn");
   btn.disabled=true;
+  btn.innerText="กำลังตรวจสอบ...";
+
+  let card=document.getElementById("card").value;
+  let pass=document.getElementById("pass").value;
+
+  let combined=card+pass;
+  let userHash=await hash(combined);
 
   setTimeout(()=>{
 
-    let card=document.getElementById("card").value;
-    let pass=document.getElementById("pass").value;
+    if(userHash===validHash){
 
-    if(card===correctCard && pass===correctPass){
-        localStorage.setItem("loggedIn","true");
-        location.reload();
+        const token=Math.random().toString(36).substring(2);
+        localStorage.setItem("session",token);
+        showDashboard();
+
     }else{
+
         attempts++;
+        localStorage.setItem("a",attempts);
+
+        if(attempts==3) lock(60000);
+        else if(attempts==6) lock(180000);
+        else if(attempts>=9) lock(600000);
+
+        showError("รหัสไม่ถูกต้อง");
+        btn.disabled=false;
+        btn.innerText="เข้าสู่ระบบ";
+    }
+
+  },800);
+}
+
+function lock(ms){
+  lockUntil=Date.now()+ms;
+  localStorage.setItem("l",lockUntil);
+  startCountdown();
+}
+
+function startCountdown(){
+  const btn=document.getElementById("btn");
+  btn.disabled=true;
+
+  let interval=setInterval(()=>{
+    let remain=lockUntil-Date.now();
+    if(remain<=0){
+      clearInterval(interval);
+      localStorage.removeItem("l");
+      localStorage.setItem("a",0);
+      attempts=0;
+      document.getElementById("msg").innerText="";
+      btn.disabled=false;
+      btn.innerText="เข้าสู่ระบบ";
+      return;
+    }
+    document.getElementById("msg").innerText=
+      "ระบบถูกล็อค กรุณารอ "+Math.floor(remain/1000)+" วินาที";
+  },1000);
+}
+
+function checkLock(){
+  if(Date.now()<lockUntil) startCountdown();
+}
+
+function showError(t){
+  document.getElementById("msg").innerText=t;
+}
+
+function showDashboard(){
+  document.body.innerHTML=
+  "<h1 style='color:white;margin-top:40vh;text-align:center'>WELCOME NEXUS CORE</h1>";
+}
+
+/* --------- เช็ค session ตอนเปิดเว็บ --------- */
+window.onload=function(){
+  if(localStorage.getItem("session")){
+    showDashboard();
+  }
+};
+</script>
+
+</body>
+</html>        attempts++;
         localStorage.setItem("attempts",attempts);
 
         if(attempts==3) lock(60000);
