@@ -6,90 +6,87 @@
 <title>NEXUS CORE - Access Control</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Tahoma,sans-serif;}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Segoe UI,Tahoma,sans-serif;
+}
 
 body{
-    background:linear-gradient(135deg,#1f2d3a,#2f4454);
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+  min-height:100vh;
+  background:linear-gradient(135deg,#1f2d3a,#2f4454);
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 .container{
-    width:100%;
-    max-width:400px;
-    padding:20px;
+  width:100%;
+  padding:20px;
+  text-align:center;
 }
 
 .card{
-    background:white;
-    padding:35px 25px;
-    border-radius:14px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.25);
-    text-align:center;
+  width:100%;
+  max-width:480px;
+  margin:auto;
+  background:white;
+  padding:45px 35px;
+  border-radius:20px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.35);
 }
 
 .logo{
-    width:90px;
-    margin-bottom:15px;
+  width:110px;
+  margin-bottom:15px;
 }
 
 h2{
-    margin-bottom:5px;
+  font-size:26px;
+  margin-bottom:5px;
 }
 
 .subtitle{
-    color:#777;
-    font-size:14px;
-    margin-bottom:25px;
+  color:#777;
+  margin-bottom:30px;
 }
 
 input{
-    width:100%;
-    padding:12px;
-    margin-bottom:15px;
-    border-radius:6px;
-    border:1px solid #ccc;
-    font-size:14px;
+  width:100%;
+  padding:14px;
+  margin-bottom:18px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:15px;
 }
 
 button{
-    width:100%;
-    padding:13px;
-    border:none;
-    border-radius:6px;
-    background:#2f4454;
-    color:white;
-    font-size:15px;
-    cursor:pointer;
-    transition:0.3s;
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:10px;
+  background:#2f4454;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
 }
 
 button:disabled{
-    background:#999;
-    cursor:not-allowed;
+  background:gray;
+  cursor:not-allowed;
 }
 
-button:hover:not(:disabled){
-    background:#1f2d3a;
+.error{
+  color:red;
+  margin-bottom:10px;
 }
-
-.message{
-    margin-top:15px;
-    font-size:14px;
-    min-height:20px;
-}
-
-.error{color:#d32f2f;}
-.success{color:#2e7d32;}
-.lock{color:#ff9800;}
 
 .footer{
-    text-align:center;
-    margin-top:20px;
-    color:white;
-    font-size:13px;
+  margin-top:20px;
+  color:white;
+  font-size:14px;
+  opacity:0.8;
 }
 </style>
 </head>
@@ -97,94 +94,85 @@ button:hover:not(:disabled){
 <body>
 
 <div class="container">
-    <div class="card">
-        <!-- ใส่ไฟล์โลโก้ของคุณ -->
-        <img src="logo.png" class="logo" alt="NEXUS CORE Logo">
+  <div class="card">
+    <img src="logo.png" class="logo">
+    <h2>NEXUS CORE</h2>
+    <div class="subtitle">Access Control System</div>
 
-        <h2>NEXUS CORE</h2>
-        <div class="subtitle">Access Control System</div>
+    <div class="error" id="errorMsg"></div>
 
-        <input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่">
-        <input type="password" id="pass" placeholder="รหัสผ่าน">
+    <input type="text" id="card" placeholder="รหัสประจำตัวเจ้าหน้าที่">
+    <input type="password" id="pass" placeholder="รหัสผ่าน">
 
-        <button id="loginBtn">เข้าสู่ระบบ</button>
+    <button onclick="login()" id="loginBtn">เข้าสู่ระบบ</button>
+  </div>
 
-        <div class="message" id="msg"></div>
-    </div>
-
-    <div class="footer">
-        © 2026 NEXUS CORE Security Division
-    </div>
+  <div class="footer">
+    © 2026 NEXUS CORE Security Division
+  </div>
 </div>
 
 <script>
 const correctCard="LC-A01";
 const correctPass="Lc1993♧";
 
-let attempts=0;
-let lockUntil=0;
+let attempts = localStorage.getItem("attempts") 
+    ? parseInt(localStorage.getItem("attempts")) : 0;
 
-const btn=document.getElementById("loginBtn");
-const msg=document.getElementById("msg");
+let lockUntil = localStorage.getItem("lockUntil") 
+    ? parseInt(localStorage.getItem("lockUntil")) : 0;
 
-btn.addEventListener("click", function(){
+checkLock();
 
-    if(Date.now()<lockUntil){
-        return;
-    }
+function login(){
 
-    const card=document.getElementById("card").value;
-    const pass=document.getElementById("pass").value;
+  if(Date.now() < lockUntil){
+    showError("ระบบถูกล็อคชั่วคราว กรุณารอ...");
+    return;
+  }
 
-    if(card===correctCard && pass===correctPass){
-        msg.className="message success";
-        msg.innerText="ยืนยันตัวตนสำเร็จ กำลังเข้าสู่ระบบ...";
-        btn.disabled=true;
+  let card=document.getElementById("card").value;
+  let pass=document.getElementById("pass").value;
 
-        setTimeout(()=>{
-            msg.innerText="เข้าสู่ระบบสำเร็จ";
-        },1500);
+  if(card===correctCard && pass===correctPass){
+      localStorage.setItem("loggedIn","true");
+      alert("เข้าสู่ระบบสำเร็จ");
+      location.reload();
+  }else{
+      attempts++;
+      localStorage.setItem("attempts",attempts);
 
-    }else{
-        attempts++;
-        msg.className="message error";
-        msg.innerText="รหัสไม่ถูกต้อง";
+      if(attempts==3) lock(60000);      // 1 นาที
+      if(attempts==6) lock(180000);     // 3 นาที
+      if(attempts>=9) lock(600000);     // 10 นาที
 
-        if(attempts===3){
-            lockSystem(30);
-        }
-        if(attempts===6){
-            lockSystem(60);
-        }
-        if(attempts===9){
-            lockSystem(300);
-        }
-    }
-
-});
-
-function lockSystem(seconds){
-    lockUntil=Date.now()+(seconds*1000);
-    btn.disabled=true;
-    msg.className="message lock";
-    countdown(seconds);
+      showError("รหัสไม่ถูกต้อง");
+  }
 }
 
-function countdown(sec){
-    let timer=setInterval(()=>{
-        let remain=Math.ceil((lockUntil-Date.now())/1000);
+function lock(duration){
+  lockUntil = Date.now() + duration;
+  localStorage.setItem("lockUntil",lockUntil);
+  document.getElementById("loginBtn").disabled=true;
+}
 
-        if(remain<=0){
-            clearInterval(timer);
-            attempts=0;
-            btn.disabled=false;
-            msg.innerText="สามารถเข้าสู่ระบบได้อีกครั้ง";
-            msg.className="message";
-        }else{
-            msg.innerText="ระบบถูกล็อคชั่วคราว ("+remain+" วินาที)";
-        }
+function checkLock(){
+  if(Date.now() < lockUntil){
+      document.getElementById("loginBtn").disabled=true;
+      showError("บัญชีถูกล็อคชั่วคราว");
+  }else{
+      document.getElementById("loginBtn").disabled=false;
+  }
+}
 
-    },1000);
+function showError(msg){
+  document.getElementById("errorMsg").innerText=msg;
+}
+
+window.onload=function(){
+  if(localStorage.getItem("loggedIn")==="true"){
+    document.body.innerHTML="<h1 style='color:white;text-align:center;margin-top:40vh;'>WELCOME NEXUS CORE</h1>";
+  }
 }
 </script>
 
