@@ -8,65 +8,75 @@
 <style>
 body{
   margin:0;
-  font-family:Segoe UI, sans-serif;
-  background:linear-gradient(145deg,#1b2735,#2c3e50);
-  color:white;
+  font-family:Segoe UI, Arial, sans-serif;
+  background:linear-gradient(135deg,#1b2735,#2c3e50);
+  color:#fff;
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
-  flex-direction:column;
   text-align:center;
 }
-
+.container{
+  max-width:400px;
+}
 button{
   margin-top:20px;
-  padding:12px 25px;
+  padding:10px 20px;
   border:none;
-  border-radius:8px;
-  background:white;
+  border-radius:6px;
+  background:#fff;
   color:#2c3e50;
-  font-weight:600;
   cursor:pointer;
+}
+.timer{
+  margin-top:10px;
+  font-size:14px;
+  opacity:0.8;
 }
 </style>
 </head>
+
 <body>
 
-<h1>NEXUS CORE</h1>
-<p>Secure Environment · Access Granted</p>
-<p id="timer"></p>
+<div class="container">
+  <h1>NEXUS CORE</h1>
+  <p>Secure Environment · Access Granted</p>
 
-<button onclick="logout()">Sign Out</button>
+  <div class="timer" id="timer"></div>
+
+  <button onclick="logout()">Sign Out</button>
+</div>
 
 <script>
-const session = JSON.parse(localStorage.getItem("session"));
-const MAX_SESSION = 5 * 60 * 1000; // 5 นาที
+const session = JSON.parse(localStorage.getItem("nexusSession"));
 
 if(!session){
   window.location.href="index.html";
 }
 
-function checkSession(){
+function updateTimer(){
   const now = Date.now();
-  const diff = now - session.loginTime;
+  const remaining = session.expireTime - now;
 
-  if(diff > MAX_SESSION){
-    alert("Session expired");
+  if(remaining <= 0){
     logout();
   }
 
-  const remaining = Math.floor((MAX_SESSION - diff)/1000);
-  document.getElementById("timer").textContent =
-    "Session expires in: " + remaining + " seconds";
+  const minutes = Math.floor((remaining/1000)/60);
+  const seconds = Math.floor((remaining/1000)%60);
+
+  document.getElementById("timer").innerText =
+    "Session expires in: " + minutes + "m " + seconds + "s";
 }
 
 function logout(){
-  localStorage.removeItem("session");
+  localStorage.removeItem("nexusSession");
   window.location.href="index.html";
 }
 
-setInterval(checkSession,1000);
+setInterval(updateTimer,1000);
+updateTimer();
 </script>
 
 </body>
