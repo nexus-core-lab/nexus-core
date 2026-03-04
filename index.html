@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS CORE</title>
+<title>NEXUS CORE | Secure Access</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:Segoe UI,Tahoma,sans-serif;
-  background:linear-gradient(135deg,#1f2d3a,#2f4454);
+  font-family:'Segoe UI',Tahoma,sans-serif;
+  background:linear-gradient(145deg,#1b2735,#2c3e50);
   display:flex;
   justify-content:center;
   align-items:center;
@@ -17,47 +19,75 @@ body{
 }
 
 .card{
-  background:white;
-  padding:30px;
-  border-radius:15px;
-  width:300px;
+  background:#ffffff;
+  width:340px;
+  padding:40px 30px;
+  border-radius:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.25);
   text-align:center;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:2px;
+  margin-bottom:5px;
+}
+
+.sub{
+  font-size:12px;
+  color:#888;
+  margin-bottom:25px;
 }
 
 input{
   width:100%;
-  padding:10px;
-  margin:10px 0;
-  border-radius:8px;
-  border:1px solid #ccc;
+  padding:12px;
+  margin:8px 0;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:14px;
+}
+
+input:focus{
+  outline:none;
+  border-color:#2c3e50;
 }
 
 button{
   width:100%;
-  padding:10px;
+  padding:12px;
+  margin-top:15px;
   border:none;
-  border-radius:8px;
-  background:#2f4454;
+  border-radius:10px;
+  background:#2c3e50;
   color:white;
+  font-weight:600;
   cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#1b2735;
 }
 
 .error{
-  color:red;
-  font-size:14px;
-  margin-top:10px;
+  color:#d63031;
+  font-size:13px;
+  margin-top:12px;
 }
 </style>
 </head>
 <body>
 
 <div class="card">
-  <h2>NEXUS CORE</h2>
+  <div class="logo">NEXUS CORE</div>
+  <div class="sub">Enterprise Secure Gateway</div>
 
-  <input type="text" id="user" placeholder="รหัสประจำตัว">
-  <input type="password" id="pass" placeholder="รหัสผ่าน">
+  <input type="text" id="user" placeholder="Employee ID">
+  <input type="password" id="pass" placeholder="Password">
 
-  <button onclick="login()" id="loginBtn">เข้าสู่ระบบ</button>
+  <button onclick="login()">Sign In</button>
 
   <div class="error" id="errorMsg"></div>
 </div>
@@ -67,7 +97,6 @@ const correctUser="admin";
 const correctPass="1234";
 
 function login(){
-
   const user=document.getElementById("user").value;
   const pass=document.getElementById("pass").value;
   const error=document.getElementById("errorMsg");
@@ -76,7 +105,7 @@ function login(){
     localStorage.setItem("session","active");
     window.location.href="dashboard.html";
   }else{
-    error.innerText="รหัสไม่ถูกต้อง";
+    error.innerText="Authentication failed";
   }
 }
 
