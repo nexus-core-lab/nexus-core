@@ -9,45 +9,45 @@
 <style>
 
 body{
-font-family: Arial, Helvetica, sans-serif;
+font-family: Arial, sans-serif;
 background:#0b3a42;
 display:flex;
-justify-content:center;
 align-items:center;
+justify-content:center;
 height:100vh;
 margin:0;
 }
 
-.login-box{
-background:#ffffff;
+.box{
+background:white;
 padding:35px;
-width:340px;
-border-radius:10px;
-box-shadow:0 10px 25px rgba(0,0,0,0.25);
+width:330px;
+border-radius:8px;
+box-shadow:0 8px 20px rgba(0,0,0,0.25);
 text-align:center;
 }
 
 .logo{
-width:65px;
-margin-bottom:12px;
+width:70px;
+margin-bottom:10px;
 }
 
-h2{
-margin:5px 0;
+.title{
 font-size:18px;
+font-weight:bold;
 color:#222;
 }
 
-.sub{
+.subtitle{
 font-size:13px;
-color:#555;
+color:#666;
 margin-bottom:20px;
 }
 
 input{
 width:100%;
 padding:10px;
-margin:8px 0;
+margin:7px 0;
 border:1px solid #ccc;
 border-radius:5px;
 font-size:14px;
@@ -55,17 +55,17 @@ font-size:14px;
 
 button{
 width:100%;
-padding:11px;
+padding:10px;
 background:#2f3f55;
 color:white;
 border:none;
-border-radius:6px;
+border-radius:5px;
 font-weight:bold;
 cursor:pointer;
 }
 
 button:disabled{
-background:#9aa4b2;
+background:#999;
 cursor:not-allowed;
 }
 
@@ -76,7 +76,7 @@ color:#c0392b;
 }
 
 .footer{
-margin-top:18px;
+margin-top:15px;
 font-size:11px;
 color:#777;
 }
@@ -86,22 +86,22 @@ color:#777;
 
 <body>
 
-<div class="login-box">
+<div class="box">
 
 <img src="logo.png" class="logo">
 
-<h2>Secure Access Portal</h2>
-<div class="sub">Authorized Personnel Only</div>
+<div class="title">Secure Access Portal</div>
+<div class="subtitle">Authorized Personnel Only</div>
 
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
-<button onclick="login()" id="loginBtn">SIGN IN</button>
+<button id="loginBtn" onclick="login()">SIGN IN</button>
 
 <div id="msg"></div>
 
 <div class="footer">
-Access is monitored and logged
+© Secure Internal System
 </div>
 
 </div>
@@ -110,22 +110,23 @@ Access is monitored and logged
 
 const ADMIN_ID="admin"
 const ADMIN_PASS="1234"
+const LINE_LINK="https://lin.ee/lGGma6p"
 
-let fail = Number(localStorage.getItem("fail")) || 0
-let lockUntil = Number(localStorage.getItem("lockUntil")) || 0
+let failCount = localStorage.getItem("failCount") || 0
+let lockUntil = localStorage.getItem("lockUntil") || 0
 
-function updateLock(){
+function checkLock(){
 
 let now = Date.now()
 
 if(now < lockUntil){
 
-let remain = Math.ceil((lockUntil-now)/1000)
+let sec = Math.ceil((lockUntil-now)/1000)
 
 document.getElementById("loginBtn").disabled=true
-document.getElementById("msg").innerText="Security lock active : "+remain+"s"
+document.getElementById("msg").innerText="Security Lock Active — Retry in "+sec+"s"
 
-setTimeout(updateLock,1000)
+setTimeout(checkLock,1000)
 
 }else{
 
@@ -138,37 +139,27 @@ document.getElementById("msg").innerText=""
 
 function login(){
 
-let u=document.getElementById("user").value
-let p=document.getElementById("pass").value
+let id=document.getElementById("user").value
+let pass=document.getElementById("pass").value
 
-let now=Date.now()
+if(id===ADMIN_ID && pass===ADMIN_PASS){
 
-if(now < lockUntil){
-updateLock()
+localStorage.removeItem("failCount")
+localStorage.removeItem("lockUntil")
+
+window.location.href=LINE_LINK
 return
+
 }
 
-if(u===ADMIN_ID && p===ADMIN_PASS){
-
-fail=0
-localStorage.removeItem("fail")
-
-window.location.href="https://lin.ee/lGGma6p"
-
-}else{
-
-fail++
-localStorage.setItem("fail",fail)
+failCount++
+localStorage.setItem("failCount",failCount)
 
 let lockTime=0
 
-if(fail>=9){
-lockTime=180
-}else if(fail>=6){
-lockTime=90
-}else if(fail>=3){
-lockTime=30
-}
+if(failCount>=9) lockTime=180
+else if(failCount>=6) lockTime=90
+else if(failCount>=3) lockTime=30
 
 if(lockTime>0){
 
@@ -177,15 +168,11 @@ localStorage.setItem("lockUntil",lockUntil)
 
 }
 
-document.getElementById("msg").innerText="Invalid credentials"
-
-updateLock()
+checkLock()
 
 }
 
-}
-
-updateLock()
+checkLock()
 
 </script>
 
