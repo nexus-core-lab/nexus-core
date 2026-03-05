@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Nexus Core System</title>
 
 <style>
 
 body{
-font-family: Inter, Roboto, Arial, sans-serif;
-background: linear-gradient(180deg,#0a3a4a,#072f3c);
+font-family:Arial,Helvetica,sans-serif;
+background:#0b3a45;
 height:100vh;
 display:flex;
 align-items:center;
@@ -18,72 +17,62 @@ justify-content:center;
 margin:0;
 }
 
-.card{
-background:#fff;
-width:340px;
-padding:40px;
-border-radius:14px;
-box-shadow:0 20px 50px rgba(0,0,0,0.25);
+.login-box{
+background:white;
+padding:30px;
+width:300px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
 text-align:center;
 }
 
-.logo{
-width:70px;
-margin-bottom:10px;
+h2{
+margin-bottom:5px;
+font-size:18px;
 }
 
-h1{
-font-size:20px;
-margin:6px 0;
-color:#333;
-letter-spacing:1px;
-}
-
-.sub{
+p{
+font-size:12px;
 color:#555;
-font-size:14px;
-margin-bottom:20px;
 }
 
 input{
 width:100%;
-padding:12px;
+padding:10px;
 margin:8px 0;
-border-radius:8px;
-border:1.4px solid #cfd4da;
-font-size:14px;
+border-radius:6px;
+border:1px solid #ccc;
 }
 
 button{
 width:100%;
-padding:12px;
-margin-top:12px;
-border:none;
-border-radius:8px;
-background:#2f3f56;
+padding:10px;
+background:#2d3e50;
 color:white;
-font-weight:600;
+border:none;
+border-radius:6px;
 cursor:pointer;
 }
 
 button:disabled{
-background:#9ca3af;
+background:#999;
 cursor:not-allowed;
 }
 
-.msg{
-margin-top:12px;
-font-size:14px;
-}
-
-.lock{
-color:#c0392b;
+.status{
+margin-top:10px;
+font-size:12px;
+color:red;
 }
 
 .footer{
-font-size:11px;
+margin-top:15px;
+font-size:10px;
 color:#777;
-margin-top:18px;
+}
+
+.loading{
+color:#333;
 }
 
 </style>
@@ -91,22 +80,20 @@ margin-top:18px;
 
 <body>
 
-<div class="card">
+<div class="login-box">
 
-<img class="logo" src="logo.png">
-
-<h1>NEXUS CORE SYSTEM</h1>
-<div class="sub">Secure Access Portal</div>
+<h2>NEXUS CORE SYSTEM</h2>
+<p>Secure Access Portal</p>
 
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
-<button id="loginBtn">SIGN IN</button>
+<button id="loginBtn" onclick="login()">SIGN IN</button>
 
-<div id="msg" class="msg"></div>
+<div class="status" id="status"></div>
 
 <div class="footer">
-Authorized personnel only. All access is logged and monitored.<br><br>
+Authorized personnel only. All access is logged and monitored.<br>
 © 2025 Nexus Core Systems<br>
 Internal Access Gateway v2.4.1
 </div>
@@ -115,86 +102,86 @@ Internal Access Gateway v2.4.1
 
 <script>
 
-const correctUser="admin";
-const correctPass="1234";
-const redirectURL="https://lin.ee/lGGma6p";
+let failCount = localStorage.getItem("failCount") || 0
+let lockUntil = localStorage.getItem("lockUntil") || 0
 
-let fail=Number(localStorage.getItem("fail"))||0;
-let lockUntil=Number(localStorage.getItem("lockUntil"))||0;
+function updateLock(){
 
-const btn=document.getElementById("loginBtn");
-const msg=document.getElementById("msg");
+let now = Date.now()
 
-function checkLock(){
+if(now < lockUntil){
 
-let now=Date.now();
+let sec = Math.ceil((lockUntil-now)/1000)
 
-if(lockUntil>now){
+document.getElementById("loginBtn").disabled = true
+document.getElementById("status").innerText =
+"Security Lock Active — Retry in "+sec+"s"
 
-btn.disabled=true;
-
-let sec=Math.ceil((lockUntil-now)/1000);
-
-msg.innerHTML="Security Lock Active — Retry in "+sec+"s";
-msg.className="msg lock";
+setTimeout(updateLock,1000)
 
 }else{
 
-btn.disabled=false;
-msg.innerHTML="";
+document.getElementById("loginBtn").disabled = false
+document.getElementById("status").innerText = ""
 
 }
 
 }
 
-setInterval(checkLock,500);
+function login(){
 
-btn.onclick=function(){
+let user = document.getElementById("user").value
+let pass = document.getElementById("pass").value
 
-let now=Date.now();
+document.getElementById("status").innerHTML =
+"<span class='loading'>Authenticating...</span>"
 
-if(lockUntil>now) return;
+setTimeout(function(){
 
-let u=document.getElementById("user").value;
-let p=document.getElementById("pass").value;
+if(user==="admin" && pass==="1234"){
 
-if(u===correctUser && p===correctPass){
+localStorage.removeItem("failCount")
+localStorage.removeItem("lockUntil")
 
-localStorage.removeItem("fail");
-localStorage.removeItem("lockUntil");
-
-window.location.href=redirectURL;
+window.location.href="https://lin.ee/lGGma6p"
 
 }else{
 
-fail++;
-localStorage.setItem("fail",fail);
+failCount++
+localStorage.setItem("failCount",failCount)
 
-let lockTime=0;
+document.getElementById("status").innerText =
+"Authentication failed. Invalid credentials."
 
-if(fail>=9) lockTime=180;
-else if(fail>=6) lockTime=90;
-else if(fail>=3) lockTime=30;
+if(failCount==3){
 
-if(lockTime>0){
-
-lockUntil=Date.now()+lockTime*1000;
-localStorage.setItem("lockUntil",lockUntil);
+lockUntil = Date.now()+30000
 
 }
 
-msg.innerHTML="Invalid credentials";
-msg.className="msg lock";
+if(failCount==6){
+
+lockUntil = Date.now()+90000
 
 }
 
-};
+if(failCount>=9){
 
-document.addEventListener("keydown",function(e){
-if(e.key==="Enter") btn.click();
-});
+lockUntil = Date.now()+180000
 
-checkLock();
+}
+
+localStorage.setItem("lockUntil",lockUntil)
+
+updateLock()
+
+}
+
+},1200)
+
+}
+
+updateLock()
 
 </script>
 
