@@ -196,38 +196,4 @@ msg.innerText="Access denied";
 </script>
 
 </body>
-</html>localStorage.setItem("lockUntil",lockUntil)
-}
-
-updateLock()
-
-}
-
-function updateLock(){
-
-let now = Date.now()
-
-if(now < lockUntil){
-
-let sec = Math.ceil((lockUntil-now)/1000)
-
-btn.disabled = true
-msg.innerText = "Security Lock Active — Retry in "+sec+"s"
-
-setTimeout(updateLock,1000)
-
-}else{
-
-btn.disabled = false
-msg.innerText = ""
-
-}
-
-}
-
-updateLock()
-
-</script>
-
-</body>
 </html>
