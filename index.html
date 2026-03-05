@@ -2,43 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>Nexus Core System</title>
 
 <style>
 
 body{
-font-family: Arial;
-background: linear-gradient(135deg,#0b3c42,#0f6a6e);
+margin:0;
 height:100vh;
 display:flex;
-align-items:center;
 justify-content:center;
-margin:0;
+align-items:center;
+background:linear-gradient(135deg,#0c4a4a,#0f766e);
+font-family:Arial;
 }
 
 .card{
+width:340px;
 background:white;
-padding:40px;
-border-radius:20px;
-width:320px;
+border-radius:16px;
+padding:35px;
 text-align:center;
 box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
 .logo{
-width:80px;
+width:70px;
 margin-bottom:10px;
 }
 
 h2{
-margin:10px 0 0;
+margin:5px 0;
 letter-spacing:2px;
 }
 
-.sub{
+.subtitle{
+font-size:12px;
 color:gray;
 margin-bottom:20px;
-font-size:14px;
 }
 
 input{
@@ -47,33 +49,36 @@ padding:12px;
 margin:8px 0;
 border-radius:8px;
 border:1px solid #ccc;
+font-size:14px;
 }
 
 button{
 width:100%;
 padding:12px;
+margin-top:10px;
 border:none;
 border-radius:8px;
-background:#2f4057;
+background:#64748b;
 color:white;
 font-weight:bold;
 cursor:pointer;
 }
 
 button:disabled{
-background:gray;
+opacity:.6;
+cursor:not-allowed;
 }
 
-#msg{
-margin-top:10px;
+.lock{
 color:red;
-font-size:14px;
+font-size:13px;
+margin-top:10px;
 }
 
 .footer{
-font-size:12px;
+margin-top:10px;
+font-size:10px;
 color:gray;
-margin-top:20px;
 }
 
 </style>
@@ -86,17 +91,17 @@ margin-top:20px;
 <img src="logo.png" class="logo">
 
 <h2>NEXUS CORE SYSTEM</h2>
-<div class="sub">Secure Access Portal</div>
+<div class="subtitle">Secure Access Portal</div>
 
-<input id="user" placeholder="User ID">
+<input id="user" placeholder="Username">
 <input id="pass" type="password" placeholder="Password">
 
-<button onclick="login()" id="btn">SIGN IN</button>
+<button id="loginBtn" onclick="login()">SIGN IN</button>
 
-<div id="msg"></div>
+<div id="lockMsg" class="lock"></div>
 
 <div class="footer">
-Authorized personnel only. All access is logged and monitored.<br>
+Authorized personnel only.<br>
 © 2025 Nexus Core Systems
 </div>
 
@@ -111,8 +116,8 @@ const LINE_URL="https://lin.ee/lGGma6p"
 let attempts=parseInt(localStorage.getItem("attempts"))||0
 let lockUntil=parseInt(localStorage.getItem("lockUntil"))||0
 
-const btn=document.getElementById("btn")
-const msg=document.getElementById("msg")
+const btn=document.getElementById("loginBtn")
+const msg=document.getElementById("lockMsg")
 
 function updateLock(){
 
@@ -122,16 +127,20 @@ if(now<lockUntil){
 
 btn.disabled=true
 
-let remain=Math.ceil((lockUntil-now)/1000)
+let sec=Math.ceil((lockUntil-now)/1000)
 
-msg.innerHTML="Security Lock Active — Retry in "+remain+"s"
+msg.innerText="Security Lock Active – Retry in "+sec+"s"
 
 setTimeout(updateLock,1000)
 
 }else{
 
 btn.disabled=false
-msg.innerHTML=""
+msg.innerText=""
+
+localStorage.removeItem("lockUntil")
+localStorage.removeItem("attempts")
+attempts=0
 
 }
 
@@ -144,17 +153,24 @@ function login(){
 let user=document.getElementById("user").value
 let pass=document.getElementById("pass").value
 
+let now=Date.now()
+
+if(now<lockUntil){
+return
+}
+
 if(user===ADMIN_ID && pass===ADMIN_PASS){
 
 localStorage.removeItem("attempts")
 localStorage.removeItem("lockUntil")
 
 window.location.href=LINE_URL
-
 return
+
 }
 
 attempts++
+
 localStorage.setItem("attempts",attempts)
 
 let lockTime=0
