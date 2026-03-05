@@ -3,24 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>NEXUS CORE SYSTEM</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:linear-gradient(135deg,#0a2a34,#0f4c5c);
+background:linear-gradient(135deg,#0b2d36,#0f4f5f);
 height:100vh;
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
 margin:0;
 }
 
 .card{
 background:white;
-width:360px;
 padding:40px;
+width:340px;
 border-radius:16px;
 box-shadow:0 15px 40px rgba(0,0,0,0.3);
 text-align:center;
@@ -28,7 +29,7 @@ text-align:center;
 
 .logo{
 width:110px;
-margin-bottom:20px;
+margin-bottom:15px;
 }
 
 .title{
@@ -48,7 +49,6 @@ padding:12px;
 margin:8px 0;
 border-radius:8px;
 border:1px solid #ccc;
-font-size:15px;
 }
 
 button{
@@ -57,10 +57,9 @@ padding:12px;
 margin-top:10px;
 border:none;
 border-radius:8px;
-background:#354a63;
+background:#394c63;
 color:white;
 font-weight:bold;
-font-size:15px;
 cursor:pointer;
 }
 
@@ -70,17 +69,18 @@ background:#999;
 
 #msg{
 margin-top:10px;
-color:red;
 font-size:13px;
+color:red;
 }
 
 .footer{
-margin-top:18px;
+margin-top:15px;
 font-size:11px;
 color:#777;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -95,7 +95,7 @@ color:#777;
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
-<button onclick="login()" id="btn">SIGN IN</button>
+<button id="loginBtn" onclick="login()">SIGN IN</button>
 
 <div id="msg"></div>
 
@@ -111,7 +111,7 @@ Authorized personnel only. All access is logged and monitored.<br>
 let failCount = localStorage.getItem("failCount") || 0
 let lockUntil = localStorage.getItem("lockUntil") || 0
 
-function updateLock(){
+function checkLock(){
 
 let now = Date.now()
 
@@ -119,33 +119,31 @@ if(now < lockUntil){
 
 let remain = Math.ceil((lockUntil-now)/1000)
 
-document.getElementById("msg").innerText =
+document.getElementById("loginBtn").disabled=true
+document.getElementById("msg").innerText=
 "Security Lock Active — Retry in "+remain+"s"
 
-document.getElementById("btn").disabled = true
-
-setTimeout(updateLock,1000)
+setTimeout(checkLock,1000)
 
 }else{
 
-document.getElementById("btn").disabled = false
+document.getElementById("loginBtn").disabled=false
 document.getElementById("msg").innerText=""
 
 }
 
 }
 
+checkLock()
+
 function login(){
 
 let user=document.getElementById("user").value
 let pass=document.getElementById("pass").value
 
-if(Date.now() < lockUntil)return
-
 if(user==="admin" && pass==="1234"){
 
-failCount=0
-localStorage.setItem("failCount",0)
+localStorage.removeItem("failCount")
 
 window.location.href="https://lin.ee/lGGma6p"
 
@@ -157,9 +155,9 @@ localStorage.setItem("failCount",failCount)
 
 let lockTime=0
 
-if(failCount==3) lockTime=30
-if(failCount==6) lockTime=90
 if(failCount>=9) lockTime=180
+else if(failCount>=6) lockTime=90
+else if(failCount>=3) lockTime=30
 
 if(lockTime>0){
 
@@ -167,19 +165,17 @@ lockUntil=Date.now()+lockTime*1000
 
 localStorage.setItem("lockUntil",lockUntil)
 
-updateLock()
+checkLock()
 
 }else{
 
-document.getElementById("msg").innerText="Invalid credentials"
+document.getElementById("msg").innerText="Invalid ID or Password"
 
 }
 
 }
 
 }
-
-updateLock()
 
 </script>
 
