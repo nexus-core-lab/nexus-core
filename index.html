@@ -3,111 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Nexus Core System</title>
 
 <style>
-
 body{
 margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(180deg,#0c3a47,#08313b);
 height:100vh;
 display:flex;
-align-items:center;
 justify-content:center;
-font-family:Arial,Helvetica,sans-serif;
-
-background:linear-gradient(135deg,#0c3b47,#0b2e3a);
+align-items:center;
 }
 
-.card{
-
-background:#f4f4f4;
-width:340px;
+.container{
+background:white;
+width:360px;
 padding:35px;
-border-radius:20px;
+border-radius:16px;
 text-align:center;
-
-box-shadow:
-0 20px 40px rgba(0,0,0,0.3);
+box-shadow:0 20px 40px rgba(0,0,0,0.3);
 }
 
 .logo{
 width:70px;
-margin-bottom:10px;
+margin-bottom:15px;
 }
 
 h1{
 font-size:22px;
-letter-spacing:2px;
 margin:5px 0;
+letter-spacing:1px;
 }
 
 .subtitle{
-font-size:14px;
 color:#555;
-margin-bottom:25px;
+margin-bottom:20px;
 }
 
 input{
-
 width:100%;
 padding:12px;
-margin:10px 0;
-
-border-radius:10px;
+margin:8px 0;
+border-radius:8px;
 border:1px solid #ccc;
-
 font-size:14px;
 }
 
 button{
-
 width:100%;
 padding:13px;
-
+margin-top:12px;
 border:none;
-border-radius:10px;
-
-background:#2e3f55;
+border-radius:8px;
+background:#3c4f63;
 color:white;
-
-font-size:15px;
 font-weight:bold;
-
 cursor:pointer;
-
 transition:0.2s;
 }
 
 button:hover{
-background:#1e2d3f;
+background:#2f4052;
 }
 
 button:disabled{
-
 background:#9aa3af;
 cursor:not-allowed;
+opacity:0.8;
 }
 
-.lock{
-margin-top:15px;
-color:#d52c2c;
+.lockmsg{
+margin-top:12px;
+color:#d22;
 font-size:14px;
 }
 
 .footer{
-margin-top:20px;
+margin-top:18px;
 font-size:12px;
-color:#777;
+color:#666;
 }
-
 </style>
 </head>
 
-
 <body>
 
-<div class="card">
+<div class="container">
 
 <img src="logo.png" class="logo">
 
@@ -119,7 +101,7 @@ color:#777;
 
 <button id="loginBtn" onclick="login()">SIGN IN</button>
 
-<div id="lockMsg" class="lock"></div>
+<div id="lockmsg" class="lockmsg"></div>
 
 <div class="footer">
 Authorized personnel only. Unauthorized access is strictly prohibited and monitored.<br><br>
@@ -131,75 +113,69 @@ Internal Access Gateway v2.4.1
 
 <script>
 
-let attempts=0
-let lockTimes=[30,90,180]
-let locked=false
+let failCount = localStorage.getItem("failCount") || 0
+let lockUntil = localStorage.getItem("lockUntil") || 0
+
+const btn = document.getElementById("loginBtn")
+const msg = document.getElementById("lockmsg")
 
 function login(){
 
-if(locked)return
+if(Date.now() < lockUntil){
+return
+}
 
-let u=document.getElementById("user").value
-let p=document.getElementById("pass").value
+let user = document.getElementById("user").value
+let pass = document.getElementById("pass").value
 
-if(u==="admin" && p==="1234"){
+if(user==="admin" && pass==="1234"){
+alert("Access Granted")
+failCount = 0
+localStorage.setItem("failCount",0)
+return
+}
 
-alert("ACCESS GRANTED")
+failCount++
+localStorage.setItem("failCount",failCount)
+
+let lockTime = 0
+
+if(failCount==3) lockTime=30
+if(failCount==6) lockTime=90
+if(failCount==9) lockTime=180
+
+if(lockTime>0){
+lockUntil = Date.now() + lockTime*1000
+localStorage.setItem("lockUntil",lockUntil)
+}
+
+updateLock()
+
+}
+
+function updateLock(){
+
+let now = Date.now()
+
+if(now < lockUntil){
+
+let sec = Math.ceil((lockUntil-now)/1000)
+
+btn.disabled = true
+msg.innerText = "Security Lock Active — Retry in "+sec+"s"
+
+setTimeout(updateLock,1000)
 
 }else{
 
-attempts++
-
-if(attempts<=3){
-
-let time=lockTimes[attempts-1]
-
-lock(time)
-
-}else{
-
-lock(180)
+btn.disabled = false
+msg.innerText = ""
 
 }
 
 }
 
-}
-
-function lock(seconds){
-
-locked=true
-
-let btn=document.getElementById("loginBtn")
-let msg=document.getElementById("lockMsg")
-
-btn.disabled=true
-
-let t=seconds
-
-msg.innerHTML="Security Lock Active — Retry in "+t+"s"
-
-let timer=setInterval(()=>{
-
-t--
-
-msg.innerHTML="Security Lock Active — Retry in "+t+"s"
-
-if(t<=0){
-
-clearInterval(timer)
-
-locked=false
-
-btn.disabled=false
-
-msg.innerHTML=""
-
-}
-
-},1000)
-
-}
+updateLock()
 
 </script>
 
