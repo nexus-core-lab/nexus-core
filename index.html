@@ -8,8 +8,8 @@
 <style>
 
 body{
-font-family:Arial,Helvetica,sans-serif;
-background:#0b3a45;
+font-family:Arial, sans-serif;
+background:linear-gradient(180deg,#0b3b4a,#072f3b);
 height:100vh;
 display:flex;
 align-items:center;
@@ -19,21 +19,28 @@ margin:0;
 
 .login-box{
 background:white;
-padding:30px;
-width:300px;
+padding:35px;
 border-radius:12px;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
+width:320px;
 text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+.logo{
+width:60px;
+margin-bottom:10px;
 }
 
 h2{
-margin-bottom:5px;
-font-size:18px;
+margin:5px;
+font-size:16px;
+letter-spacing:1px;
 }
 
 p{
+margin-top:0;
 font-size:12px;
-color:#555;
+color:#666;
 }
 
 input{
@@ -47,7 +54,7 @@ border:1px solid #ccc;
 button{
 width:100%;
 padding:10px;
-background:#2d3e50;
+background:#2c3e50;
 color:white;
 border:none;
 border-radius:6px;
@@ -56,23 +63,18 @@ cursor:pointer;
 
 button:disabled{
 background:#999;
-cursor:not-allowed;
 }
 
-.status{
+.msg{
 margin-top:10px;
-font-size:12px;
+font-size:13px;
 color:red;
 }
 
 .footer{
-margin-top:15px;
+margin-top:12px;
 font-size:10px;
 color:#777;
-}
-
-.loading{
-color:#333;
 }
 
 </style>
@@ -82,28 +84,32 @@ color:#333;
 
 <div class="login-box">
 
+<img src="logo.png" class="logo">
+
 <h2>NEXUS CORE SYSTEM</h2>
 <p>Secure Access Portal</p>
 
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
-<button id="loginBtn" onclick="login()">SIGN IN</button>
+<button onclick="login()" id="btn">SIGN IN</button>
 
-<div class="status" id="status"></div>
+<div class="msg" id="msg"></div>
 
 <div class="footer">
 Authorized personnel only. All access is logged and monitored.<br>
-© 2025 Nexus Core Systems<br>
-Internal Access Gateway v2.4.1
+© 2025 Nexus Core Systems v2.4.1
 </div>
 
 </div>
 
 <script>
 
-let failCount = localStorage.getItem("failCount") || 0
+let attempts = localStorage.getItem("attempts") || 0
 let lockUntil = localStorage.getItem("lockUntil") || 0
+
+attempts = parseInt(attempts)
+lockUntil = parseInt(lockUntil)
 
 function updateLock(){
 
@@ -111,18 +117,18 @@ let now = Date.now()
 
 if(now < lockUntil){
 
-let sec = Math.ceil((lockUntil-now)/1000)
+let remaining = Math.ceil((lockUntil-now)/1000)
 
-document.getElementById("loginBtn").disabled = true
-document.getElementById("status").innerText =
-"Security Lock Active — Retry in "+sec+"s"
+document.getElementById("btn").disabled=true
+document.getElementById("msg").innerText=
+"Security Lock Active - Retry in "+remaining+"s"
 
 setTimeout(updateLock,1000)
 
 }else{
 
-document.getElementById("loginBtn").disabled = false
-document.getElementById("status").innerText = ""
+document.getElementById("btn").disabled=false
+document.getElementById("msg").innerText=""
 
 }
 
@@ -130,54 +136,44 @@ document.getElementById("status").innerText = ""
 
 function login(){
 
-let user = document.getElementById("user").value
-let pass = document.getElementById("pass").value
+let u=document.getElementById("user").value
+let p=document.getElementById("pass").value
 
-document.getElementById("status").innerHTML =
-"<span class='loading'>Authenticating...</span>"
+if(u==="admin" && p==="1234"){
 
-setTimeout(function(){
+attempts=0
+localStorage.setItem("attempts",0)
 
-if(user==="admin" && pass==="1234"){
+document.getElementById("msg").style.color="green"
+document.getElementById("msg").innerText="Access Granted"
 
-localStorage.removeItem("failCount")
-localStorage.removeItem("lockUntil")
-
+setTimeout(()=>{
 window.location.href="https://lin.ee/lGGma6p"
+},1000)
 
-}else{
-
-failCount++
-localStorage.setItem("failCount",failCount)
-
-document.getElementById("status").innerText =
-"Authentication failed. Invalid credentials."
-
-if(failCount==3){
-
-lockUntil = Date.now()+30000
-
+return
 }
 
-if(failCount==6){
+attempts++
+localStorage.setItem("attempts",attempts)
 
-lockUntil = Date.now()+90000
+let lock=0
 
-}
+if(attempts>=9) lock=180
+else if(attempts>=6) lock=90
+else if(attempts>=3) lock=30
 
-if(failCount>=9){
+if(lock>0){
 
-lockUntil = Date.now()+180000
-
-}
-
+lockUntil=Date.now()+lock*1000
 localStorage.setItem("lockUntil",lockUntil)
 
-updateLock()
-
 }
 
-},1200)
+document.getElementById("msg").innerText=
+"Authentication failed"
+
+updateLock()
 
 }
 
