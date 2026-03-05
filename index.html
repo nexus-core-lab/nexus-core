@@ -9,36 +9,35 @@
 <style>
 
 body{
-font-family: Arial, sans-serif;
-background:#0b3a42;
+font-family:Arial;
+background:#0b3c44;
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
 height:100vh;
 margin:0;
 }
 
-.box{
+.login-box{
 background:white;
 padding:35px;
-width:330px;
-border-radius:8px;
-box-shadow:0 8px 20px rgba(0,0,0,0.25);
+width:320px;
+border-radius:10px;
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
 text-align:center;
 }
 
 .logo{
-width:70px;
+width:65px;
 margin-bottom:10px;
 }
 
-.title{
+h2{
+margin:5px 0;
 font-size:18px;
-font-weight:bold;
-color:#222;
 }
 
-.subtitle{
+p{
 font-size:13px;
 color:#666;
 margin-bottom:20px;
@@ -47,16 +46,15 @@ margin-bottom:20px;
 input{
 width:100%;
 padding:10px;
-margin:7px 0;
-border:1px solid #ccc;
+margin:6px 0;
 border-radius:5px;
-font-size:14px;
+border:1px solid #ccc;
 }
 
 button{
 width:100%;
 padding:10px;
-background:#2f3f55;
+background:#3a4a63;
 color:white;
 border:none;
 border-radius:5px;
@@ -65,8 +63,7 @@ cursor:pointer;
 }
 
 button:disabled{
-background:#999;
-cursor:not-allowed;
+background:#888;
 }
 
 #msg{
@@ -86,52 +83,51 @@ color:#777;
 
 <body>
 
-<div class="box">
+<div class="login-box">
 
 <img src="logo.png" class="logo">
 
-<div class="title">Secure Access Portal</div>
-<div class="subtitle">Authorized Personnel Only</div>
+<h2>NEXUS CORE SYSTEM</h2>
+<p>Secure Access Portal</p>
 
-<input id="user" placeholder="User ID">
-<input id="pass" type="password" placeholder="Password">
+<input id="id" placeholder="User ID">
+<input id="pw" type="password" placeholder="Password">
 
-<button id="loginBtn" onclick="login()">SIGN IN</button>
+<button onclick="login()" id="btn">SIGN IN</button>
 
 <div id="msg"></div>
 
 <div class="footer">
-© Secure Internal System
+Authorized personnel only.<br>
+All access logged and monitored.
 </div>
 
 </div>
 
 <script>
 
-const ADMIN_ID="admin"
-const ADMIN_PASS="1234"
-const LINE_LINK="https://lin.ee/lGGma6p"
+let attempts = parseInt(localStorage.getItem("attempts")) || 0;
+let lockUntil = parseInt(localStorage.getItem("lockUntil")) || 0;
 
-let failCount = localStorage.getItem("failCount") || 0
-let lockUntil = localStorage.getItem("lockUntil") || 0
+function updateLock(){
 
-function checkLock(){
+let now = Date.now();
 
-let now = Date.now()
+if(lockUntil > now){
 
-if(now < lockUntil){
+let sec = Math.ceil((lockUntil-now)/1000);
 
-let sec = Math.ceil((lockUntil-now)/1000)
+document.getElementById("msg").innerText =
+"Security Lock Active – Retry in "+sec+"s";
 
-document.getElementById("loginBtn").disabled=true
-document.getElementById("msg").innerText="Security Lock Active — Retry in "+sec+"s"
+document.getElementById("btn").disabled = true;
 
-setTimeout(checkLock,1000)
+setTimeout(updateLock,1000);
 
 }else{
 
-document.getElementById("loginBtn").disabled=false
-document.getElementById("msg").innerText=""
+document.getElementById("btn").disabled=false;
+document.getElementById("msg").innerText="";
 
 }
 
@@ -139,40 +135,50 @@ document.getElementById("msg").innerText=""
 
 function login(){
 
-let id=document.getElementById("user").value
-let pass=document.getElementById("pass").value
+let id = document.getElementById("id").value;
+let pw = document.getElementById("pw").value;
 
-if(id===ADMIN_ID && pass===ADMIN_PASS){
+let now = Date.now();
 
-localStorage.removeItem("failCount")
-localStorage.removeItem("lockUntil")
+if(now < lockUntil){
+updateLock();
+return;
+}
 
-window.location.href=LINE_LINK
-return
+if(id==="admin" && pw==="1234"){
+
+attempts=0;
+localStorage.removeItem("attempts");
+
+window.location.href="https://lin.ee/lGGma6p";
+
+return;
 
 }
 
-failCount++
-localStorage.setItem("failCount",failCount)
+attempts++;
 
-let lockTime=0
+localStorage.setItem("attempts",attempts);
 
-if(failCount>=9) lockTime=180
-else if(failCount>=6) lockTime=90
-else if(failCount>=3) lockTime=30
+let lock=0;
 
-if(lockTime>0){
+if(attempts>=9) lock=180;
+else if(attempts>=6) lock=90;
+else if(attempts>=3) lock=30;
 
-lockUntil=Date.now()+lockTime*1000
-localStorage.setItem("lockUntil",lockUntil)
+if(lock>0){
 
-}
+lockUntil = now + lock*1000;
 
-checkLock()
+localStorage.setItem("lockUntil",lockUntil);
 
 }
 
-checkLock()
+updateLock();
+
+}
+
+updateLock();
 
 </script>
 
