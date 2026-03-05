@@ -3,90 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Nexus Core System</title>
 
 <style>
+
 body{
 margin:0;
 font-family:Arial, Helvetica, sans-serif;
-background:linear-gradient(160deg,#0b2a3c,#082032);
+
+background:
+radial-gradient(circle at 20% 20%, rgba(255,255,255,0.04), transparent 40%),
+radial-gradient(circle at 80% 80%, rgba(255,255,255,0.03), transparent 40%),
+linear-gradient(160deg,#0b2a3c,#082032);
+
+height:100vh;
 display:flex;
 align-items:center;
 justify-content:center;
-height:100vh;
 }
 
 .card{
+
 background:white;
-width:360px;
-padding:40px;
-border-radius:18px;
-box-shadow:0 20px 60px rgba(0,0,0,0.4);
+width:380px;
+max-width:92%;
+padding:42px;
+border-radius:16px;
+
+box-shadow:
+0 10px 35px rgba(0,0,0,0.25);
+
 text-align:center;
 }
 
 .logo{
-width:70px;
-margin-bottom:15px;
+width:90px;
+margin-bottom:18px;
+}
+
+h2{
+margin:8px 0;
+letter-spacing:1px;
+color:#445;
 }
 
 h3{
-margin:5px;
-color:#3c4a57;
-letter-spacing:2px;
+margin-top:0;
+margin-bottom:25px;
 font-weight:600;
 }
 
-h1{
-margin-top:5px;
-font-size:22px;
-color:#1f2a37;
-}
-
 input{
+
 width:100%;
 padding:14px;
-margin-top:12px;
-border-radius:10px;
-border:1px solid #d1d5db;
+
+margin:10px 0;
+
+border-radius:8px;
+border:1px solid #ccc;
+
 font-size:15px;
 }
 
 button{
+
 width:100%;
-margin-top:16px;
 padding:14px;
-background:#22354d;
+
+margin-top:15px;
+
 border:none;
-border-radius:10px;
+border-radius:8px;
+
+background:#2a3f5f;
 color:white;
+
 font-weight:bold;
 letter-spacing:1px;
-font-size:15px;
+
 cursor:pointer;
 }
 
 button:hover{
-background:#1b2c40;
+background:#1f314a;
+}
+
+button:disabled{
+background:#9ca3af;
+cursor:not-allowed;
 }
 
 .notice{
-margin-top:14px;
+margin-top:18px;
 font-size:12px;
-color:#6b7280;
+color:#666;
 }
 
-.error{
-color:red;
-margin-top:10px;
-font-size:13px;
-}
-
-.footer{
-margin-top:16px;
-font-size:11px;
+footer{
+margin-top:12px;
+font-size:12px;
 color:#888;
 }
+
+#error{
+color:#cc3333;
+font-size:13px;
+margin-top:10px;
+}
+
 </style>
 </head>
 
@@ -96,79 +122,121 @@ color:#888;
 
 <img src="logo.png" class="logo">
 
-<h3>NEXUS CORE SYSTEM</h3>
-<h1>Secure Access Portal</h1>
+<h2>NEXUS CORE SYSTEM</h2>
+<h3>Secure Access Portal</h3>
 
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
-<button onclick="login()">SIGN IN</button>
+<button id="loginBtn" onclick="login()">SIGN IN</button>
 
-<div class="error" id="msg"></div>
+<div id="error"></div>
 
 <div class="notice">
 Authorized personnel only. All access is logged and monitored.
 </div>
 
-<div class="footer">
-© 2025 Nexus Core <br>
+<footer>
+© 2025 Nexus Core<br>
 System v2.4.1
-</div>
+</footer>
 
 </div>
 
 <script>
 
-const correctUser="admin"
-const correctPass="1234"
+const correctUser="admin";
+const correctPass="1234";
 
-let attempts=0
-let lockTime=0
+let attempts=localStorage.getItem("attempts") || 0;
+let lockUntil=localStorage.getItem("lockUntil") || 0;
 
-function login(){
+const btn=document.getElementById("loginBtn");
+const error=document.getElementById("error");
 
-const now=Date.now()
+function checkLock(){
 
-if(now < lockTime){
-let remain=Math.ceil((lockTime-now)/1000)
-document.getElementById("msg").innerText="Account locked. Try again in "+remain+"s"
-return
-}
+const now=Date.now();
 
-let user=document.getElementById("user").value
-let pass=document.getElementById("pass").value
+if(now<lockUntil){
 
-if(user===correctUser && pass===correctPass){
+btn.disabled=true;
 
-document.getElementById("msg").style.color="green"
-document.getElementById("msg").innerText="Access granted"
+let remaining=Math.ceil((lockUntil-now)/1000);
 
-setTimeout(()=>{
-window.location.href="https://lin.ee/lGGma6p"
-},1000)
+error.innerText="Security Lock Active — Retry in "+remaining+"s";
+
+setTimeout(checkLock,1000);
 
 }else{
 
-attempts++
+btn.disabled=false;
+error.innerText="";
 
-document.getElementById("msg").style.color="red"
-document.getElementById("msg").innerText="Invalid credentials"
+localStorage.setItem("attempts",0);
+
+}
+
+}
+
+checkLock();
+
+function login(){
+
+const user=document.getElementById("user").value;
+const pass=document.getElementById("pass").value;
+
+if(user===correctUser && pass===correctPass){
+
+window.location.href="https://lin.ee/lGGma6p";
+
+}else{
+
+attempts++;
+
+localStorage.setItem("attempts",attempts);
+
+error.innerText="Invalid credentials";
 
 if(attempts==3){
-lockTime=Date.now()+30000
+
+lock(30000);
+
 }
 
 if(attempts==6){
-lockTime=Date.now()+90000
+
+lock(90000);
+
 }
 
 if(attempts>=9){
-lockTime=Date.now()+180000
-}
+
+lock(180000);
 
 }
 
 }
+
+}
+
+function lock(ms){
+
+lockUntil=Date.now()+ms;
+
+localStorage.setItem("lockUntil",lockUntil);
+
+checkLock();
+
+}
+
+document.addEventListener("keydown",function(e){
+
+if(e.key==="Enter"){
+login();
+}
+
+});
 
 </script>
 
