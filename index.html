@@ -4,113 +4,79 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nexus Core Secure Portal</title>
+<title>NEXUS CORE SYSTEM</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Segoe UI,Arial;
+font-family:Arial,Helvetica,sans-serif;
 background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 height:100vh;
 display:flex;
-align-items:center;
 justify-content:center;
-color:#333;
+align-items:center;
 }
 
-.portal{
-
+.container{
 background:white;
-width:380px;
-border-radius:14px;
-box-shadow:0 20px 50px rgba(0,0,0,0.4);
-padding:35px;
+padding:40px;
+border-radius:12px;
+width:320px;
 text-align:center;
-
-animation:fadeIn 0.7s;
+box-shadow:0 10px 40px rgba(0,0,0,0.3);
+animation:fadeIn 1s ease;
 }
 
 .logo{
-width:90px;
+width:80px;
 margin-bottom:10px;
 }
 
-.system{
-font-size:13px;
-letter-spacing:2px;
-color:#777;
-}
-
-.title{
-font-size:22px;
-font-weight:600;
-margin-bottom:20px;
-}
-
-.notice{
-font-size:11px;
-color:#888;
-margin-bottom:20px;
+h2{
+margin:10px 0;
+letter-spacing:1px;
 }
 
 input{
-
 width:100%;
 padding:12px;
-margin:8px 0;
-border-radius:6px;
+margin-top:10px;
+border-radius:8px;
 border:1px solid #ccc;
-font-size:14px;
-
 }
 
 button{
-
 width:100%;
-padding:13px;
-margin-top:10px;
-background:#1c2b39;
-color:white;
+padding:12px;
+margin-top:15px;
 border:none;
-border-radius:6px;
-font-size:15px;
+border-radius:8px;
+background:#1c2b3a;
+color:white;
+font-weight:bold;
 cursor:pointer;
-
 }
 
 button:hover{
-
-background:#111c27;
-
+background:#0f1c29;
 }
 
-.footer{
-
-font-size:11px;
-margin-top:18px;
-color:#888;
-
-}
-
-.lock{
+#error{
 color:red;
-font-size:13px;
 margin-top:10px;
+font-size:14px;
 }
 
 @keyframes fadeIn{
-
 from{
 opacity:0;
-transform:translateY(25px);
+transform:translateY(30px);
 }
-
 to{
 opacity:1;
 transform:translateY(0);
 }
-
 }
 
 </style>
@@ -118,121 +84,91 @@ transform:translateY(0);
 
 <body>
 
-<div class="portal">
+<div class="container">
 
-<img src="logo.png" class="logo">
+<img class="logo" src="logo.png">
 
-<div class="system">
-NEXUS CORE SYSTEM
-</div>
-
-<div class="title">
-Secure Access Portal
-</div>
-
-<div class="notice">
-Authorized Personnel Only • All Activity Monitored
-</div>
+<h3>NEXUS CORE SYSTEM</h3>
+<h2>Secure Access Portal</h2>
 
 <input id="user" placeholder="User ID">
-
 <input id="pass" type="password" placeholder="Password">
 
-<button onclick="login()" id="btn">
-SIGN IN
-</button>
+<button onclick="login()" id="btn">SIGN IN</button>
 
-<div id="lock" class="lock"></div>
-
-<div class="footer">
-© 2025 Nexus Core • Secure Network
-</div>
+<div id="error"></div>
 
 </div>
 
 <script>
 
-let attempts=0;
+let attempts=0
+let lockTime=0
 
 function login(){
 
-let user=document.getElementById("user").value;
-let pass=document.getElementById("pass").value;
-let lock=document.getElementById("lock");
-let btn=document.getElementById("btn");
+let user=document.getElementById("user").value
+let pass=document.getElementById("pass").value
+let error=document.getElementById("error")
+let btn=document.getElementById("btn")
 
-if(user=="" || pass==""){
-
-lock.innerHTML="Invalid credentials";
-return;
-
+if(Date.now()<lockTime){
+error.innerHTML="Account locked. Try again later."
+return
 }
 
-btn.innerHTML="Verifying...";
-btn.disabled=true;
+if(user==="admin" && pass==="1234"){
+
+btn.innerHTML="Verifying..."
+btn.disabled=true
 
 setTimeout(function(){
 
-window.location.href="https://lin.ee/lGGma6p";
+window.location.href="https://lin.ee/lGGma6p"
 
-},1500);
+},1500)
 
 }
+
+else{
+
+attempts++
+
+if(attempts==3){
+lock(30000)
+}
+
+if(attempts==6){
+lock(90000)
+}
+
+if(attempts==9){
+lock(180000)
+}
+
+error.innerHTML="Invalid credentials"
+
+}
+
+}
+
+function lock(ms){
+
+lockTime=Date.now()+ms
+
+document.getElementById("error").innerHTML="Account locked for "+ms/1000+" seconds"
+
+}
+
+document.addEventListener("keypress",function(e){
+
+if(e.key==="Enter"){
+login()
+}
+
+})
 
 </script>
-
-</body>
-</html>
-lockUntil=Date.now()+lockTime*1000
-localStorage.setItem("lockUntil",lockUntil)
-
-countdown()
-
-}else{
-
-document.getElementById("error").innerText="Invalid login"
-
-}
-
-}
-
-}
-
-function countdown(){
-
-let btn=document.getElementById("btn")
-
-let timer=setInterval(()=>{
-
-let remaining=Math.floor((lockUntil-Date.now())/1000)
-
-if(remaining<=0){
-
-clearInterval(timer)
-
-btn.disabled=false
-
-document.getElementById("error").innerText=""
-
-localStorage.removeItem("lockUntil")
-
-return
-
-}
-
-btn.disabled=true
-
-document.getElementById("error").innerText=
-"Account locked. Try again in "+remaining+"s"
-
-},1000)
-
-}
-
-countdown()
-
-</script>
-
 
 </body>
 </html>
