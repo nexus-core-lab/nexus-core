@@ -1,77 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus Core System</title>
 
 <style>
 
 body{
-font-family:Arial;
-background:#0f4c53;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-margin:0;
+    margin:0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(135deg,#0c3b46,#0a2d36);
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-.card{
-background:white;
-padding:40px;
-border-radius:15px;
-width:320px;
-text-align:center;
-box-shadow:0 10px 30px rgba(0,0,0,0.3);
+/* Login Card */
+
+.login-box{
+    background:#ffffff;
+    width:360px;
+    padding:40px 35px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
 }
+
+/* Logo */
 
 .logo{
-width:90px;
-margin-bottom:15px;
+    width:95px;
+    height:95px;
+    margin-bottom:15px;
+    filter:drop-shadow(0 3px 6px rgba(0,0,0,0.2));
 }
 
-h2{
-margin:5px;
+/* Title */
+
+.title{
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:1px;
+    color:#1b1b1b;
 }
 
-.sub{
-color:#777;
-margin-bottom:20px;
+.subtitle{
+    font-size:14px;
+    color:#666;
+    margin-bottom:25px;
 }
+
+/* Input */
 
 input{
-width:100%;
-padding:12px;
-margin:8px 0;
-border-radius:8px;
-border:1px solid #ccc;
-font-size:14px;
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border-radius:6px;
+    border:1px solid #d2d2d2;
+    font-size:14px;
 }
+
+/* Button */
 
 button{
-width:100%;
-padding:12px;
-background:#26384d;
-color:white;
-border:none;
-border-radius:8px;
-font-size:15px;
-cursor:pointer;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    background:#2f3e4f;
+    border:none;
+    border-radius:6px;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
 }
 
-button:disabled{
-background:#999;
+button:hover{
+    background:#24313f;
 }
 
-.error{
-color:red;
-margin-top:10px;
+.message{
+    margin-top:15px;
+    font-size:13px;
+    color:#b00020;
 }
+
+/* Footer */
 
 .footer{
-font-size:11px;
-color:#777;
-margin-top:20px;
+    margin-top:15px;
+    font-size:11px;
+    color:#777;
 }
 
 </style>
@@ -79,89 +100,46 @@ margin-top:20px;
 
 <body>
 
-<div class="card">
+<div class="login-box">
 
 <img src="logo.png" class="logo">
 
-<h2>NEXUS CORE SYSTEM</h2>
-<div class="sub">Secure Access Portal</div>
-
-<form id="loginForm">
+<div class="title">NEXUS CORE SYSTEM</div>
+<div class="subtitle">Secure Access Portal</div>
 
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
-<button id="loginBtn">SIGN IN</button>
+<button onclick="login()">SIGN IN</button>
 
-</form>
-
-<div id="msg" class="error"></div>
+<div class="message" id="msg"></div>
 
 <div class="footer">
-Authorized personnel only.<br>
-All access logged and monitored.<br>
-© 2025 Nexus Core Systems
+Authorized personnel only. All access is logged and monitored.<br>
+© 2025 Nexus Core Systems<br>
+Internal Access Gateway v2.4.1
 </div>
 
 </div>
 
 <script>
 
-const form=document.getElementById("loginForm")
-const msg=document.getElementById("msg")
-const btn=document.getElementById("loginBtn")
-
-let lock=false
-
-if(sessionStorage.getItem("login")==="true"){
-location.href="https://lin.ee/lGGma6p"
-}
-
-form.addEventListener("submit",function(e){
-
-e.preventDefault()
-
-if(lock) return
+function login(){
 
 let u=document.getElementById("user").value
 let p=document.getElementById("pass").value
 
 if(u==="admin" && p==="1234"){
-
-sessionStorage.setItem("login","true")
-
-location.href="https://lin.ee/lGGma6p"
+    
+    window.location.href="https://lin.ee/lGGma6p"
 
 }else{
 
-msg.innerText="Invalid access credentials"
-
-lock=true
-btn.disabled=true
-
-let t=30
-
-let timer=setInterval(function(){
-
-msg.innerText="Security Lock Active — Retry in "+t+"s"
-
-t--
-
-if(t<0){
-
-clearInterval(timer)
-
-msg.innerText=""
-btn.disabled=false
-lock=false
+document.getElementById("msg").innerText="Access Denied"
 
 }
 
-},1000)
-
 }
-
-})
 
 </script>
 
