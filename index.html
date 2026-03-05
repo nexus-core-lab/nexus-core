@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,78 +9,88 @@
 <style>
 
 body{
-font-family: system-ui, Arial, sans-serif;
-background:#0f1e2e;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
 margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(160deg,#0b2a3c,#082032);
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
 }
 
 .card{
-background:#ffffff;
-width:340px;
-padding:30px;
-border-radius:12px;
-box-shadow:0 6px 20px rgba(0,0,0,0.25);
+background:white;
+width:360px;
+padding:40px;
+border-radius:18px;
+box-shadow:0 20px 60px rgba(0,0,0,0.4);
 text-align:center;
 }
 
 .logo{
 width:70px;
-margin-bottom:10px;
+margin-bottom:15px;
+}
+
+h3{
+margin:5px;
+color:#3c4a57;
+letter-spacing:2px;
+font-weight:600;
 }
 
 h1{
-font-size:18px;
-margin:5px 0;
-color:#2c3e50;
-}
-
-h2{
+margin-top:5px;
 font-size:22px;
-margin-bottom:20px;
-color:#1a1a1a;
+color:#1f2a37;
 }
 
 input{
 width:100%;
-padding:12px;
-margin:8px 0;
-border:1px solid #ccc;
-border-radius:6px;
-font-size:14px;
+padding:14px;
+margin-top:12px;
+border-radius:10px;
+border:1px solid #d1d5db;
+font-size:15px;
 }
 
 button{
 width:100%;
-padding:12px;
-background:#1f2f45;
-color:white;
+margin-top:16px;
+padding:14px;
+background:#22354d;
 border:none;
-border-radius:6px;
-font-weight:600;
+border-radius:10px;
+color:white;
+font-weight:bold;
+letter-spacing:1px;
+font-size:15px;
 cursor:pointer;
 }
 
-button:disabled{
-background:#888;
+button:hover{
+background:#1b2c40;
 }
 
-.message{
+.notice{
+margin-top:14px;
+font-size:12px;
+color:#6b7280;
+}
+
+.error{
+color:red;
 margin-top:10px;
-font-size:14px;
+font-size:13px;
 }
 
 .footer{
-margin-top:20px;
-font-size:12px;
-color:#777;
+margin-top:16px;
+font-size:11px;
+color:#888;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -90,18 +99,23 @@ color:#777;
 
 <img src="logo.png" class="logo">
 
-<h1>NEXUS CORE SYSTEM</h1>
-<h2>Secure Access Portal</h2>
+<h3>NEXUS CORE SYSTEM</h3>
+<h1>Secure Access Portal</h1>
 
-<input id="username" placeholder="User ID">
-<input id="password" type="password" placeholder="Password">
+<input id="user" placeholder="User ID">
+<input id="pass" type="password" placeholder="Password">
 
-<button id="loginBtn" onclick="login()">SIGN IN</button>
+<button id="loginBtn">SIGN IN</button>
 
-<div id="msg" class="message"></div>
+<div class="error" id="msg"></div>
+
+<div class="notice">
+Authorized personnel only. All access is logged and monitored.
+</div>
 
 <div class="footer">
-© 2025 Nexus Core
+© 2025 Nexus Core <br>
+System v2.4.1
 </div>
 
 </div>
@@ -112,49 +126,50 @@ const correctUser="admin"
 const correctPass="1234"
 
 let attempts=0
-
-function login(){
-
-let user=document.getElementById("username").value
-let pass=document.getElementById("password").value
-let msg=document.getElementById("msg")
 let btn=document.getElementById("loginBtn")
+let msg=document.getElementById("msg")
 
-if(user===correctUser && pass===correctPass){
+btn.onclick=function(){
 
-msg.style.color="green"
-msg.innerText="Access granted. Redirecting..."
+let u=document.getElementById("user").value
+let p=document.getElementById("pass").value
+
+if(u===correctUser && p===correctPass){
+
+btn.innerText="Verifying..."
+btn.disabled=true
 
 setTimeout(()=>{
+
 window.location.href="https://lin.ee/lGGma6p"
-},1500)
 
-}
+},1200)
 
-else{
+}else{
 
 attempts++
-msg.style.color="red"
+
 msg.innerText="Invalid credentials"
 
 if(attempts>=3){
 
+let lock=30
+
 btn.disabled=true
-
-let time=30
-
-msg.innerText="Too many attempts. Try again in "+time+"s"
 
 let timer=setInterval(()=>{
 
-time--
-msg.innerText="Too many attempts. Try again in "+time+"s"
+msg.innerText="Account locked. Try again in "+lock+"s"
 
-if(time<=0){
+lock--
+
+if(lock<0){
+
 clearInterval(timer)
 btn.disabled=false
 msg.innerText=""
 attempts=0
+
 }
 
 },1000)
