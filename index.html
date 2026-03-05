@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -11,7 +12,7 @@
 <style>
 
 body{
-font-family:Arial, Helvetica, sans-serif;
+font-family:Arial;
 background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 height:100vh;
 display:flex;
@@ -20,37 +21,37 @@ justify-content:center;
 margin:0;
 }
 
-.login-card{
+.card{
 background:white;
-width:350px;
+width:360px;
 padding:35px;
 border-radius:14px;
 text-align:center;
-box-shadow:0 10px 30px rgba(0,0,0,0.3);
+box-shadow:0 15px 40px rgba(0,0,0,0.4);
 }
 
 .logo{
-width:80px;
+width:90px;
 margin-bottom:15px;
 }
 
-h1{
-font-size:14px;
+.title{
+font-size:13px;
 letter-spacing:2px;
 color:#6b7280;
-margin:0;
 }
 
-h2{
-margin-top:5px;
+.subtitle{
+font-size:20px;
 margin-bottom:25px;
+font-weight:bold;
 color:#1f2937;
 }
 
 input{
 width:100%;
-padding:12px;
-margin-bottom:15px;
+padding:13px;
+margin-bottom:14px;
 border-radius:8px;
 border:1px solid #d1d5db;
 font-size:14px;
@@ -59,29 +60,22 @@ font-size:14px;
 button{
 width:100%;
 padding:13px;
-border:none;
-border-radius:8px;
 background:#1f2937;
 color:white;
+border:none;
+border-radius:8px;
 font-weight:bold;
 cursor:pointer;
 }
 
 button:disabled{
 background:#9ca3af;
-cursor:not-allowed;
 }
 
-#errorMsg{
+#error{
 margin-top:10px;
-font-size:14px;
 color:red;
-}
-
-.notice{
-font-size:11px;
-color:#6b7280;
-margin-top:12px;
+font-size:14px;
 }
 
 footer{
@@ -90,40 +84,25 @@ font-size:11px;
 color:#9ca3af;
 }
 
-@keyframes shake{
-0%{transform:translateX(0)}
-25%{transform:translateX(-4px)}
-50%{transform:translateX(4px)}
-75%{transform:translateX(-4px)}
-100%{transform:translateX(0)}
-}
-
-.shake{
-animation:shake .3s;
-}
-
 </style>
 </head>
 
+
 <body>
 
-<div class="login-card">
+<div class="card">
 
 <img src="logo.png" class="logo">
 
-<h1>NEXUS CORE SYSTEM</h1>
-<h2>Secure Access Portal</h2>
+<div class="title">NEXUS CORE SYSTEM</div>
+<div class="subtitle">Secure Access Portal</div>
 
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
-<button id="loginBtn">SIGN IN</button>
+<button onclick="login()" id="btn">SIGN IN</button>
 
-<div id="errorMsg"></div>
-
-<p class="notice">
-Authorized personnel only. All access attempts are monitored.
-</p>
+<div id="error"></div>
 
 <footer>
 © 2025 Nexus Core
@@ -131,115 +110,99 @@ Authorized personnel only. All access attempts are monitored.
 
 </div>
 
+
 <script>
 
-let attempts=parseInt(localStorage.getItem("attempts"))||0
-let lockUntil=parseInt(localStorage.getItem("lockUntil"))||0
+let correctUser="admin"
+let correctPass="1234"
 
-const btn=document.getElementById("loginBtn")
-const error=document.getElementById("errorMsg")
-
-function lock(duration){
-
-lockUntil=Date.now()+duration
-localStorage.setItem("lockUntil",lockUntil)
-
-startCountdown()
-
-}
-
-function startCountdown(){
-
-btn.disabled=true
-
-let interval=setInterval(()=>{
-
-let remaining=lockUntil-Date.now()
-
-if(remaining<=0){
-
-clearInterval(interval)
-
-localStorage.removeItem("lockUntil")
-localStorage.setItem("attempts",0)
-
-attempts=0
-btn.disabled=false
-error.innerText=""
-
-return
-}
-
-let sec=Math.ceil(remaining/1000)
-
-error.innerText="Account locked. Try again in "+sec+"s"
-
-},1000)
-
-}
+let attempts=localStorage.getItem("attempts") || 0
+let lockUntil=localStorage.getItem("lockUntil") || 0
 
 function login(){
 
-if(Date.now()<lockUntil){
-startCountdown()
+let now=Date.now()
+
+if(now<lockUntil){
+
+countdown()
 return
+
 }
 
-btn.innerText="Authenticating..."
-btn.disabled=true
+let u=document.getElementById("user").value
+let p=document.getElementById("pass").value
 
-setTimeout(()=>{
+if(u===correctUser && p===correctPass){
 
-const user=document.getElementById("user").value
-const pass=document.getElementById("pass").value
+localStorage.removeItem("attempts")
 
-if(user==="admin" && pass==="1234"){
+window.location.href="https://lin.ee/lGGma6p"
 
-error.style.color="green"
-error.innerText="Access Granted"
-
-localStorage.setItem("session","true")
-
-setTimeout(()=>{
-window.location.href="dashboard.html"
-},1000)
-
-return
-}
+}else{
 
 attempts++
+
 localStorage.setItem("attempts",attempts)
 
-document.querySelector(".login-card").classList.add("shake")
-setTimeout(()=>{document.querySelector(".login-card").classList.remove("shake")},300)
+let lockTime=0
 
-if(attempts==3) lock(30000)
-else if(attempts==6) lock(90000)
-else if(attempts>=9) lock(180000)
+if(attempts>=9) lockTime=180
+else if(attempts>=6) lockTime=90
+else if(attempts>=3) lockTime=30
 
-error.style.color="red"
-error.innerText="Invalid credentials"
+if(lockTime>0){
 
-btn.innerText="SIGN IN"
+lockUntil=Date.now()+lockTime*1000
+localStorage.setItem("lockUntil",lockUntil)
+
+countdown()
+
+}else{
+
+document.getElementById("error").innerText="Invalid login"
+
+}
+
+}
+
+}
+
+function countdown(){
+
+let btn=document.getElementById("btn")
+
+let timer=setInterval(()=>{
+
+let remaining=Math.floor((lockUntil-Date.now())/1000)
+
+if(remaining<=0){
+
+clearInterval(timer)
+
 btn.disabled=false
 
-},800)
+document.getElementById("error").innerText=""
+
+localStorage.removeItem("lockUntil")
+
+return
 
 }
 
-btn.addEventListener("click",login)
+btn.disabled=true
 
-window.onload=function(){
+document.getElementById("error").innerText=
+"Account locked. Try again in "+remaining+"s"
 
-if(Date.now()<lockUntil){
-startCountdown()
+},1000)
+
 }
 
-}
-
-document.addEventListener("contextmenu",e=>e.preventDefault())
+countdown()
 
 </script>
+
 
 </body>
 </html>
