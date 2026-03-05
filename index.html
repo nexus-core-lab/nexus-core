@@ -3,45 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Nexus Core System</title>
 
 <style>
-
 body{
-font-family:Arial, sans-serif;
-background:linear-gradient(180deg,#083b45,#0e5b63);
+margin:0;
+font-family: Arial, Helvetica, sans-serif;
+background:#0f4c4c;
 display:flex;
 justify-content:center;
 align-items:center;
 height:100vh;
-margin:0;
 }
 
-.login-box{
+.card{
 background:white;
-padding:30px;
+padding:40px;
 border-radius:14px;
 width:320px;
 text-align:center;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
+box-shadow:0 15px 40px rgba(0,0,0,0.25);
 }
 
 .logo{
-width:95px;
-height:95px;
+width:90px;
 margin-bottom:15px;
 }
 
-h2{
-margin:5px 0;
+h1{
 font-size:22px;
+margin:10px 0;
+letter-spacing:1px;
 }
 
-p{
+.subtitle{
 color:#666;
+margin-bottom:25px;
 font-size:14px;
-margin-bottom:20px;
 }
 
 input{
@@ -56,43 +54,56 @@ font-size:14px;
 button{
 width:100%;
 padding:12px;
-margin-top:10px;
+margin-top:12px;
 border:none;
 border-radius:8px;
-background:#2f4156;
+background:#2c3e50;
 color:white;
 font-size:15px;
 cursor:pointer;
 }
 
 button:hover{
-background:#223244;
+background:#1f2c3a;
 }
 
-#msg{
-margin-top:10px;
-font-size:14px;
-color:red;
+.status{
+margin-top:15px;
+font-size:13px;
+color:#c0392b;
 }
 
+.footer{
+margin-top:18px;
+font-size:11px;
+color:#777;
+line-height:1.4;
+}
 </style>
+
 </head>
 
 <body>
 
-<div class="login-box">
+<div class="card">
 
-<img src="logo.png" class="logo">
+<img src="https://i.imgur.com/6o5VbQp.png" class="logo">
 
-<h2>NEXUS CORE SYSTEM</h2>
-<p>Secure Access Portal</p>
+<h1>NEXUS CORE SYSTEM</h1>
+<div class="subtitle">Internal Access Portal</div>
 
-<input type="text" id="user" placeholder="User ID">
-<input type="password" id="pass" placeholder="Password">
+<input id="user" placeholder="User ID">
+<input id="pass" type="password" placeholder="Password">
 
 <button onclick="login()">SIGN IN</button>
 
-<div id="msg"></div>
+<div id="msg" class="status"></div>
+
+<div class="footer">
+Authorized personnel only<br>
+Access is logged and monitored<br>
+© 2025 Nexus Core Systems
+</div>
 
 </div>
 
@@ -100,17 +111,14 @@ color:red;
 
 function login(){
 
-let u=document.getElementById("user").value
-let p=document.getElementById("pass").value
+let u=document.getElementById("user").value;
+let p=document.getElementById("pass").value;
 
 if(u==="admin" && p==="1234"){
-
-window.location.href="https://lin.ee/lGGma6p"
-
-}else{
-
-document.getElementById("msg").innerText="Invalid access credentials"
-
+window.location.href="https://lin.ee/lGGma6p";
+}
+else{
+document.getElementById("msg").innerText="Invalid access credentials";
 }
 
 }
