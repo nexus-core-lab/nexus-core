@@ -1,175 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexus Core | Secure Access</title>
+
+<title>Nexus Core System</title>
+
+<link rel="icon" href="logo.png">
 
 <style>
-*{box-sizing:border-box;}
 
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  background:#f4f6f8;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+font-family:system-ui;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+margin:0;
 }
 
-.container{
-  background:#fff;
-  width:100%;
-  max-width:360px;
-  padding:40px 30px;
-  border-radius:8px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.08);
-  text-align:center;
+.card{
+background:white;
+width:360px;
+padding:40px;
+border-radius:16px;
+text-align:center;
+box-shadow:0 15px 40px rgba(0,0,0,.3);
 }
 
 .logo{
-  width:90px;
-  margin-bottom:10px;
+width:85px;
+margin-bottom:15px;
 }
 
-.company{
-  font-size:13px;
-  letter-spacing:2px;
-  color:#6b7280;
-  margin-bottom:5px;
+.titleSmall{
+letter-spacing:2px;
+font-size:13px;
+color:#6b7280;
 }
 
-h1{
-  font-size:18px;
-  margin:0 0 25px 0;
-  color:#1f2937;
+.titleBig{
+font-size:22px;
+margin-bottom:25px;
+font-weight:600;
+color:#111827;
 }
 
 input{
-  width:100%;
-  padding:12px;
-  margin-bottom:15px;
-  border:1px solid #d1d5db;
-  border-radius:6px;
-  font-size:14px;
-  background:#fff;
+width:100%;
+padding:12px;
+margin-bottom:14px;
+border-radius:8px;
+border:1px solid #d1d5db;
+font-size:14px;
 }
 
 button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:6px;
-  background:#1f2937;
-  color:#fff;
-  font-weight:600;
-  cursor:pointer;
+width:100%;
+padding:13px;
+border:none;
+border-radius:8px;
+background:#1f2937;
+color:white;
+font-weight:600;
+cursor:pointer;
 }
 
 button:disabled{
-  background:#9ca3af;
-  cursor:not-allowed;
+background:#9ca3af;
+cursor:not-allowed;
 }
 
-.message{
-  margin-top:10px;
-  font-size:13px;
-  color:#dc2626;
-  min-height:18px;
+#error{
+color:red;
+font-size:14px;
+margin-top:10px;
 }
 
-.footer{
-  margin-top:25px;
-  font-size:11px;
-  color:#6b7280;
+footer{
+margin-top:20px;
+font-size:11px;
+color:#9ca3af;
 }
+
+.shake{
+animation:shake .3s;
+}
+
+@keyframes shake{
+0%{transform:translateX(0)}
+25%{transform:translateX(-4px)}
+50%{transform:translateX(4px)}
+75%{transform:translateX(-4px)}
+100%{transform:translateX(0)}
+}
+
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="card" id="card">
 
-<img src="logo.png" class="logo" alt="Nexus Core Logo">
+<img src="logo.png" class="logo">
 
-<div class="company">NEXUS CORE SYSTEM</div>
-<h1>Secure Access Portal</h1>
+<div class="titleSmall">NEXUS CORE SYSTEM</div>
+<div class="titleBig">Secure Access Portal</div>
 
-<input type="text" id="user" placeholder="User ID">
-<input type="password" id="pass" placeholder="Password">
+<input id="user" placeholder="User ID">
+<input id="pass" type="password" placeholder="Password">
 
-<button id="loginBtn">SIGN IN</button>
+<button id="loginBtn" onclick="login()">SIGN IN</button>
 
-<div class="message" id="message"></div>
+<div id="error"></div>
 
-<div class="footer">
-© 2025 Nexus Core. All rights reserved.
-</div>
+<footer>
+© 2025 Nexus Core
+</footer>
 
 </div>
 
 <script>
-const correctUser = "admin";
-const correctPass = "1234";
 
-let failedAttempts = parseInt(localStorage.getItem("failedAttempts")) || 0;
-let lockUntil = parseInt(localStorage.getItem("lockUntil")) || 0;
+let attempts = Number(localStorage.getItem("attempts")) || 0
+let lockUntil = Number(localStorage.getItem("lockUntil")) || 0
 
-const loginBtn = document.getElementById("loginBtn");
-const message = document.getElementById("message");
+const btn = document.getElementById("loginBtn")
+const error = document.getElementById("error")
 
-function checkLock() {
-  const now = Date.now();
+function checkLock(){
 
-  if (lockUntil > now) {
-    const remaining = Math.ceil((lockUntil - now)/1000);
-    loginBtn.disabled = true;
-    message.innerText = "Account locked. Try again in " + remaining + "s";
-    setTimeout(checkLock,1000);
-  } else {
-    loginBtn.disabled = false;
-    message.innerText = "";
-  }
+let now = Date.now()
+
+if(now < lockUntil){
+
+let seconds = Math.ceil((lockUntil-now)/1000)
+
+btn.disabled=true
+error.innerHTML="Account locked. Try again in "+seconds+"s"
+
+setTimeout(checkLock,1000)
+
+return true
 }
 
-checkLock();
+btn.disabled=false
+error.innerHTML=""
+return false
+}
 
-loginBtn.addEventListener("click", function(){
+checkLock()
 
-  const now = Date.now();
-  if (lockUntil > now) return;
+function login(){
 
-  const user = document.getElementById("user").value;
-  const pass = document.getElementById("pass").value;
+if(checkLock()) return
 
-  if(user === correctUser && pass === correctPass){
-    alert("Login successful");
-    failedAttempts = 0;
-    localStorage.clear();
-  }else{
-    failedAttempts++;
-    localStorage.setItem("failedAttempts", failedAttempts);
+let user=document.getElementById("user").value
+let pass=document.getElementById("pass").value
 
-    let lockTime = 0;
+// ตัวอย่างบัญชี
+if(user==="admin" && pass==="1234"){
 
-    if(failedAttempts >= 9){
-      lockTime = 180;
-    } else if(failedAttempts >= 6){
-      lockTime = 90;
-    } else if(failedAttempts >= 3){
-      lockTime = 30;
-    }
+alert("Login Success")
 
-    if(lockTime > 0){
-      lockUntil = Date.now() + lockTime*1000;
-      localStorage.setItem("lockUntil", lockUntil);
-      checkLock();
-    } else {
-      message.innerText = "Invalid credentials ("+failedAttempts+")";
-    }
-  }
-});
+attempts=0
+localStorage.setItem("attempts",0)
+
+return
+}
+
+attempts++
+
+localStorage.setItem("attempts",attempts)
+
+document.getElementById("card").classList.add("shake")
+
+setTimeout(()=>{
+document.getElementById("card").classList.remove("shake")
+},300)
+
+let lockTime=0
+
+if(attempts>=9) lockTime=180
+else if(attempts>=6) lockTime=90
+else if(attempts>=3) lockTime=30
+
+if(lockTime>0){
+
+lockUntil=Date.now()+lockTime*1000
+
+localStorage.setItem("lockUntil",lockUntil)
+
+}
+
+checkLock()
+
+}
+
 </script>
 
 </body>
