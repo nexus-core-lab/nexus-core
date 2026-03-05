@@ -2,83 +2,78 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nexus Core System</title>
 
 <style>
 
 body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:linear-gradient(135deg,#0b3a42,#0f6b73);
+font-family: Arial;
+background: linear-gradient(135deg,#0b3c42,#0f6a6e);
 height:100vh;
 display:flex;
 align-items:center;
 justify-content:center;
+margin:0;
 }
 
 .card{
 background:white;
-width:90%;
-max-width:420px;
 padding:40px;
 border-radius:20px;
+width:320px;
 text-align:center;
-box-shadow:0 20px 40px rgba(0,0,0,0.3);
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
 .logo{
-width:120px;
+width:80px;
 margin-bottom:10px;
 }
 
-h1{
-margin:10px 0 5px;
-font-size:26px;
+h2{
+margin:10px 0 0;
 letter-spacing:2px;
 }
 
-.subtitle{
-color:#666;
-margin-bottom:25px;
+.sub{
+color:gray;
+margin-bottom:20px;
+font-size:14px;
 }
 
 input{
 width:100%;
-padding:14px;
-margin:10px 0;
-border-radius:10px;
+padding:12px;
+margin:8px 0;
+border-radius:8px;
 border:1px solid #ccc;
-font-size:16px;
 }
 
 button{
 width:100%;
-padding:14px;
+padding:12px;
 border:none;
-border-radius:10px;
-background:#3b4a5f;
+border-radius:8px;
+background:#2f4057;
 color:white;
-font-size:16px;
 font-weight:bold;
 cursor:pointer;
 }
 
 button:disabled{
-background:#9aa3ad;
-cursor:not-allowed;
+background:gray;
 }
 
-.message{
-margin-top:15px;
+#msg{
+margin-top:10px;
 color:red;
-font-weight:bold;
+font-size:14px;
 }
 
 .footer{
-margin-top:20px;
 font-size:12px;
-color:#666;
+color:gray;
+margin-top:20px;
 }
 
 </style>
@@ -90,15 +85,15 @@ color:#666;
 
 <img src="logo.png" class="logo">
 
-<h1>NEXUS CORE SYSTEM</h1>
-<div class="subtitle">Secure Access Portal</div>
+<h2>NEXUS CORE SYSTEM</h2>
+<div class="sub">Secure Access Portal</div>
 
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
-<button id="loginBtn" onclick="login()">SIGN IN</button>
+<button onclick="login()" id="btn">SIGN IN</button>
 
-<div id="message" class="message"></div>
+<div id="msg"></div>
 
 <div class="footer">
 Authorized personnel only. All access is logged and monitored.<br>
@@ -109,44 +104,87 @@ Authorized personnel only. All access is logged and monitored.<br>
 
 <script>
 
-const ADMIN_ID="admin";
-const ADMIN_PASS="1234";
-const LINE_URL="https://lin.ee/lGGma6p";
+const ADMIN_ID="admin"
+const ADMIN_PASS="1234"
+const LINE_URL="https://lin.ee/lGGma6p"
 
-let attempts=parseInt(localStorage.getItem("attempts"))||0;
-let lockUntil=parseInt(localStorage.getItem("lockUntil"))||0;
+let attempts=parseInt(localStorage.getItem("attempts"))||0
+let lockUntil=parseInt(localStorage.getItem("lockUntil"))||0
 
-const msg=document.getElementById("message");
-const btn=document.getElementById("loginBtn");
+const btn=document.getElementById("btn")
+const msg=document.getElementById("msg")
 
 function updateLock(){
 
-let now=Date.now();
+let now=Date.now()
 
-if(lockUntil>now){
+if(now<lockUntil){
 
-let remain=Math.floor((lockUntil-now)/1000);
+btn.disabled=true
 
-btn.disabled=true;
+let remain=Math.ceil((lockUntil-now)/1000)
 
-msg.innerHTML="Security Lock Active – Retry in "+remain+"s";
+msg.innerHTML="Security Lock Active — Retry in "+remain+"s"
 
-setTimeout(updateLock,1000);
+setTimeout(updateLock,1000)
 
 }else{
 
-btn.disabled=false;
-
-msg.innerHTML="";
-
-}
+btn.disabled=false
+msg.innerHTML=""
 
 }
 
-updateLock();
+}
+
+updateLock()
 
 function login(){
 
+let user=document.getElementById("user").value
+let pass=document.getElementById("pass").value
+
+if(user===ADMIN_ID && pass===ADMIN_PASS){
+
+localStorage.removeItem("attempts")
+localStorage.removeItem("lockUntil")
+
+window.location.href=LINE_URL
+
+return
+}
+
+attempts++
+localStorage.setItem("attempts",attempts)
+
+let lockTime=0
+
+if(attempts>=9){
+lockTime=180
+}
+else if(attempts>=6){
+lockTime=90
+}
+else if(attempts>=3){
+lockTime=30
+}
+
+if(lockTime>0){
+
+lockUntil=Date.now()+lockTime*1000
+
+localStorage.setItem("lockUntil",lockUntil)
+
+}
+
+updateLock()
+
+}
+
+</script>
+
+</body>
+</html>
 let id=document.getElementById("user").value;
 let pass=document.getElementById("pass").value;
 
