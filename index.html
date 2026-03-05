@@ -2,45 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>NEXUS CORE SYSTEM</title>
+<title>Nexus Core System</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Arial,Helvetica,sans-serif;
+font-family:Arial;
+background:linear-gradient(135deg,#0f4c4c,#1e7777);
 height:100vh;
 display:flex;
 align-items:center;
 justify-content:center;
-background:linear-gradient(135deg,#0f4c4c,#0a2e2e);
 }
 
-.card{
+.login-box{
 background:white;
-padding:40px;
+padding:30px;
 width:320px;
 border-radius:14px;
 text-align:center;
-box-shadow:0 10px 40px rgba(0,0,0,0.3);
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
 }
 
 .logo{
-width:70px;
+width:60px;
 margin-bottom:10px;
 }
 
 h2{
-margin:10px 0 5px 0;
+margin:5px 0;
 letter-spacing:2px;
-}
-
-.sub{
-font-size:12px;
-color:gray;
-margin-bottom:20px;
 }
 
 input{
@@ -49,7 +41,6 @@ padding:10px;
 margin:8px 0;
 border-radius:6px;
 border:1px solid #ccc;
-font-size:14px;
 }
 
 button{
@@ -57,16 +48,14 @@ width:100%;
 padding:10px;
 border:none;
 border-radius:6px;
-background:#88929b;
+background:#7f8c8d;
 color:white;
 font-weight:bold;
-margin-top:8px;
 cursor:pointer;
 }
 
-button:disabled{
-background:#bbb;
-cursor:not-allowed;
+button:hover{
+background:#5d6d6d;
 }
 
 #lockMsg{
@@ -77,8 +66,8 @@ color:red;
 
 .footer{
 font-size:10px;
-color:#777;
-margin-top:15px;
+margin-top:12px;
+color:#666;
 }
 
 </style>
@@ -86,12 +75,12 @@ margin-top:15px;
 
 <body>
 
-<div class="card">
+<div class="login-box">
 
 <img src="logo.png" class="logo">
 
 <h2>NEXUS CORE SYSTEM</h2>
-<div class="sub">Secure Access Portal</div>
+<p style="font-size:12px;color:#777">Secure Access Portal</p>
 
 <input id="user" placeholder="Username">
 <input id="pass" type="password" placeholder="Password">
@@ -101,8 +90,8 @@ margin-top:15px;
 <div id="lockMsg"></div>
 
 <div class="footer">
-Authorized personnel only. All access is logged and monitored.<br>
-© 2025 Nexus Core Systems
+Authorized personnel only.  
+All access is logged and monitored.
 </div>
 
 </div>
@@ -111,6 +100,7 @@ Authorized personnel only. All access is logged and monitored.<br>
 
 const ADMIN_ID="admin"
 const ADMIN_PASS="1234"
+
 const LINE_URL="https://lin.ee/lGGma6p"
 
 let attempts=parseInt(localStorage.getItem("attempts"))||0
@@ -129,7 +119,7 @@ btn.disabled=true
 
 let sec=Math.ceil((lockUntil-now)/1000)
 
-msg.innerText="Security Lock Active — Retry in "+sec+"s"
+msg.innerText="Security Lock Active – Retry in "+sec+"s"
 
 setTimeout(updateLock,1000)
 
@@ -140,6 +130,7 @@ msg.innerText=""
 
 localStorage.removeItem("lockUntil")
 localStorage.removeItem("attempts")
+
 attempts=0
 
 }
@@ -170,7 +161,6 @@ return
 }
 
 attempts++
-
 localStorage.setItem("attempts",attempts)
 
 let lockTime=0
