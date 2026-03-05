@@ -1,30 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Nexus Core System</title>
 
 <style>
 
 body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#0f4c54;
+font-family:Arial;
+background:#0f4c53;
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
 height:100vh;
+margin:0;
 }
 
 .card{
 background:white;
 padding:40px;
-border-radius:20px;
+border-radius:15px;
 width:320px;
 text-align:center;
-box-shadow:0 20px 40px rgba(0,0,0,0.3);
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
 .logo{
@@ -33,69 +31,75 @@ margin-bottom:15px;
 }
 
 h2{
-margin:10px 0;
-letter-spacing:2px;
+margin:5px;
+}
+
+.sub{
+color:#777;
+margin-bottom:20px;
 }
 
 input{
 width:100%;
 padding:12px;
-margin:10px 0;
-border-radius:10px;
+margin:8px 0;
+border-radius:8px;
 border:1px solid #ccc;
-font-size:15px;
+font-size:14px;
 }
 
 button{
 width:100%;
-padding:13px;
-border:none;
-border-radius:10px;
-background:#24364b;
+padding:12px;
+background:#26384d;
 color:white;
-font-size:16px;
+border:none;
+border-radius:8px;
+font-size:15px;
 cursor:pointer;
 }
 
-button:hover{
-background:#1b2a3a;
+button:disabled{
+background:#999;
 }
 
-.msg{
-margin-top:12px;
+.error{
 color:red;
-font-size:14px;
+margin-top:10px;
 }
 
 .footer{
-margin-top:20px;
-font-size:12px;
+font-size:11px;
 color:#777;
+margin-top:20px;
 }
 
 </style>
-
 </head>
+
 <body>
 
 <div class="card">
 
-<img class="logo" src="logo.png">
+<img src="logo.png" class="logo">
 
 <h2>NEXUS CORE SYSTEM</h2>
-<div>Secure Access Portal</div>
+<div class="sub">Secure Access Portal</div>
+
+<form id="loginForm">
 
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
-<button onclick="login()">SIGN IN</button>
+<button id="loginBtn">SIGN IN</button>
 
-<div id="msg" class="msg"></div>
+</form>
+
+<div id="msg" class="error"></div>
 
 <div class="footer">
-Authorized personnel only.  
-All access is logged and monitored.  
-<br>
+Authorized personnel only.<br>
+All access logged and monitored.<br>
 © 2025 Nexus Core Systems
 </div>
 
@@ -103,44 +107,61 @@ All access is logged and monitored.
 
 <script>
 
-/* AUTO LOGIN (NO REFRESH) */
+const form=document.getElementById("loginForm")
+const msg=document.getElementById("msg")
+const btn=document.getElementById("loginBtn")
 
-if(localStorage.getItem("access")=="true"){
+let lock=false
+
+if(sessionStorage.getItem("login")==="true"){
 location.href="https://lin.ee/lGGma6p"
 }
 
-function login(){
+form.addEventListener("submit",function(e){
+
+e.preventDefault()
+
+if(lock) return
 
 let u=document.getElementById("user").value
 let p=document.getElementById("pass").value
 
 if(u==="admin" && p==="1234"){
 
-localStorage.setItem("access","true")
+sessionStorage.setItem("login","true")
 
 location.href="https://lin.ee/lGGma6p"
 
 }else{
 
-document.getElementById("msg").innerText="Invalid access credentials"
+msg.innerText="Invalid access credentials"
+
+lock=true
+btn.disabled=true
+
+let t=30
+
+let timer=setInterval(function(){
+
+msg.innerText="Security Lock Active — Retry in "+t+"s"
+
+t--
+
+if(t<0){
+
+clearInterval(timer)
+
+msg.innerText=""
+btn.disabled=false
+lock=false
 
 }
 
-}
+},1000)
 
-/* ENTER LOGIN */
-
-document.addEventListener("keydown",function(e){
-
-if(e.key==="Enter"){
-login()
 }
 
 })
-
-/* DISABLE RIGHT CLICK */
-
-document.addEventListener("contextmenu",e=>e.preventDefault())
 
 </script>
 
