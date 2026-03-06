@@ -9,218 +9,156 @@
 <style>
 
 body{
-font-family: Arial, sans-serif;
-background: linear-gradient(135deg,#052c33,#0c4a54);
-height:100vh;
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(160deg,#063d3d,#0a5c5c);
 display:flex;
 justify-content:center;
 align-items:center;
-margin:0;
+height:100vh;
 }
 
 .card{
-background: rgba(255,255,255,0.96);
-backdrop-filter: blur(6px);
+background:white;
+width:90%;
+max-width:420px;
 padding:40px;
-width:340px;
-border-radius:20px;
-box-shadow:0 25px 60px rgba(0,0,0,0.35);
+border-radius:30px;
 text-align:center;
+box-shadow:0 20px 40px rgba(0,0,0,0.2);
 }
 
 .logo{
-width:85px;
-margin-bottom:18px;
+width:95px;
+margin-bottom:10px;
 }
 
-.title{
-font-size:24px;
-font-weight:bold;
+h1{
+margin:5px 0;
 letter-spacing:2px;
-color:#2b2b2b;
+font-size:26px;
 }
 
 .subtitle{
-color:#6a6a6a;
-font-size:14px;
+color:#777;
 margin-bottom:20px;
 }
 
-.systeminfo{
+.system-info{
+color:#999;
 font-size:13px;
-color:#8a8a8a;
+margin-bottom:25px;
 line-height:1.6;
-margin-bottom:20px;
 }
 
 input{
 width:100%;
-padding:12px;
+padding:15px;
 margin:8px 0;
-border-radius:10px;
-border:1px solid #dcdcdc;
-font-size:14px;
-transition:0.2s;
-}
-
-input:focus{
-border:1px solid #2d6cdf;
-outline:none;
-box-shadow:0 0 0 2px rgba(45,108,223,0.15);
+border-radius:12px;
+border:1px solid #ddd;
+font-size:15px;
 }
 
 button{
 width:100%;
-padding:13px;
+padding:15px;
 margin-top:10px;
 border:none;
-border-radius:10px;
-background:#3e516a;
+border-radius:12px;
+background:#455a75;
 color:white;
-font-weight:bold;
+font-size:16px;
 letter-spacing:1px;
+font-weight:600;
 cursor:pointer;
-transition:0.25s;
+transition:0.3s;
 }
 
 button:hover{
-background:#2d3f58;
-transform:translateY(-1px);
-box-shadow:0 8px 18px rgba(0,0,0,0.25);
-}
-
-button:disabled{
-background:#9aa3ad;
-cursor:not-allowed;
+background:#2f4159;
 }
 
 .status{
-margin-top:18px;
+margin-top:20px;
 font-size:13px;
-color:#7a7a7a;
-line-height:1.5;
+color:#777;
+line-height:1.7;
 }
 
-.footer{
-margin-top:18px;
+.warning{
+margin-top:15px;
 font-size:12px;
-color:#8c8c8c;
-}
-
-#message{
-margin-top:10px;
-font-size:13px;
-color:red;
+color:#999;
 }
 
 </style>
 </head>
 
+
 <body>
 
 <div class="card">
 
-<img src="logo.png" class="logo">
+<img class="logo" src="logo.png">
 
-<div class="title">NEXUS CORE SYSTEM</div>
+<h1>NEXUS CORE SYSTEM</h1>
 <div class="subtitle">Secure Access Portal</div>
 
-<div class="systeminfo">
+<div class="system-info">
 SYSTEM ID: NX-CORE-771A<br>
 SECURITY LEVEL: OMEGA<br>
 NETWORK NODE: GLOBAL GRID
 </div>
 
-<input id="user" placeholder="User ID">
-<input id="pass" type="password" placeholder="Password">
+<input type="text" placeholder="User ID">
+<input type="password" placeholder="Password">
 
-<button id="loginBtn" onclick="login()">SIGN IN</button>
-
-<div id="message"></div>
+<button>SIGN IN</button>
 
 <div class="status">
+
 SYSTEM STATUS: ONLINE<br>
-ENCRYPTION: AES-256
+SECURE CHANNEL: AES-256<br>
+NODE AUTHENTICATION: VERIFIED<br>
+
+USER IP: <span id="ip">Loading...</span><br>
+SESSION ID: <span id="session"></span><br>
+SERVER TIME: <span id="time"></span>
+
 </div>
 
-<div class="footer">
+<div class="warning">
+
 WARNING: This system is restricted to authorized personnel only.<br>
 All access is logged and monitored.<br>
 © 2025 Nexus Core Systems
+
 </div>
 
 </div>
+
 
 <script>
 
-const ADMIN_ID="admin"
-const ADMIN_PASS="1234"
-const LINE_URL="https://lin.ee/lGGma6p"
-
-let attempts = localStorage.getItem("loginAttempts") || 0
-let lockUntil = localStorage.getItem("lockUntil") || 0
-
-const msg=document.getElementById("message")
-const btn=document.getElementById("loginBtn")
-const user=document.getElementById("user")
-const pass=document.getElementById("pass")
-
-function checkLock(){
-
-let now=Date.now()
-
-if(lockUntil>now){
-
-btn.disabled=true
-user.disabled=true
-pass.disabled=true
-
-let remain=Math.ceil((lockUntil-now)/1000)
-
-msg.innerText="System locked. Try again in "+remain+" seconds"
-
-setTimeout(checkLock,1000)
-
-}else{
-
-btn.disabled=false
-user.disabled=false
-pass.disabled=false
-msg.innerText=""
-
+function randomSession(){
+return Math.random().toString(36).substring(2,12).toUpperCase()
 }
 
+document.getElementById("session").innerText=randomSession()
+
+function updateTime(){
+const now=new Date()
+document.getElementById("time").innerText=now.toLocaleTimeString()
 }
 
-function login(){
+setInterval(updateTime,1000)
 
-if(lockUntil>Date.now()){
-checkLock()
-return
-}
-
-if(user.value===ADMIN_ID && pass.value===ADMIN_PASS){
-
-localStorage.setItem("loginAttempts",0)
-window.location.href=LINE_URL
-
-}else{
-
-attempts++
-localStorage.setItem("loginAttempts",attempts)
-
-msg.innerText="Access denied"
-
-lockUntil=Date.now()+30000
-localStorage.setItem("lockUntil",lockUntil)
-
-checkLock()
-
-}
-
-}
-
-checkLock()
+fetch("https://api.ipify.org?format=json")
+.then(res=>res.json())
+.then(data=>{
+document.getElementById("ip").innerText=data.ip
+})
 
 </script>
 
