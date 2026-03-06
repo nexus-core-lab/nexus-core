@@ -1,150 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NEXUS CORE SYSTEM</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<title>Nexus Core System</title>
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter;
-}
-
 body{
-
-background:linear-gradient(160deg,#0c1f2c,#07141c);
+font-family: Arial, sans-serif;
+background: linear-gradient(135deg,#052c33,#0c4a52);
 height:100vh;
 display:flex;
-align-items:center;
 justify-content:center;
-color:#1c1c1c;
-
+align-items:center;
+margin:0;
 }
 
-.container{
-
-width:420px;
-background:#f3f4f6;
-border-radius:24px;
-padding:40px;
-box-shadow:
-0 25px 60px rgba(0,0,0,0.35);
-
+.card{
+background:#ffffff;
+padding:35px;
+width:340px;
+border-radius:20px;
+box-shadow:0 20px 40px rgba(0,0,0,0.35);
 text-align:center;
-
 }
 
 .logo{
-
-width:70px;
-margin-bottom:18px;
-
+width:80px;
+margin-bottom:10px;
 }
 
-h1{
-
-font-size:26px;
-letter-spacing:3px;
-font-weight:600;
-color:#26323c;
-
+.title{
+font-size:22px;
+font-weight:bold;
+letter-spacing:2px;
+color:#222;
 }
 
 .subtitle{
-
-margin-top:4px;
-color:#6b7280;
-font-size:14px;
-
+font-size:15px;
+color:#666;
+margin-bottom:18px;
 }
 
 .info{
-
-margin-top:20px;
 font-size:13px;
-color:#6b7280;
+color:#777;
 line-height:1.6;
-
+margin-bottom:18px;
 }
 
 input{
-
 width:100%;
-padding:14px;
-margin-top:14px;
-
+padding:12px;
+margin:7px 0;
 border-radius:10px;
-border:1px solid #d1d5db;
-
-font-size:15px;
-
+border:1px solid #ddd;
+font-size:14px;
 }
 
 button{
-
-margin-top:18px;
 width:100%;
-padding:14px;
-
+padding:13px;
+margin-top:10px;
 border:none;
 border-radius:10px;
-
-background:#334155;
+background:#394b63;
 color:white;
-
-font-weight:600;
-letter-spacing:1px;
-
+font-size:14px;
+font-weight:bold;
 cursor:pointer;
-transition:.2s;
-
 }
 
 button:hover{
-
-background:#1e293b;
-
+background:#2d3d52;
 }
 
-.status{
-
-margin-top:16px;
-font-size:13px;
-color:#4b5563;
-
+button:disabled{
+background:#9aa3ad;
+cursor:not-allowed;
 }
 
-.console{
-
-margin-top:18px;
-
-background:#111827;
-color:#d1d5db;
-
-border-radius:10px;
-
-padding:14px;
-
-font-family:monospace;
+#message{
+margin-top:10px;
 font-size:13px;
+color:red;
+}
 
-text-align:left;
-
+.system{
+margin-top:15px;
+font-size:12px;
+color:#666;
 }
 
 .footer{
-
+font-size:11px;
 margin-top:18px;
-font-size:12px;
-color:#6b7280;
-
+color:#777;
+line-height:1.4;
 }
 
 </style>
@@ -152,78 +107,95 @@ color:#6b7280;
 
 <body>
 
-<div class="container">
+<div class="card">
 
-<img class="logo" src="logo.png">
+<img src="logo.png" class="logo">
 
-<h1>NEXUS CORE SYSTEM</h1>
+<div class="title">NEXUS CORE SYSTEM</div>
 <div class="subtitle">Secure Access Portal</div>
 
 <div class="info">
-
 SYSTEM ID: NX-CORE-771A<br>
 SECURITY LEVEL: OMEGA<br>
 NETWORK NODE: GLOBAL GRID
-
 </div>
 
-<input type="text" placeholder="User ID">
-<input type="password" placeholder="Password">
+<input id="user" placeholder="User ID">
+<input id="pass" type="password" placeholder="Password">
 
-<button onclick="login()">SIGN IN</button>
+<button id="loginBtn" onclick="login()">SIGN IN</button>
 
-<div class="status">
+<div id="message"></div>
 
-System Status: ONLINE | Encryption: AES-256
-
-</div>
-
-<div class="console" id="console">
-
-[system] nexus core initializing...<br>
-[system] loading authentication service...
-
+<div class="system">
+SYSTEM STATUS: ONLINE<br>
+ENCRYPTION: AES-256
 </div>
 
 <div class="footer">
-
-Authorized personnel only. All access logged and monitored.<br>
+WARNING: This system is restricted to authorized personnel only.<br>
+All access is logged and monitored.<br>
 © 2025 Nexus Core Systems
-
 </div>
 
 </div>
 
 <script>
 
-function log(msg){
+const ADMIN_ID="admin"
+const ADMIN_PASS="1234"
+const LINE_URL="https://lin.ee/lGGma6p"
 
-let box=document.getElementById("console")
+let lockUntil = localStorage.getItem("lockUntil") || 0
 
-box.innerHTML += "<br>"+msg
+const msg=document.getElementById("message")
+const btn=document.getElementById("loginBtn")
+
+function checkLock(){
+
+let now=Date.now()
+
+if(lockUntil>now){
+
+let seconds=Math.ceil((lockUntil-now)/1000)
+
+btn.disabled=true
+msg.innerText="Access locked. Try again in "+seconds+" sec"
+
+setTimeout(checkLock,1000)
+
+}else{
+
+btn.disabled=false
+msg.innerText=""
+
+}
 
 }
 
 function login(){
 
-log("[auth] verifying credentials...")
-setTimeout(()=>{
+let user=document.getElementById("user").value
+let pass=document.getElementById("pass").value
 
-log("[auth] secure session created")
+if(user===ADMIN_ID && pass===ADMIN_PASS){
 
-},800)
+window.location.href=LINE_URL
+
+}else{
+
+lockUntil=Date.now()+30000
+localStorage.setItem("lockUntil",lockUntil)
+
+msg.innerText="Access denied"
+
+checkLock()
 
 }
 
-setInterval(()=>{
+}
 
-let now=new Date()
-
-let t=now.toLocaleTimeString()
-
-log("["+t+"] node heartbeat OK")
-
-},7000)
+checkLock()
 
 </script>
 
