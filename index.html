@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,100 +8,110 @@
 
 <style>
 
-body{
-font-family: Arial, sans-serif;
-background: linear-gradient(135deg,#0b2a36,#0f4c5c);
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-margin:0;
+*{
+box-sizing:border-box;
+font-family:Segoe UI,Roboto,sans-serif;
 }
 
-.card{
-background:#f4f6f8;
-padding:35px;
-width:340px;
+body{
+margin:0;
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,#0c2d33,#0f4c5c);
+}
+
+.container{
+width:380px;
+background:#fff;
 border-radius:18px;
-box-shadow:0 20px 60px rgba(0,0,0,0.45);
+padding:40px 35px;
+box-shadow:0 20px 40px rgba(0,0,0,0.25);
 text-align:center;
 }
 
 .logo{
-width:80px;
+width:70px;
 margin-bottom:10px;
 }
 
-.title{
-font-size:22px;
-font-weight:700;
-letter-spacing:1px;
-color:#1f2933;
+h1{
+margin:10px 0 4px;
+font-size:24px;
+letter-spacing:2px;
 }
 
 .subtitle{
-color:#6b7280;
+color:#666;
 font-size:14px;
-margin-bottom:15px;
+margin-bottom:25px;
 }
 
-.sysinfo{
-font-size:12px;
-color:#6b7280;
-margin-bottom:18px;
+.systeminfo{
+font-size:13px;
+color:#777;
+margin-bottom:25px;
 line-height:1.6;
 }
 
 input{
 width:100%;
-padding:11px;
-margin:6px 0;
-border-radius:8px;
-border:1px solid #cbd5e1;
-font-size:14px;
+padding:14px;
+margin:8px 0;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:15px;
 }
 
 button{
 width:100%;
-padding:12px;
+padding:14px;
 margin-top:10px;
 border:none;
-border-radius:8px;
-background:#334155;
-color:white;
-font-weight:bold;
-letter-spacing:1px;
+border-radius:10px;
+background:#394a59;
+color:#fff;
+font-size:16px;
 cursor:pointer;
+transition:0.2s;
 }
 
-button:disabled{
-background:#94a3b8;
+button:hover{
+background:#2c3a46;
 }
 
 .status{
-font-size:12px;
-margin-top:12px;
-color:#475569;
+margin-top:15px;
+font-size:13px;
+color:#666;
 }
 
-.log{
-background:#1f2933;
-color:#d1d5db;
-font-size:11px;
-padding:12px;
-margin-top:15px;
-border-radius:8px;
-text-align:left;
-height:70px;
-overflow:hidden;
-font-family:monospace;
-border:1px solid #374151;
+.error{
+color:#c0392b;
+margin-top:10px;
+font-size:14px;
+}
+
+.lock{
+color:#e67e22;
 }
 
 .footer{
-font-size:11px;
-margin-top:15px;
-color:#6b7280;
+margin-top:25px;
+font-size:12px;
+color:#777;
+}
+
+.toggle{
+position:absolute;
+right:15px;
+top:14px;
+cursor:pointer;
+}
+
+.passwordbox{
+position:relative;
 }
 
 </style>
@@ -109,32 +119,37 @@ color:#6b7280;
 
 <body>
 
-<div class="card">
+<div class="container">
 
 <img src="logo.png" class="logo">
 
-<div class="title">NEXUS CORE SYSTEM</div>
+<h1>NEXUS CORE SYSTEM</h1>
 <div class="subtitle">Secure Access Portal</div>
 
-<div class="sysinfo">
+<div class="systeminfo">
 SYSTEM ID: NX-CORE-771A<br>
 SECURITY LEVEL: OMEGA<br>
 NETWORK NODE: GLOBAL GRID
 </div>
 
 <input id="user" placeholder="User ID">
-<input id="pass" type="password" placeholder="Password">
 
-<button id="loginBtn" onclick="login()">SIGN IN</button>
+<div class="passwordbox">
+<input id="pass" type="password" placeholder="Password">
+<span class="toggle" onclick="togglePass()">👁</span>
+</div>
+
+<button onclick="login()">SIGN IN</button>
 
 <div class="status">
 System Status: ONLINE | Encryption: AES-256
 </div>
 
-<div class="log" id="log"></div>
+<div id="msg" class="error"></div>
 
 <div class="footer">
-Authorized personnel only. All access is logged and monitored.<br>
+Authorized personnel only.<br>
+All access attempts are logged.<br>
 © 2025 Nexus Core Systems
 </div>
 
@@ -142,73 +157,92 @@ Authorized personnel only. All access is logged and monitored.<br>
 
 <script>
 
-const ADMIN_ID="admin"
-const ADMIN_PASS="1234"
-const LINE_URL="https://lin.ee/lGGma6p"
+let correctUser="admin"
+let correctPass="nexus771"
 
 let attempts=0
-let lockUntil=0
+let locked=false
+let lockTime=0
 
-const logBox=document.getElementById("log")
+function togglePass(){
 
-function time(){
-let d=new Date()
-return d.toLocaleTimeString()
+let p=document.getElementById("pass")
+
+if(p.type==="password"){
+p.type="text"
+}else{
+p.type="password"
 }
-
-function addLog(text){
-logBox.innerHTML+="["+time()+"] "+text+"<br>"
-logBox.scrollTop=logBox.scrollHeight
-}
-
-function boot(){
-
-addLog("nexus core boot sequence initialized")
-setTimeout(()=>addLog("secure connection established"),800)
-setTimeout(()=>addLog("authentication service ready"),1600)
-setTimeout(()=>addLog("system monitoring active"),2300)
 
 }
 
 function login(){
 
-let id=document.getElementById("user").value
-let pw=document.getElementById("pass").value
-
-let now=Date.now()
-
-if(lockUntil>now){
-
-addLog("access temporarily locked")
+if(locked){
 return
-
 }
 
-if(id===ADMIN_ID && pw===ADMIN_PASS){
+let u=document.getElementById("user").value
+let p=document.getElementById("pass").value
+let msg=document.getElementById("msg")
 
-addLog("authentication successful")
+if(u===correctUser && p===correctPass){
+
+msg.style.color="green"
+msg.innerText="Access Granted"
+
 setTimeout(()=>{
-window.location.href=LINE_URL
-},900)
-
-return
+window.location="dashboard.html"
+},1000)
 
 }
+
+else{
 
 attempts++
 
-addLog("invalid credentials attempt")
+msg.style.color="#c0392b"
+msg.innerText="Invalid credentials"
 
-if(attempts>=1){
+if(attempts>=3){
 
-lockUntil=Date.now()+30000
-addLog("security lock engaged (30s)")
+lockSystem()
+
+}
 
 }
 
 }
 
-boot()
+function lockSystem(){
+
+locked=true
+lockTime=30
+
+let msg=document.getElementById("msg")
+msg.className="error lock"
+
+let timer=setInterval(()=>{
+
+msg.innerText="Too many attempts. Locked "+lockTime+"s"
+
+lockTime--
+
+if(lockTime<0){
+
+clearInterval(timer)
+
+locked=false
+attempts=0
+
+msg.className="error"
+msg.innerText=""
+
+}
+
+},1000)
+
+}
 
 </script>
 
