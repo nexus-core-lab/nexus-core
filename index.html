@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,45 +9,45 @@
 <style>
 
 body{
-font-family:Arial;
-background:linear-gradient(135deg,#081c24,#0f4c5c);
+font-family: Arial, sans-serif;
+background: linear-gradient(135deg,#06242e,#0f4c5c);
 height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
 margin:0;
-color:#333;
 }
 
 .card{
-background:#fff;
+background:#f5f6f7;
 padding:35px;
-width:330px;
-border-radius:18px;
+width:340px;
+border-radius:20px;
 box-shadow:0 15px 40px rgba(0,0,0,0.4);
 text-align:center;
 }
 
 .logo{
-width:75px;
-margin-bottom:10px;
+width:85px;
+margin-bottom:15px;
 }
 
 .title{
 font-size:22px;
 font-weight:bold;
 letter-spacing:2px;
+color:#2b2b2b;
 }
 
 .subtitle{
-color:#666;
+color:#6d6d6d;
 font-size:14px;
 margin-bottom:15px;
 }
 
-.systeminfo{
+.meta{
 font-size:12px;
-color:#888;
+color:#7a7a7a;
 margin-bottom:20px;
 line-height:1.6;
 }
@@ -56,60 +56,62 @@ input{
 width:100%;
 padding:12px;
 margin:7px 0;
-border-radius:8px;
+border-radius:10px;
 border:1px solid #ccc;
 font-size:14px;
 }
 
+input:focus{
+outline:none;
+border-color:#2e3f55;
+box-shadow:0 0 4px rgba(0,0,0,0.2);
+}
+
 button{
 width:100%;
-padding:12px;
-margin-top:10px;
+padding:13px;
+margin-top:12px;
 border:none;
-border-radius:8px;
-background:#2f4057;
+border-radius:10px;
+background:#394b63;
 color:white;
 font-weight:bold;
-letter-spacing:1px;
+font-size:15px;
 cursor:pointer;
+transition:0.2s;
 }
 
 button:hover{
-background:#243447;
+background:#2f4056;
 }
 
 button:disabled{
 background:#9aa3ad;
-}
-
-#message{
-margin-top:10px;
-font-size:13px;
-color:red;
+cursor:not-allowed;
 }
 
 .status{
-font-size:11px;
+font-size:12px;
 margin-top:10px;
-color:#444;
+color:#666;
 }
 
-.log{
-background:#111;
-color:#0f0;
-font-size:10px;
-padding:10px;
-margin-top:15px;
-border-radius:6px;
-text-align:left;
-height:60px;
-overflow:hidden;
+.console{
+background:black;
+color:#00ff6a;
 font-family:monospace;
+font-size:12px;
+text-align:left;
+padding:10px;
+border-radius:10px;
+margin-top:15px;
+height:80px;
+overflow:hidden;
 }
 
-.footer{
+.warning{
 font-size:11px;
-margin-top:12px;
+margin-top:15px;
 color:#777;
 }
 
@@ -125,31 +127,28 @@ color:#777;
 <div class="title">NEXUS CORE SYSTEM</div>
 <div class="subtitle">Secure Access Portal</div>
 
-<div class="systeminfo">
+<div class="meta">
 SYSTEM ID: NX-CORE-771A<br>
 SECURITY LEVEL: OMEGA<br>
 NETWORK NODE: GLOBAL GRID
 </div>
 
-<input id="user" placeholder="User ID">
-<input id="pass" type="password" placeholder="Password">
+<input id="user" placeholder="รหัสผู้ใช้">
+<input id="pass" type="password" placeholder="รหัสผ่าน">
 
-<button id="loginBtn" onclick="login()">SIGN IN</button>
+<button id="loginBtn" onclick="login()">เข้าสู่ระบบ</button>
 
-<div id="message"></div>
-
-<div class="status">
-SYSTEM STATUS: ONLINE<br>
-ENCRYPTION: AES-256
+<div class="status" id="status">
+สถานะระบบ: ออนไลน์ | การเข้ารหัส: AES-256
 </div>
 
-<div class="log" id="log">
-[system] nexus core initialized<br>
+<div class="console" id="console">
+[ระบบ] nexus core เริ่มทำงานแล้ว<br>
 </div>
 
-<div class="footer">
-WARNING: Authorized personnel only.<br>
-All activity monitored.<br>
+<div class="warning">
+คำเตือน: เฉพาะบุคลากรที่ได้รับอนุญาตเท่านั้น<br>
+กิจกรรมทั้งหมดจะถูกตรวจสอบ<br>
 © 2025 Nexus Core Systems
 </div>
 
@@ -161,81 +160,98 @@ const ADMIN_ID="admin"
 const ADMIN_PASS="1234"
 const LINE_URL="https://lin.ee/lGGma6p"
 
-let attempts=0
+let lockUntil = localStorage.getItem("lockUntil") || 0
 
-const msg=document.getElementById("message")
 const btn=document.getElementById("loginBtn")
-const log=document.getElementById("log")
+const user=document.getElementById("user")
+const pass=document.getElementById("pass")
+const consoleBox=document.getElementById("console")
+const status=document.getElementById("status")
 
-function addLog(text){
+function log(text){
+consoleBox.innerHTML += text+"<br>"
+consoleBox.scrollTop=consoleBox.scrollHeight
+}
 
-let time=new Date().toLocaleTimeString()
+function checkLock(){
 
-log.innerHTML+="["+time+"] "+text+"<br>"
+let now=Date.now()
 
-log.scrollTop=log.scrollHeight
+if(lockUntil>now){
+
+btn.disabled=true
+user.disabled=true
+pass.disabled=true
+
+startCountdown()
+
+}
+
+}
+
+function startCountdown(){
+
+let timer=setInterval(()=>{
+
+let now=Date.now()
+let remain=Math.floor((lockUntil-now)/1000)
+
+if(remain<=0){
+
+clearInterval(timer)
+
+btn.disabled=false
+user.disabled=false
+pass.disabled=false
+
+status.innerHTML="สถานะระบบ: ออนไลน์ | การเข้ารหัส: AES-256"
+localStorage.removeItem("lockUntil")
+
+log("[ระบบ] ปลดล็อคการเข้าสู่ระบบ")
+
+return
+}
+
+status.innerHTML="ล็อคความปลอดภัย "+remain+" วินาที"
+
+},1000)
 
 }
 
 function login(){
 
-let id=document.getElementById("user").value
-let pw=document.getElementById("pass").value
+let id=user.value
+let pw=pass.value
 
-addLog("credentials submitted")
-
-msg.innerHTML="Verifying credentials..."
-
-btn.disabled=true
-
-setTimeout(()=>{
-
-addLog("network scan complete")
+log("[AUTH] ตรวจสอบข้อมูลผู้ใช้")
 
 if(id===ADMIN_ID && pw===ADMIN_PASS){
 
-addLog("authentication success")
-
-msg.style.color="green"
-msg.innerHTML="Access Granted"
+log("[AUTH] ยืนยันตัวตนสำเร็จ")
+log("[NODE] กำลังเชื่อมต่อระบบ")
 
 setTimeout(()=>{
 window.location.href=LINE_URL
-},1000)
+},800)
 
 return
-}
-
-attempts++
-
-addLog("authentication failed")
-
-msg.style.color="red"
-msg.innerHTML="Invalid credentials (attempt "+attempts+")"
-
-btn.disabled=false
-
-if(attempts>=1){
-
-addLog("security lock triggered")
-
-msg.innerHTML="Security Lock Activated"
-
-btn.disabled=true
-
-setTimeout(()=>{
-btn.disabled=false
-msg.innerHTML=""
-},15000)
 
 }
 
-},1500)
+log("[SECURITY] รหัสไม่ถูกต้อง")
+
+lockUntil=Date.now()+30000
+localStorage.setItem("lockUntil",lockUntil)
+
+checkLock()
 
 }
 
-addLog("connection established")
-addLog("awaiting credentials")
+checkLock()
+
+log("[NODE] เชื่อมต่อเครือข่ายสำเร็จ")
+log("[SECURITY] encryption module loaded")
+log("[SYSTEM] awaiting credentials")
 
 </script>
 
