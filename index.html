@@ -59,19 +59,19 @@ cursor:pointer;
 }
 
 button:disabled{
-background:#888;
-}
-
-.status{
-margin-top:10px;
-font-size:14px;
-color:red;
+background:#999;
 }
 
 .footer{
 margin-top:20px;
 font-size:12px;
 color:#777;
+}
+
+.lock{
+color:red;
+font-weight:bold;
+margin-top:10px;
 }
 
 </style>
@@ -97,7 +97,7 @@ NETWORK NODE: GLOBAL GRID
 
 <button id="loginBtn" onclick="login()">SIGN IN</button>
 
-<div class="status" id="status"></div>
+<div id="lockMsg" class="lock"></div>
 
 <div class="footer">
 
@@ -120,59 +120,74 @@ Nexus Core Lab — Advanced Research Division<br>
 
 <script>
 
-let locked=false;
-let timeLeft=30;
+let failCount = localStorage.getItem("failCount") ? parseInt(localStorage.getItem("failCount")) : 0;
+let lockUntil = localStorage.getItem("lockUntil") ? parseInt(localStorage.getItem("lockUntil")) : 0;
+
+function checkLock(){
+
+let now = Date.now();
+
+if(now < lockUntil){
+
+let remaining = Math.ceil((lockUntil - now)/1000);
+
+document.getElementById("loginBtn").disabled = true;
+document.getElementById("lockMsg").innerText =
+"SECURITY LOCK ACTIVE ("+remaining+"s)";
+
+}else{
+
+document.getElementById("loginBtn").disabled = false;
+document.getElementById("lockMsg").innerText = "";
+
+}
+
+}
+
+setInterval(checkLock,1000);
 
 function login(){
 
-if(locked) return;
+let now = Date.now();
+
+if(now < lockUntil){
+return;
+}
 
 var user=document.getElementById("user").value;
 var pass=document.getElementById("pass").value;
 
 if(user==="Nc001" && pass==="1234"){
 
+localStorage.removeItem("failCount");
+localStorage.removeItem("lockUntil");
+
 window.location.href="https://lin.ee/lGGma6p";
 
 }else{
 
-startLock();
+failCount++;
+localStorage.setItem("failCount",failCount);
+
+if(failCount%3===0){
+
+let level = failCount/3;
+
+let lockTime = level*30*1000;
+
+lockUntil = Date.now()+lockTime;
+
+localStorage.setItem("lockUntil",lockUntil);
+
+}
+
+checkLock();
 
 }
 
 }
 
-function startLock(){
-
-locked=true;
-
-document.getElementById("loginBtn").disabled=true;
-
-let status=document.getElementById("status");
-
-let timer=setInterval(function(){
-
-status.innerText="ACCESS DENIED — RETRY IN "+timeLeft+"s";
-
-timeLeft--;
-
-if(timeLeft<0){
-
-clearInterval(timer);
-
-locked=false;
-
-timeLeft=30;
-
-document.getElementById("loginBtn").disabled=false;
-
-status.innerText="";
-
-}
-
-},1000);
-
-}
+checkLock();
 
 </script>
 
