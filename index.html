@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
 
 body{
 font-family: Arial, sans-serif;
-background: linear-gradient(135deg,#052c33,#0c4a52);
+background: linear-gradient(135deg,#052c33,#0c4a54);
 height:100vh;
 display:flex;
 justify-content:center;
@@ -19,46 +19,54 @@ margin:0;
 }
 
 .card{
-background:#ffffff;
-padding:35px;
+background: rgba(255,255,255,0.96);
+backdrop-filter: blur(6px);
+padding:40px;
 width:340px;
 border-radius:20px;
-box-shadow:0 20px 40px rgba(0,0,0,0.35);
+box-shadow:0 25px 60px rgba(0,0,0,0.35);
 text-align:center;
 }
 
 .logo{
-width:80px;
-margin-bottom:10px;
+width:85px;
+margin-bottom:18px;
 }
 
 .title{
-font-size:22px;
+font-size:24px;
 font-weight:bold;
 letter-spacing:2px;
-color:#222;
+color:#2b2b2b;
 }
 
 .subtitle{
-font-size:15px;
-color:#666;
-margin-bottom:18px;
+color:#6a6a6a;
+font-size:14px;
+margin-bottom:20px;
 }
 
-.info{
+.systeminfo{
 font-size:13px;
-color:#777;
+color:#8a8a8a;
 line-height:1.6;
-margin-bottom:18px;
+margin-bottom:20px;
 }
 
 input{
 width:100%;
 padding:12px;
-margin:7px 0;
+margin:8px 0;
 border-radius:10px;
-border:1px solid #ddd;
+border:1px solid #dcdcdc;
 font-size:14px;
+transition:0.2s;
+}
+
+input:focus{
+border:1px solid #2d6cdf;
+outline:none;
+box-shadow:0 0 0 2px rgba(45,108,223,0.15);
 }
 
 button{
@@ -67,15 +75,18 @@ padding:13px;
 margin-top:10px;
 border:none;
 border-radius:10px;
-background:#394b63;
+background:#3e516a;
 color:white;
-font-size:14px;
 font-weight:bold;
+letter-spacing:1px;
 cursor:pointer;
+transition:0.25s;
 }
 
 button:hover{
-background:#2d3d52;
+background:#2d3f58;
+transform:translateY(-1px);
+box-shadow:0 8px 18px rgba(0,0,0,0.25);
 }
 
 button:disabled{
@@ -83,23 +94,23 @@ background:#9aa3ad;
 cursor:not-allowed;
 }
 
+.status{
+margin-top:18px;
+font-size:13px;
+color:#7a7a7a;
+line-height:1.5;
+}
+
+.footer{
+margin-top:18px;
+font-size:12px;
+color:#8c8c8c;
+}
+
 #message{
 margin-top:10px;
 font-size:13px;
 color:red;
-}
-
-.system{
-margin-top:15px;
-font-size:12px;
-color:#666;
-}
-
-.footer{
-font-size:11px;
-margin-top:18px;
-color:#777;
-line-height:1.4;
 }
 
 </style>
@@ -114,7 +125,7 @@ line-height:1.4;
 <div class="title">NEXUS CORE SYSTEM</div>
 <div class="subtitle">Secure Access Portal</div>
 
-<div class="info">
+<div class="systeminfo">
 SYSTEM ID: NX-CORE-771A<br>
 SECURITY LEVEL: OMEGA<br>
 NETWORK NODE: GLOBAL GRID
@@ -127,7 +138,7 @@ NETWORK NODE: GLOBAL GRID
 
 <div id="message"></div>
 
-<div class="system">
+<div class="status">
 SYSTEM STATUS: ONLINE<br>
 ENCRYPTION: AES-256
 </div>
@@ -146,10 +157,13 @@ const ADMIN_ID="admin"
 const ADMIN_PASS="1234"
 const LINE_URL="https://lin.ee/lGGma6p"
 
+let attempts = localStorage.getItem("loginAttempts") || 0
 let lockUntil = localStorage.getItem("lockUntil") || 0
 
 const msg=document.getElementById("message")
 const btn=document.getElementById("loginBtn")
+const user=document.getElementById("user")
+const pass=document.getElementById("pass")
 
 function checkLock(){
 
@@ -157,16 +171,21 @@ let now=Date.now()
 
 if(lockUntil>now){
 
-let seconds=Math.ceil((lockUntil-now)/1000)
-
 btn.disabled=true
-msg.innerText="Access locked. Try again in "+seconds+" sec"
+user.disabled=true
+pass.disabled=true
+
+let remain=Math.ceil((lockUntil-now)/1000)
+
+msg.innerText="System locked. Try again in "+remain+" seconds"
 
 setTimeout(checkLock,1000)
 
 }else{
 
 btn.disabled=false
+user.disabled=false
+pass.disabled=false
 msg.innerText=""
 
 }
@@ -175,19 +194,25 @@ msg.innerText=""
 
 function login(){
 
-let user=document.getElementById("user").value
-let pass=document.getElementById("pass").value
+if(lockUntil>Date.now()){
+checkLock()
+return
+}
 
-if(user===ADMIN_ID && pass===ADMIN_PASS){
+if(user.value===ADMIN_ID && pass.value===ADMIN_PASS){
 
+localStorage.setItem("loginAttempts",0)
 window.location.href=LINE_URL
 
 }else{
 
-lockUntil=Date.now()+30000
-localStorage.setItem("lockUntil",lockUntil)
+attempts++
+localStorage.setItem("loginAttempts",attempts)
 
 msg.innerText="Access denied"
+
+lockUntil=Date.now()+30000
+localStorage.setItem("lockUntil",lockUntil)
 
 checkLock()
 
