@@ -9,47 +9,46 @@
 <style>
 
 body{
-font-family: "Segoe UI", Arial;
-background: radial-gradient(circle at center,#0f4c5c,#06161d);
+font-family:Arial, sans-serif;
+background:linear-gradient(135deg,#071e26,#0f4c5c);
 height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
 margin:0;
-color:#222;
 }
 
 .card{
-background:white;
-padding:40px;
-width:360px;
+background:#ffffff;
+padding:35px;
+width:340px;
 border-radius:16px;
-box-shadow:0 20px 60px rgba(0,0,0,0.45);
+box-shadow:0 15px 40px rgba(0,0,0,0.4);
 text-align:center;
+position:relative;
 }
 
 .logo{
-width:90px;
+width:80px;
 margin-bottom:15px;
 }
 
 .title{
-font-size:22px;
-font-weight:700;
+font-size:20px;
+font-weight:bold;
 letter-spacing:2px;
 }
 
 .subtitle{
-font-size:14px;
 color:#666;
-margin-bottom:25px;
+margin-bottom:20px;
 }
 
-.system{
-font-size:11px;
-color:#888;
+.sysinfo{
+font-size:12px;
+color:#777;
 margin-bottom:20px;
-line-height:1.6;
+line-height:18px;
 }
 
 input{
@@ -61,27 +60,21 @@ border:1px solid #ccc;
 font-size:14px;
 }
 
-input:focus{
-outline:none;
-border-color:#2e3f55;
-}
-
 button{
 width:100%;
-padding:13px;
+padding:12px;
 margin-top:12px;
 border:none;
 border-radius:8px;
-background:#2e3f55;
+background:#34495e;
 color:white;
-font-weight:600;
-letter-spacing:1px;
+font-weight:bold;
 cursor:pointer;
 transition:0.2s;
 }
 
 button:hover{
-background:#1f2d3f;
+background:#2c3e50;
 }
 
 button:disabled{
@@ -90,17 +83,10 @@ cursor:not-allowed;
 }
 
 #message{
-margin-top:12px;
+margin-top:10px;
 font-size:13px;
-color:#c62828;
+color:red;
 min-height:18px;
-}
-
-.warning{
-margin-top:18px;
-font-size:11px;
-color:#666;
-line-height:1.5;
 }
 
 .footer{
@@ -109,19 +95,53 @@ margin-top:15px;
 color:#777;
 }
 
+.scan{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:linear-gradient(
+transparent,
+rgba(0,255,200,0.15),
+transparent
+);
+animation:scan 3s infinite;
+pointer-events:none;
+}
+
+@keyframes scan{
+0%{transform:translateY(-100%)}
+100%{transform:translateY(100%)}
+}
+
+.alert{
+animation:shake 0.4s;
+}
+
+@keyframes shake{
+0%{transform:translateX(0)}
+25%{transform:translateX(-5px)}
+50%{transform:translateX(5px)}
+75%{transform:translateX(-5px)}
+100%{transform:translateX(0)}
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="card" id="card">
+
+<div class="scan"></div>
 
 <img src="logo.png" class="logo">
 
 <div class="title">NEXUS CORE SYSTEM</div>
 <div class="subtitle">Secure Access Portal</div>
 
-<div class="system">
+<div class="sysinfo">
 SYSTEM ID: NX-CORE-771A<br>
 SECURITY LEVEL: OMEGA<br>
 NETWORK NODE: GLOBAL GRID
@@ -134,12 +154,8 @@ NETWORK NODE: GLOBAL GRID
 
 <div id="message"></div>
 
-<div class="warning">
-WARNING: This system is restricted to authorized personnel only.
-Unauthorized access will be logged and monitored.
-</div>
-
 <div class="footer">
+WARNING: Authorized personnel only.<br>
 © 2025 Nexus Core Systems
 </div>
 
@@ -151,91 +167,114 @@ const ADMIN_ID="admin"
 const ADMIN_PASS="1234"
 const LINE_URL="https://lin.ee/lGGma6p"
 
-let attempts = localStorage.getItem("loginAttempts") || 0
-let lockUntil = localStorage.getItem("lockUntil") || 0
+let attempts=localStorage.getItem("attempts")||0
+let lockUntil=localStorage.getItem("lockUntil")||0
 
 const msg=document.getElementById("message")
 const btn=document.getElementById("loginBtn")
-const user=document.getElementById("user")
-const pass=document.getElementById("pass")
+const card=document.getElementById("card")
 
-function checkLock(){
+function logAccess(status){
 
-let now=Date.now()
+let logs=JSON.parse(localStorage.getItem("accessLogs")||"[]")
 
-if(lockUntil>now){
+logs.push({
+time:new Date().toLocaleString(),
+status:status
+})
+
+localStorage.setItem("accessLogs",JSON.stringify(logs))
+
+}
+
+function startCountdown(){
 
 btn.disabled=true
-user.disabled=true
-pass.disabled=true
 
-let interval=setInterval(()=>{
+let timer=setInterval(()=>{
 
-let remaining=Math.ceil((lockUntil-Date.now())/1000)
+let remain=Math.floor((lockUntil-Date.now())/1000)
 
-msg.innerText="System locked "+remaining+" sec"
+if(remain<=0){
 
-if(remaining<=0){
-clearInterval(interval)
+clearInterval(timer)
 
 btn.disabled=false
-user.disabled=false
-pass.disabled=false
-msg.innerText=""
+msg.innerText="System ready."
+
+}else{
+
+msg.innerText="Security Lock "+remain+"s"
+
 }
 
 },1000)
 
 }
 
-}
-
 function login(){
 
+let user=document.getElementById("user").value
+let pass=document.getElementById("pass").value
+
 if(Date.now()<lockUntil){
+startCountdown()
 return
 }
 
-let u=user.value
-let p=pass.value
+if(user===ADMIN_ID && pass===ADMIN_PASS){
 
-if(u===ADMIN_ID && p===ADMIN_PASS){
+logAccess("AUTHORIZED")
 
-attempts=0
-localStorage.setItem("loginAttempts",0)
+msg.style.color="green"
+msg.innerText="ACCESS GRANTED"
 
-window.location.href=LINE_URL
-return
+let token=Math.random().toString(36).substring(2)
+localStorage.setItem("sessionToken",token)
 
-}
-
-attempts++
-localStorage.setItem("loginAttempts",attempts)
-
-let lockTime=0
-
-if(attempts>=1) lockTime=30
-if(attempts>=3) lockTime=90
-if(attempts>=6) lockTime=180
-
-if(lockTime>0){
-
-lockUntil=Date.now()+lockTime*1000
-localStorage.setItem("lockUntil",lockUntil)
-
-msg.innerText="Access denied. System locked "+lockTime+" sec"
-
-checkLock()
+setTimeout(()=>{
+window.location.href="dashboard.html"
+},1200)
 
 }else{
 
-msg.innerText="Invalid credentials"
+attempts++
+
+localStorage.setItem("attempts",attempts)
+
+card.classList.add("alert")
+
+setTimeout(()=>card.classList.remove("alert"),400)
+
+msg.style.color="red"
+
+logAccess("DENIED")
+
+if(attempts>=3){
+
+lockUntil=Date.now()+30000
+localStorage.setItem("lockUntil",lockUntil)
+
+msg.innerText="SECURITY LOCK 30s"
+
+attempts=0
+localStorage.setItem("attempts",0)
+
+startCountdown()
+
+}else{
+
+msg.innerText="ACCESS DENIED ("+attempts+"/3)"
 
 }
 
 }
 
-checkLock()
+}
+
+if(Date.now()<lockUntil){
+startCountdown()
+}
 
 </script>
 
