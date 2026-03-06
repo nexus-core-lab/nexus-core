@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Nexus Core Secure Portal</title>
 
 <style>
 
 body{
-font-family:Arial,Helvetica,sans-serif;
+font-family:'Inter',sans-serif;
 background:#071a1f;
 display:flex;
 align-items:center;
@@ -24,7 +29,7 @@ padding:40px;
 border-radius:14px;
 width:320px;
 text-align:center;
-box-shadow:0 10px 30px rgba(0,0,0,.3);
+box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
 .logo{
@@ -51,11 +56,23 @@ color:white;
 font-weight:bold;
 border-radius:6px;
 cursor:pointer;
+box-shadow:0 0 12px rgba(0,0,0,0.25);
+transition:all .25s ease;
+}
+
+button:hover{
+background:#162333;
+box-shadow:0 0 18px rgba(0,120,255,0.35);
+transform:translateY(-1px);
 }
 
 button:disabled{
 opacity:.6;
 cursor:not-allowed;
+}
+
+button:active{
+transform:scale(0.97);
 }
 
 .footer{
@@ -77,24 +94,16 @@ display:none;
 align-items:center;
 justify-content:center;
 }
-button{
-transition:0.2s;
-}
 
-button:hover{
-background:#162333;
-}
-
-button:active{
-transform:scale(0.97);
-}
 .modal-box{
 background:white;
 padding:25px;
-border-radius:10px;
+border-radius:12px;
 width:280px;
 text-align:center;
-box-shadow:0 10px 25px rgba(0,0,0,.3);
+box-shadow:
+0 15px 40px rgba(0,0,0,.35),
+0 5px 15px rgba(0,0,0,.15);
 animation:popup .25s ease;
 }
 
@@ -118,6 +127,126 @@ from{transform:scale(.8);opacity:0}
 to{transform:scale(1);opacity:1}
 }
 
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<img src="logo.png" class="logo">
+
+<h3>Nexus Core Secure Portal</h3>
+
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+
+<button id="loginBtn" onclick="login()">SIGN IN</button>
+
+<div class="footer">
+Unauthorized access is prohibited.<br>
+All activity is logged and monitored.<br><br>
+© 2025 Nexus Core Systems
+</div>
+
+</div>
+
+
+<div class="modal" id="modal">
+
+<div class="modal-box">
+
+<h2>ACCESS DENIED</h2>
+
+<p id="msg">
+Invalid credentials detected.
+</p>
+
+<button class="dismiss" onclick="closeModal()">DISMISS</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+let locked=false
+
+function login(){
+
+if(locked){
+showLock()
+return
+}
+
+let btn=document.getElementById("loginBtn")
+
+btn.innerText="Authenticating..."
+btn.disabled=true
+
+setTimeout(checkLogin,1200)
+
+}
+
+function checkLogin(){
+
+let user=document.getElementById("user").value
+let pass=document.getElementById("pass").value
+
+if(user==="admin" && pass==="1234"){
+
+window.location.href="https://lin.ee/lGGma6p"
+
+}else{
+
+locked=true
+showError()
+
+}
+
+let btn=document.getElementById("loginBtn")
+btn.innerText="SIGN IN"
+btn.disabled=false
+
+}
+
+function showError(){
+
+let now=new Date()
+let time=now.toLocaleTimeString()
+
+document.getElementById("msg").innerHTML=
+"Invalid credentials detected.<br>Security event logged : "+time+"<br><br>System locked."
+
+document.getElementById("modal").style.display="flex"
+
+}
+
+function showLock(){
+
+document.getElementById("msg").innerHTML=
+"SECURITY LOCK<br><br>Too many invalid attempts.<br>Access permanently disabled."
+
+document.getElementById("modal").style.display="flex"
+
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none"
+}
+
+document.addEventListener("keypress",function(e){
+if(e.key==="Enter"){
+login()
+}
+})
+
+</script>
+
+</body>
+</html>}
 </style>
 </head>
 
@@ -214,6 +343,7 @@ document.getElementById("modal").style.display="none"
 }
 
 </script>
-
+SYSTEM STATUS : SECURE
+NETWORK : ENCRYPTED
 </body>
 </html>
