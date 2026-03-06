@@ -2,96 +2,111 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>NEXUS CORE // ULTRA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+<title>Nexus Core System</title>
 
 <style>
 
 body{
-background:#05070d;
-color:#00eaff;
-font-family:'Orbitron',sans-serif;
+font-family: "Segoe UI", Arial;
+background: radial-gradient(circle at center,#0f4c5c,#06161d);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
 margin:0;
-overflow:hidden;
+color:#222;
 }
 
-.grid{
-position:fixed;
-width:100%;
-height:100%;
-background-image:
-linear-gradient(rgba(0,255,255,0.05) 1px, transparent 1px),
-linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px);
-background-size:40px 40px;
-z-index:-1;
-}
-
-.header{
+.card{
+background:white;
+padding:40px;
+width:360px;
+border-radius:16px;
+box-shadow:0 20px 60px rgba(0,0,0,0.45);
 text-align:center;
-margin-top:80px;
-letter-spacing:4px;
+}
+
+.logo{
+width:90px;
+margin-bottom:15px;
 }
 
 .title{
-font-size:48px;
-font-weight:600;
-text-shadow:0 0 20px #00eaff;
+font-size:22px;
+font-weight:700;
+letter-spacing:2px;
 }
 
 .subtitle{
-opacity:0.5;
-margin-top:10px;
+font-size:14px;
+color:#666;
+margin-bottom:25px;
 }
 
-.panel{
-width:420px;
-margin:80px auto;
-padding:30px;
-border:1px solid rgba(0,255,255,0.3);
-background:rgba(0,0,0,0.4);
-backdrop-filter:blur(10px);
-box-shadow:0 0 30px rgba(0,255,255,0.1);
+.system{
+font-size:11px;
+color:#888;
+margin-bottom:20px;
+line-height:1.6;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:7px 0;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+input:focus{
+outline:none;
+border-color:#2e3f55;
 }
 
 button{
 width:100%;
-padding:14px;
-margin-top:15px;
-background:transparent;
-border:1px solid #00eaff;
-color:#00eaff;
-font-family:'Orbitron';
+padding:13px;
+margin-top:12px;
+border:none;
+border-radius:8px;
+background:#2e3f55;
+color:white;
+font-weight:600;
+letter-spacing:1px;
 cursor:pointer;
-transition:0.3s;
+transition:0.2s;
 }
 
 button:hover{
-background:#00eaff;
-color:#000;
-box-shadow:0 0 20px #00eaff;
+background:#1f2d3f;
 }
 
-.status{
-margin-top:20px;
-font-size:12px;
-opacity:0.6;
+button:disabled{
+background:#9aa3ad;
+cursor:not-allowed;
 }
 
-.scan{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-pointer-events:none;
-background:linear-gradient(transparent, rgba(0,255,255,0.08), transparent);
-animation:scan 4s linear infinite;
+#message{
+margin-top:12px;
+font-size:13px;
+color:#c62828;
+min-height:18px;
 }
 
-@keyframes scan{
-0%{transform:translateY(-100%)}
-100%{transform:translateY(100%)}
+.warning{
+margin-top:18px;
+font-size:11px;
+color:#666;
+line-height:1.5;
+}
+
+.footer{
+font-size:11px;
+margin-top:15px;
+color:#777;
 }
 
 </style>
@@ -99,39 +114,128 @@ animation:scan 4s linear infinite;
 
 <body>
 
-<div class="grid"></div>
-<div class="scan"></div>
+<div class="card">
 
-<div class="header">
-<div class="title">NEXUS CORE</div>
-<div class="subtitle">GLOBAL NETWORK INTERFACE</div>
+<img src="logo.png" class="logo">
+
+<div class="title">NEXUS CORE SYSTEM</div>
+<div class="subtitle">Secure Access Portal</div>
+
+<div class="system">
+SYSTEM ID: NX-CORE-771A<br>
+SECURITY LEVEL: OMEGA<br>
+NETWORK NODE: GLOBAL GRID
 </div>
 
-<div class="panel">
+<input id="user" placeholder="User ID">
+<input id="pass" type="password" placeholder="Password">
 
-<button onclick="boot()">INITIALIZE SYSTEM</button>
-<button onclick="secure()">SECURE CHANNEL</button>
-<button onclick="deploy()">DEPLOY PROTOCOL</button>
+<button id="loginBtn" onclick="login()">SIGN IN</button>
 
-<div class="status" id="status">
-SYSTEM STATUS : STANDBY
+<div id="message"></div>
+
+<div class="warning">
+WARNING: This system is restricted to authorized personnel only.
+Unauthorized access will be logged and monitored.
+</div>
+
+<div class="footer">
+© 2025 Nexus Core Systems
 </div>
 
 </div>
 
 <script>
 
-function boot(){
-document.getElementById("status").innerText="SYSTEM STATUS : BOOTING CORE..."
+const ADMIN_ID="admin"
+const ADMIN_PASS="1234"
+const LINE_URL="https://lin.ee/lGGma6p"
+
+let attempts = localStorage.getItem("loginAttempts") || 0
+let lockUntil = localStorage.getItem("lockUntil") || 0
+
+const msg=document.getElementById("message")
+const btn=document.getElementById("loginBtn")
+const user=document.getElementById("user")
+const pass=document.getElementById("pass")
+
+function checkLock(){
+
+let now=Date.now()
+
+if(lockUntil>now){
+
+btn.disabled=true
+user.disabled=true
+pass.disabled=true
+
+let interval=setInterval(()=>{
+
+let remaining=Math.ceil((lockUntil-Date.now())/1000)
+
+msg.innerText="System locked "+remaining+" sec"
+
+if(remaining<=0){
+clearInterval(interval)
+
+btn.disabled=false
+user.disabled=false
+pass.disabled=false
+msg.innerText=""
 }
 
-function secure(){
-document.getElementById("status").innerText="SYSTEM STATUS : ENCRYPTED CHANNEL ESTABLISHED"
+},1000)
+
 }
 
-function deploy(){
-document.getElementById("status").innerText="SYSTEM STATUS : PROTOCOL DEPLOYED"
 }
+
+function login(){
+
+if(Date.now()<lockUntil){
+return
+}
+
+let u=user.value
+let p=pass.value
+
+if(u===ADMIN_ID && p===ADMIN_PASS){
+
+attempts=0
+localStorage.setItem("loginAttempts",0)
+
+window.location.href=LINE_URL
+return
+
+}
+
+attempts++
+localStorage.setItem("loginAttempts",attempts)
+
+let lockTime=0
+
+if(attempts>=1) lockTime=30
+if(attempts>=3) lockTime=90
+if(attempts>=6) lockTime=180
+
+if(lockTime>0){
+
+lockUntil=Date.now()+lockTime*1000
+localStorage.setItem("lockUntil",lockUntil)
+
+msg.innerText="Access denied. System locked "+lockTime+" sec"
+
+checkLock()
+
+}else{
+
+msg.innerText="Invalid credentials"
+
+}
+
+}
+
+checkLock()
 
 </script>
 
