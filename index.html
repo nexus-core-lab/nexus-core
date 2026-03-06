@@ -9,46 +9,47 @@
 <style>
 
 body{
-font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#071e26,#0f4c5c);
+font-family:Arial;
+background:linear-gradient(135deg,#081c24,#0f4c5c);
 height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
 margin:0;
+color:#333;
 }
 
 .card{
-background:#ffffff;
+background:#fff;
 padding:35px;
-width:340px;
-border-radius:16px;
+width:330px;
+border-radius:18px;
 box-shadow:0 15px 40px rgba(0,0,0,0.4);
 text-align:center;
-position:relative;
 }
 
 .logo{
-width:80px;
-margin-bottom:15px;
+width:75px;
+margin-bottom:10px;
 }
 
 .title{
-font-size:20px;
+font-size:22px;
 font-weight:bold;
 letter-spacing:2px;
 }
 
 .subtitle{
 color:#666;
-margin-bottom:20px;
+font-size:14px;
+margin-bottom:15px;
 }
 
-.sysinfo{
+.systeminfo{
 font-size:12px;
-color:#777;
+color:#888;
 margin-bottom:20px;
-line-height:18px;
+line-height:1.6;
 }
 
 input{
@@ -63,68 +64,53 @@ font-size:14px;
 button{
 width:100%;
 padding:12px;
-margin-top:12px;
+margin-top:10px;
 border:none;
 border-radius:8px;
-background:#34495e;
+background:#2f4057;
 color:white;
 font-weight:bold;
+letter-spacing:1px;
 cursor:pointer;
-transition:0.2s;
 }
 
 button:hover{
-background:#2c3e50;
+background:#243447;
 }
 
 button:disabled{
 background:#9aa3ad;
-cursor:not-allowed;
 }
 
 #message{
 margin-top:10px;
 font-size:13px;
 color:red;
-min-height:18px;
+}
+
+.status{
+font-size:11px;
+margin-top:10px;
+color:#444;
+}
+
+.log{
+background:#111;
+color:#0f0;
+font-size:10px;
+padding:10px;
+margin-top:15px;
+border-radius:6px;
+text-align:left;
+height:60px;
+overflow:hidden;
+font-family:monospace;
 }
 
 .footer{
 font-size:11px;
-margin-top:15px;
+margin-top:12px;
 color:#777;
-}
-
-.scan{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:linear-gradient(
-transparent,
-rgba(0,255,200,0.15),
-transparent
-);
-animation:scan 3s infinite;
-pointer-events:none;
-}
-
-@keyframes scan{
-0%{transform:translateY(-100%)}
-100%{transform:translateY(100%)}
-}
-
-.alert{
-animation:shake 0.4s;
-}
-
-@keyframes shake{
-0%{transform:translateX(0)}
-25%{transform:translateX(-5px)}
-50%{transform:translateX(5px)}
-75%{transform:translateX(-5px)}
-100%{transform:translateX(0)}
 }
 
 </style>
@@ -132,16 +118,14 @@ animation:shake 0.4s;
 
 <body>
 
-<div class="card" id="card">
-
-<div class="scan"></div>
+<div class="card">
 
 <img src="logo.png" class="logo">
 
 <div class="title">NEXUS CORE SYSTEM</div>
 <div class="subtitle">Secure Access Portal</div>
 
-<div class="sysinfo">
+<div class="systeminfo">
 SYSTEM ID: NX-CORE-771A<br>
 SECURITY LEVEL: OMEGA<br>
 NETWORK NODE: GLOBAL GRID
@@ -154,8 +138,18 @@ NETWORK NODE: GLOBAL GRID
 
 <div id="message"></div>
 
+<div class="status">
+SYSTEM STATUS: ONLINE<br>
+ENCRYPTION: AES-256
+</div>
+
+<div class="log" id="log">
+[system] nexus core initialized<br>
+</div>
+
 <div class="footer">
 WARNING: Authorized personnel only.<br>
+All activity monitored.<br>
 © 2025 Nexus Core Systems
 </div>
 
@@ -167,114 +161,81 @@ const ADMIN_ID="admin"
 const ADMIN_PASS="1234"
 const LINE_URL="https://lin.ee/lGGma6p"
 
-let attempts=localStorage.getItem("attempts")||0
-let lockUntil=localStorage.getItem("lockUntil")||0
+let attempts=0
 
 const msg=document.getElementById("message")
 const btn=document.getElementById("loginBtn")
-const card=document.getElementById("card")
+const log=document.getElementById("log")
 
-function logAccess(status){
+function addLog(text){
 
-let logs=JSON.parse(localStorage.getItem("accessLogs")||"[]")
+let time=new Date().toLocaleTimeString()
 
-logs.push({
-time:new Date().toLocaleString(),
-status:status
-})
+log.innerHTML+="["+time+"] "+text+"<br>"
 
-localStorage.setItem("accessLogs",JSON.stringify(logs))
-
-}
-
-function startCountdown(){
-
-btn.disabled=true
-
-let timer=setInterval(()=>{
-
-let remain=Math.floor((lockUntil-Date.now())/1000)
-
-if(remain<=0){
-
-clearInterval(timer)
-
-btn.disabled=false
-msg.innerText="System ready."
-
-}else{
-
-msg.innerText="Security Lock "+remain+"s"
-
-}
-
-},1000)
+log.scrollTop=log.scrollHeight
 
 }
 
 function login(){
 
-let user=document.getElementById("user").value
-let pass=document.getElementById("pass").value
+let id=document.getElementById("user").value
+let pw=document.getElementById("pass").value
 
-if(Date.now()<lockUntil){
-startCountdown()
+addLog("credentials submitted")
+
+msg.innerHTML="Verifying credentials..."
+
+btn.disabled=true
+
+setTimeout(()=>{
+
+addLog("network scan complete")
+
+if(id===ADMIN_ID && pw===ADMIN_PASS){
+
+addLog("authentication success")
+
+msg.style.color="green"
+msg.innerHTML="Access Granted"
+
+setTimeout(()=>{
+window.location.href=LINE_URL
+},1000)
+
 return
 }
 
-if(user===ADMIN_ID && pass===ADMIN_PASS){
-
-logAccess("AUTHORIZED")
-
-msg.style.color="green"
-msg.innerText="ACCESS GRANTED"
-
-let token=Math.random().toString(36).substring(2)
-localStorage.setItem("sessionToken",token)
-
-setTimeout(()=>{
-window.location.href="dashboard.html"
-},1200)
-
-}else{
-
 attempts++
 
-localStorage.setItem("attempts",attempts)
-
-card.classList.add("alert")
-
-setTimeout(()=>card.classList.remove("alert"),400)
+addLog("authentication failed")
 
 msg.style.color="red"
+msg.innerHTML="Invalid credentials (attempt "+attempts+")"
 
-logAccess("DENIED")
+btn.disabled=false
 
-if(attempts>=3){
+if(attempts>=1){
 
-lockUntil=Date.now()+30000
-localStorage.setItem("lockUntil",lockUntil)
+addLog("security lock triggered")
 
-msg.innerText="SECURITY LOCK 30s"
+msg.innerHTML="Security Lock Activated"
 
-attempts=0
-localStorage.setItem("attempts",0)
+btn.disabled=true
 
-startCountdown()
-
-}else{
-
-msg.innerText="ACCESS DENIED ("+attempts+"/3)"
+setTimeout(()=>{
+btn.disabled=false
+msg.innerHTML=""
+},15000)
 
 }
 
-}
+},1500)
 
 }
 
-if(Date.now()<lockUntil){
-startCountdown()
-}
+addLog("connection established")
+addLog("awaiting credentials")
 
 </script>
 
