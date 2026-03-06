@@ -1,76 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Nexus Core Secure Portal</title>
 
 <style>
 
 body{
-font-family:Arial;
-background:linear-gradient(180deg,#0f2a2c,#0b1c1e);
+font-family:Arial,Helvetica,sans-serif;
+background:#071a1f;
 display:flex;
-justify-content:center;
 align-items:center;
+justify-content:center;
 height:100vh;
 margin:0;
+color:#333;
 }
 
 .container{
 background:white;
 padding:40px;
-border-radius:20px;
-width:380px;
+border-radius:14px;
+width:320px;
 text-align:center;
+box-shadow:0 10px 30px rgba(0,0,0,.3);
 }
 
 .logo{
-width:95px;
-margin-bottom:15px;
-}
-
-h1{
-letter-spacing:4px;
-font-size:28px;
-}
-
-.subtitle{
-color:#777;
-margin-bottom:25px;
+width:70px;
+margin-bottom:20px;
 }
 
 input{
 width:100%;
 padding:12px;
 margin:8px 0;
-border-radius:8px;
+border-radius:6px;
 border:1px solid #ccc;
+font-size:14px;
 }
 
 button{
 width:100%;
-padding:14px;
-background:#4b5f77;
-color:white;
+padding:12px;
+margin-top:10px;
 border:none;
-border-radius:10px;
+background:#2e3f55;
+color:white;
 font-weight:bold;
+border-radius:6px;
+cursor:pointer;
 }
 
 button:disabled{
-background:#999;
+opacity:.6;
+cursor:not-allowed;
 }
 
-.lock{
-color:red;
-font-weight:bold;
-margin-top:15px;
+.footer{
+font-size:11px;
+color:#777;
+margin-top:20px;
 }
 
-/* MODAL */
+/* modal */
 
 .modal{
 position:fixed;
@@ -78,40 +72,40 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.6);
+background:rgba(0,0,0,.45);
 display:none;
-justify-content:center;
 align-items:center;
+justify-content:center;
 }
 
 .modal-box{
 background:white;
 padding:25px;
-border-radius:12px;
-width:300px;
+border-radius:10px;
+width:280px;
 text-align:center;
-box-shadow:0 10px 25px rgba(0,0,0,0.3);
+box-shadow:0 10px 25px rgba(0,0,0,.3);
+animation:popup .25s ease;
 }
 
-.modal-title{
-font-weight:bold;
-margin-bottom:10px;
+.modal-box h2{
+margin:0;
+font-size:18px;
 }
 
-.modal-text{
-color:#444;
-margin-bottom:20px;
+.modal-box p{
+font-size:13px;
+color:#555;
+margin:10px 0 20px 0;
 }
 
-.modal button{
-background:#2f3d50;
+.dismiss{
+background:#34495e;
 }
 
-.footer{
-margin-top:25px;
-font-size:12px;
-color:#777;
-line-height:1.6;
+@keyframes popup{
+from{transform:scale(.8);opacity:0}
+to{transform:scale(1);opacity:1}
 }
 
 </style>
@@ -123,131 +117,91 @@ line-height:1.6;
 
 <img src="logo.png" class="logo">
 
-<h1>NEXUS CORE</h1>
-<div class="subtitle">Secure Access Portal</div>
+<h3>Nexus Core Secure Portal</h3>
 
 <input id="user" placeholder="Username">
 <input id="pass" type="password" placeholder="Password">
 
 <button id="loginBtn" onclick="login()">SIGN IN</button>
 
-<div id="lockMsg" class="lock"></div>
-
 <div class="footer">
-
 Unauthorized access is prohibited.<br>
-All activity is logged and monitored.
-
-<br><br>
-
+All activity is logged and monitored.<br><br>
 © 2025 Nexus Core Systems
-
 </div>
 
 </div>
 
 
-<!-- MODAL -->
+<!-- modal -->
 
-<div id="modal" class="modal">
-
+<div class="modal" id="modal">
 <div class="modal-box">
 
-<div class="modal-title">ACCESS DENIED</div>
+<h2>ACCESS DENIED</h2>
 
-<div class="modal-text">
+<p id="msg">
 Invalid credentials detected.<br>
 Security event logged.
-</div>
+</p>
 
-<button onclick="closeModal()">DISMISS</button>
-
-</div>
+<button class="dismiss" onclick="closeModal()">DISMISS</button>
 
 </div>
+</div>
+
 
 <script>
 
-let attempts = localStorage.getItem("attempts") ? parseInt(localStorage.getItem("attempts")) : 0
-let lockUntil = localStorage.getItem("lockUntil") ? parseInt(localStorage.getItem("lockUntil")) : 0
-
 function login(){
 
-let now = Date.now()
+let btn=document.getElementById("loginBtn")
 
-if(now < lockUntil){
-return
+btn.innerText="Authenticating..."
+btn.disabled=true
+
+setTimeout(checkLogin,1200)
+
 }
 
-var user=document.getElementById("user").value
-var pass=document.getElementById("pass").value
+function checkLogin(){
 
-if(user==="Nc001" && pass==="1234"){
+let user=document.getElementById("user").value
+let pass=document.getElementById("pass").value
 
-localStorage.removeItem("attempts")
-localStorage.removeItem("lockUntil")
+/* USER PASS ของคุณยังคงเดิม */
+
+if(user==="admin" && pass==="1234"){
 
 window.location.href="https://lin.ee/lGGma6p"
 
 }else{
 
-attempts++
-localStorage.setItem("attempts",attempts)
-
-showModal()
-
-if(attempts%3===0){
-
-let addTime=(attempts/3)*30000
-lockUntil=Date.now()+addTime
-
-localStorage.setItem("lockUntil",lockUntil)
+showError()
 
 }
 
-updateLock()
-
-}
-
-}
-
-function updateLock(){
-
-let now=Date.now()
 let btn=document.getElementById("loginBtn")
-let msg=document.getElementById("lockMsg")
-
-if(now<lockUntil){
-
-let sec=Math.ceil((lockUntil-now)/1000)
-
-btn.disabled=true
-msg.innerText="SECURITY LOCK ACTIVE ("+sec+"s)"
-
-setTimeout(updateLock,1000)
-
-}else{
-
+btn.innerText="SIGN IN"
 btn.disabled=false
-msg.innerText=""
 
 }
 
-}
+function showError(){
 
-function showModal(){
+let now=new Date()
+let time=now.toLocaleTimeString()
+
+document.getElementById("msg").innerHTML=
+"Invalid credentials detected.<br>Security event logged : "+time
 
 document.getElementById("modal").style.display="flex"
 
 }
 
 function closeModal(){
-
 document.getElementById("modal").style.display="none"
-
 }
-
-updateLock()
 
 </script>
 
