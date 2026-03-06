@@ -2,15 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Nexus Core System</title>
 
 <style>
 
 body{
-font-family:system-ui,-apple-system,Segoe UI,Roboto;
-background:linear-gradient(135deg,#0f3d3e,#0b2c2d);
+font-family:Arial;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 display:flex;
 justify-content:center;
 align-items:center;
@@ -18,93 +16,65 @@ height:100vh;
 margin:0;
 }
 
-.card{
+.box{
 background:white;
-padding:40px;
-border-radius:20px;
-width:320px;
+padding:35px;
+border-radius:18px;
+width:340px;
 text-align:center;
-box-shadow:0 10px 40px rgba(0,0,0,.25);
+box-shadow:0 15px 40px rgba(0,0,0,0.25);
 }
 
 .logo{
-width:48px;
+width:70px;
 margin-bottom:10px;
 }
 
 h1{
-font-size:22px;
-font-weight:600;
+margin:8px 0;
+font-size:24px;
 letter-spacing:1px;
-margin:5px 0;
 }
 
-.subtitle{
-color:#777;
-font-size:14px;
+.sub{
+color:#666;
 margin-bottom:20px;
-}
-
-.system{
-font-size:12px;
-color:#888;
-margin-bottom:25px;
 }
 
 input{
 width:100%;
 padding:12px;
 margin:8px 0;
-border:1px solid #d8d8d8;
-border-radius:10px;
-font-size:14px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:15px;
 }
 
 button{
 width:100%;
-padding:13px;
-background:#3a4a59;
+padding:12px;
+margin-top:10px;
+background:#2f4156;
 color:white;
 border:none;
-border-radius:10px;
-font-size:14px;
+border-radius:8px;
+font-size:16px;
 cursor:pointer;
-margin-top:10px;
 }
 
 button:hover{
-background:#2f3f4d;
+background:#1e2d3e;
 }
 
 .status{
-margin-top:15px;
-font-size:13px;
-color:#666;
-}
-
-.log{
-margin-top:15px;
-background:#0e0e0e;
-color:#aaa;
-font-family:monospace;
-padding:10px;
-border-radius:8px;
-font-size:12px;
-text-align:left;
-height:70px;
-overflow:auto;
-}
-
-.footer{
-margin-top:20px;
-font-size:11px;
+margin-top:10px;
+font-size:14px;
 color:#777;
 }
 
-.error{
-color:#c0392b;
-margin-top:10px;
-font-size:13px;
+.lock{
+color:red;
+font-weight:bold;
 }
 
 </style>
@@ -112,91 +82,72 @@ font-size:13px;
 
 <body>
 
-<div class="card">
+<div class="box">
 
 <img src="logo.png" class="logo">
 
-<h1>NEXUS CORE SYSTEM</h1>
-<div class="subtitle">Secure Access Portal</div>
-
-<div class="system">
-SYSTEM ID: NX-CORE-771A<br>
-SECURITY LEVEL: OMEGA<br>
-NETWORK NODE: GLOBAL GRID
-</div>
+<h1>NEXUS CORE</h1>
+<div class="sub">Secure Access Portal</div>
 
 <input id="user" placeholder="User ID">
 <input id="pass" type="password" placeholder="Password">
 
 <button onclick="login()">SIGN IN</button>
 
-<div class="error" id="error"></div>
-
-<div class="status">
-System Status: ONLINE | Encryption: AES-256
-</div>
-
-<div class="log" id="log">
-[boot] nexus core initialized
-</div>
-
-<div class="footer">
-Authorized personnel only.<br>
-Unauthorized access is prohibited.<br>
-© 2025 Nexus Core Systems
-</div>
+<div class="status" id="msg"></div>
 
 </div>
 
 <script>
 
-let attempts = 0
-let locked = false
-
-function log(msg){
-let time=new Date().toLocaleTimeString()
-document.getElementById("log").innerHTML += `<br>[${time}] ${msg}`
-}
+let maxFail=1
+let lockTime=30000
 
 function login(){
 
-if(locked)return
+let now=Date.now()
+let lock=localStorage.getItem("lockUntil")
 
-let user=document.getElementById("user").value
-let pass=document.getElementById("pass").value
-let error=document.getElementById("error")
+if(lock && now<lock){
 
-error.innerText=""
+let sec=Math.ceil((lock-now)/1000)
+document.getElementById("msg").innerHTML=
+"<span class='lock'>System Locked "+sec+"s</span>"
 
-log("authentication request received")
+return
+}
 
-if(user==="admin" && pass==="1234"){
+let u=document.getElementById("user").value
+let p=document.getElementById("pass").value
 
-log("credentials verified")
-log("generating secure session")
+if(u==="admin" && p==="1234"){
 
-error.style.color="#2ecc71"
-error.innerText="Authenticating..."
+localStorage.removeItem("fail")
+
+document.getElementById("msg").innerText="Access Granted"
 
 setTimeout(()=>{
-window.location="dashboard.html"
-},1200)
+window.location.href="https://lin.ee/lGGma6p"
+},800)
+
+return
+}
+
+let fail=localStorage.getItem("fail")
+fail=fail?parseInt(fail)+1:1
+localStorage.setItem("fail",fail)
+
+if(fail>=maxFail){
+
+let until=Date.now()+lockTime
+localStorage.setItem("lockUntil",until)
+
+document.getElementById("msg").innerHTML=
+"<span class='lock'>Login Failed - System Locked</span>"
 
 }else{
 
-attempts++
-
-log("authentication failed")
-
-error.innerText="Access denied"
-
-if(attempts>=3){
-
-locked=true
-log("security lock activated")
-error.innerText="System locked"
-
-}
+document.getElementById("msg").innerText="Invalid Credentials"
 
 }
 
