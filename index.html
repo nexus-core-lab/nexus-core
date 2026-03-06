@@ -1,198 +1,255 @@
-<!DOCTYPE html>                  <html lang="en">                  
-<head>                  
-<meta charset="UTF-8">                  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">                  <title>Nexus Core System</title>                  <style>                  
-                  
-body{                  
-font-family: Arial, sans-serif;                  
-background: linear-gradient(135deg,#052c33,#0c4a54);                  
-height:100vh;                  
-display:flex;                  
-justify-content:center;                  
-align-items:center;                  
-margin:0;                  
-}                  
-                  
-.card{                  
-background: rgba(255,255,255,0.96);                  
-backdrop-filter: blur(6px);                  
-padding:40px;                  
-width:340px;                  
-border-radius:20px;                  
-box-shadow:0 25px 60px rgba(0,0,0,0.35);                  
-text-align:center;                  
-}                  
-                  
-.logo{                  
-width:85px;                  
-margin-bottom:18px;                  
-}                  
-                  
-.title{                  
-font-size:24px;                  
-font-weight:bold;                  
-letter-spacing:2px;                  
-color:#2b2b2b;                  
-}                  
-                  
-.subtitle{                  
-color:#6a6a6a;                  
-font-size:14px;                  
-margin-bottom:20px;                  
-}                  
-                  
-.systeminfo{                  
-font-size:13px;                  
-color:#8a8a8a;                  
-line-height:1.6;                  
-margin-bottom:20px;                  
-}                  
-                  
-input{                  
-width:100%;                  
-padding:12px;                  
-margin:8px 0;                  
-border-radius:10px;                  
-border:1px solid #dcdcdc;                  
-font-size:14px;                  
-transition:0.2s;                  
-}                  
-                  
-input:focus{                  
-border:1px solid #2d6cdf;                  
-outline:none;                  
-box-shadow:0 0 0 2px rgba(45,108,223,0.15);                  
-}                  
-                  
-button{                  
-width:100%;                  
-padding:13px;                  
-margin-top:10px;                  
-border:none;                  
-border-radius:10px;                  
-background:#3e516a;                  
-color:white;                  
-font-weight:bold;                  
-letter-spacing:1px;                  
-cursor:pointer;                  
-transition:0.25s;                  
-}                  
-                  
-button:hover{                  
-background:#2d3f58;                  
-transform:translateY(-1px);                  
-box-shadow:0 8px 18px rgba(0,0,0,0.25);                  
-}                  
-                  
-button:disabled{                  
-background:#9aa3ad;                  
-cursor:not-allowed;                  
-}                  
-                  
-.status{                  
-margin-top:18px;                  
-font-size:13px;                  
-color:#7a7a7a;                  
-line-height:1.5;                  
-}                  
-                  
-.footer{                  
-margin-top:18px;                  
-font-size:12px;                  
-color:#8c8c8c;                  
-}                  
-                  
-#message{                  
-margin-top:10px;                  
-font-size:13px;                  
-color:red;                  
-}                  
-                  
-</style>                  </head>                  <body>                  <div class="card">                  <img src="logo.png" class="logo">                  <div class="title">NEXUS CORE SYSTEM</div>                  
-<div class="subtitle">Secure Access Portal</div>                  <div class="systeminfo">                  
-SYSTEM ID: NX-CORE-771A<br>                  
-SECURITY LEVEL: OMEGA<br>                  
-NETWORK NODE: GLOBAL GRID                  
-</div>                  <input id="user" placeholder="User ID">                  
-<input id="pass" type="password" placeholder="Password">                  <button id="loginBtn" onclick="login()">SIGN IN</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div id="message"></div>                  <div class="status">                  
-SYSTEM STATUS: ONLINE<br>                  
-ENCRYPTION: AES-256                  
-</div>                  <div class="footer">                  
-WARNING: This system is restricted to authorized personnel only.<br>                  
-All access is logged and monitored.<br>                  
-© 2025 Nexus Core Systems                  
-</div>                  </div>                  <script>                  
-                  
-const ADMIN_ID="admin"                  
-const ADMIN_PASS="1234"                  
-const LINE_URL="https://lin.ee/lGGma6p"                  
-                  
-let attempts = localStorage.getItem("loginAttempts") || 0                  
-let lockUntil = localStorage.getItem("lockUntil") || 0                  
-                  
-const msg=document.getElementById("message")                  
-const btn=document.getElementById("loginBtn")                  
-const user=document.getElementById("user")                  
-const pass=document.getElementById("pass")                  
-                  
-function checkLock(){                  
-                  
-let now=Date.now()                  
-                  
-if(lockUntil>now){                  
-                  
-btn.disabled=true                  
-user.disabled=true                  
-pass.disabled=true                  
-                  
-let remain=Math.ceil((lockUntil-now)/1000)                  
-                  
-msg.innerText="System locked. Try again in "+remain+" seconds"                  
-                  
-setTimeout(checkLock,1000)                  
-                  
-}else{                  
-                  
-btn.disabled=false                  
-user.disabled=false                  
-pass.disabled=false                  
-msg.innerText=""                  
-                  
-}                  
-                  
-}                  
-                  
-function login(){                  
-                  
-if(lockUntil>Date.now()){                  
-checkLock()                  
-return                  
-}                  
-                  
-if(user.value===ADMIN_ID && pass.value===ADMIN_PASS){                  
-                  
-localStorage.setItem("loginAttempts",0)                  
-window.location.href=LINE_URL                  
-                  
-}else{                  
-                  
-attempts++                  
-localStorage.setItem("loginAttempts",attempts)                  
-                  
-msg.innerText="Access denied"                  
-                  
-lockUntil=Date.now()+30000                  
-localStorage.setItem("lockUntil",lockUntil)                  
-                  
-checkLock()                  
-                  
-}                  
-                  
-}                  
-                  
-checkLock()                  
-                  
-</script>                  </body>                  
-</html>                  
+<title>Nexus Core System</title>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+background: linear-gradient(135deg,#052c33,#0c4a54);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+margin:0;
+}
+
+.card{
+background: rgba(255,255,255,0.96);
+backdrop-filter: blur(6px);
+padding:40px;
+width:340px;
+border-radius:22px;
+box-shadow:0 25px 60px rgba(0,0,0,0.35);
+text-align:center;
+}
+
+.logo{
+width:95px;
+margin-bottom:18px;
+}
+
+.title{
+font-size:24px;
+font-weight:bold;
+letter-spacing:2px;
+color:#2b2b2b;
+}
+
+.subtitle{
+color:#6a6a6a;
+font-size:14px;
+margin-bottom:20px;
+}
+
+.systeminfo{
+font-size:13px;
+color:#8a8a8a;
+line-height:1.6;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:10px;
+border:1px solid #dcdcdc;
+font-size:14px;
+transition:0.2s;
+}
+
+input:focus{
+border:1px solid #2d6cdf;
+outline:none;
+box-shadow:0 0 0 2px rgba(45,108,223,0.15);
+}
+
+button{
+width:100%;
+padding:13px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+background:#3e516a;
+color:white;
+font-weight:bold;
+letter-spacing:1px;
+cursor:pointer;
+transition:0.25s;
+}
+
+button:hover{
+background:#2d3f58;
+transform:translateY(-1px);
+box-shadow:0 8px 18px rgba(0,0,0,0.25);
+}
+
+button:disabled{
+background:#7d8793;
+opacity:0.85;
+cursor:not-allowed;
+}
+
+.status{
+margin-top:18px;
+font-size:13px;
+color:#7a7a7a;
+line-height:1.6;
+}
+
+.footer{
+margin-top:18px;
+font-size:12px;
+color:#8c8c8c;
+}
+
+#message{
+margin-top:12px;
+font-size:14px;
+font-weight:500;
+color:red;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<img src="logo.png" class="logo">
+
+<div class="title">NEXUS CORE SYSTEM</div>
+<div class="subtitle">Secure Access Portal</div>
+
+<div class="systeminfo">
+SYSTEM ID : NX-CORE-771A<br>
+SECURITY LEVEL : OMEGA<br>
+NETWORK NODE : GLOBAL GRID
+</div>
+
+<input type="text" id="user" placeholder="User ID">
+<input type="password" id="pass" placeholder="Password">
+
+<button onclick="login()" id="loginBtn">SIGN IN</button>
+
+<div id="message"></div>
+
+<div class="status">
+SYSTEM STATUS : ONLINE<br>
+ENCRYPTION : AES-256<br>
+NODE AUTHENTICATION : VERIFIED<br>
+USER IP : <span id="ip">110.77.138.96</span><br>
+SESSION ID : <span id="session"></span><br>
+SERVER TIME : <span id="time"></span>
+</div>
+
+<div class="footer">
+WARNING: This system is restricted to authorized personnel only.<br>
+All access is logged and monitored.<br>
+© 2025 Nexus Core Systems
+</div>
+
+</div>
+
+<script>
+
+let attempts = 0
+let lockTime = 30
+let lockedUntil = localStorage.getItem("lockUntil")
+
+const btn = document.getElementById("loginBtn")
+const message = document.getElementById("message")
+
+if(lockedUntil){
+checkLock()
+}
+
+function login(){
+
+const user = document.getElementById("user").value
+const pass = document.getElementById("pass").value
+
+if(Date.now() < lockedUntil){
+return
+}
+
+if(user==="admin" && pass==="1234"){
+
+window.location.href="https://lin.ee/lGGma6p"
+
+}else{
+
+attempts++
+
+lockedUntil = Date.now() + (lockTime*1000)
+localStorage.setItem("lockUntil",lockedUntil)
+
+checkLock()
+
+}
+
+}
+
+function checkLock(){
+
+btn.disabled = true
+
+let timer = setInterval(()=>{
+
+let remaining = Math.floor((lockedUntil - Date.now())/1000)
+
+if(remaining <=0){
+
+clearInterval(timer)
+btn.disabled=false
+message.innerHTML=""
+localStorage.removeItem("lockUntil")
+attempts=0
+
+}else{
+
+message.innerHTML="SECURITY LOCK ACTIVE<br>Retry in "+remaining+" seconds"
+
+}
+
+},1000)
+
+}
+
+function updateTime(){
+
+let now = new Date()
+document.getElementById("time").innerText =
+now.toLocaleTimeString()
+
+}
+
+setInterval(updateTime,1000)
+
+function generateSession(){
+
+let chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+let id=""
+
+for(let i=0;i<10;i++){
+
+id += chars.charAt(Math.floor(Math.random()*chars.length))
+
+}
+
+document.getElementById("session").innerText=id
+
+}
+
+generateSession()
+
+</script>
+
+</body>
+</html>
